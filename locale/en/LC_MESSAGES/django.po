@@ -1,0 +1,418 @@
+# ## locale/en/LC_MESSAGES/django.po
+msgid ""
+msgstr ""
+"Project-Id-Version: MietSystem\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-01 18:32+0200\n"
+"PO-Revision-Date: 2025-07-01 15:41+0200\n"
+"Last-Translator: \n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: analytics/apps.py:9
+msgid "Analytics"
+msgstr "Analytics"
+
+#: analytics/models.py:13 analytics/models.py:36 bookings/models.py:18
+#: reviews/models.py:12 reviews/views.py:68
+msgid "User"
+msgstr "User"
+
+#: analytics/models.py:15
+msgid "Query"
+msgstr "Query"
+
+#: analytics/models.py:16 analytics/models.py:44 analytics/views.py:54
+msgid "Timestamp"
+msgstr "Timestamp"
+
+#: analytics/models.py:24
+msgid "Search History"
+msgstr "Search History"
+
+#: analytics/models.py:25
+msgid "Search Histories"
+msgstr "Search Histories"
+
+#: analytics/models.py:42 bookings/models.py:24 listings/models.py:34
+#: reviews/views.py:68
+msgid "Listing"
+msgstr "Listing"
+
+#: analytics/models.py:52
+msgid "View History"
+msgstr "View History"
+
+#: analytics/models.py:53
+msgid "View Histories"
+msgstr "View Histories"
+
+#: analytics/serializers.py:18
+msgid "Query must be between 1 and 255 characters"
+msgstr "Query must be between 1 and 255 characters"
+
+#: analytics/views.py:39
+msgid "Invalid time frame. Use 'week' or 'month'"
+msgstr "Invalid time frame. Use 'week' or 'month'"
+
+#: analytics/views.py:54
+msgid "Listing ID"
+msgstr "Listing ID"
+
+#: analytics/views.py:54 listings/models.py:9
+msgid "Title"
+msgstr "Title"
+
+#: analytics/views.py:54
+msgid "Views"
+msgstr "Views"
+
+#: bookings/apps.py:9 bookings/models.py:53
+msgid "Bookings"
+msgstr "Bookings"
+
+#: bookings/models.py:10
+msgid "Pending"
+msgstr "Pending"
+
+#: bookings/models.py:11
+msgid "Confirmed"
+msgstr "Confirmed"
+
+#: bookings/models.py:12
+msgid "Cancelled"
+msgstr "Cancelled"
+
+#: bookings/models.py:26
+msgid "Start date"
+msgstr "Start date"
+
+#: bookings/models.py:27
+msgid "End date"
+msgstr "End date"
+
+#: bookings/models.py:31
+msgid "Total price"
+msgstr "Total price"
+
+#: bookings/models.py:37
+msgid "Status"
+msgstr "Status"
+
+#: bookings/models.py:41 listings/models.py:19 reviews/models.py:23
+msgid "Created at"
+msgstr "Created at"
+
+#: bookings/models.py:52 reviews/models.py:18
+msgid "Booking"
+msgstr "Booking"
+
+#: bookings/models.py:57 bookings/serializers.py:28
+msgid "End date must be after start date"
+msgstr "End date must be after start date"
+
+#: bookings/models.py:59
+msgid "Total price must be non-negative"
+msgstr "Total price must be non-negative"
+
+#: bookings/permissions.py:7
+msgid "Only the booking owner or landlord can perform this action"
+msgstr "Only the booking owner or landlord can perform this action"
+
+#: bookings/serializers.py:25
+msgid "Cannot book an inactive listing"
+msgstr "Cannot book an inactive listing"
+
+#: bookings/serializers.py:31
+msgid "Start date cannot be in the past"
+msgstr "Start date cannot be in the past"
+
+#: bookings/serializers.py:35
+msgid "Booking duration must be between 1 and 30 days"
+msgstr "Booking duration must be between 1 and 30 days"
+
+#: bookings/serializers.py:43
+msgid "Dates overlap with existing booking"
+msgstr "Dates overlap with existing booking"
+
+#: bookings/serializers.py:48
+msgid "Selected dates are not available"
+msgstr "Selected dates are not available"
+
+#: bookings/views.py:48
+msgid "Only tenants can create bookings"
+msgstr "Only tenants can create bookings"
+
+#: bookings/views.py:69
+msgid "Only the landlord can confirm"
+msgstr "Only the landlord can confirm"
+
+#: bookings/views.py:71
+msgid "Only pending bookings can be confirmed"
+msgstr "Only pending bookings can be confirmed"
+
+#: bookings/views.py:75
+msgid "Booking confirmed"
+msgstr "Booking confirmed"
+
+#: bookings/views.py:83
+msgid "Only the user or landlord can cancel"
+msgstr "Only the user or landlord can cancel"
+
+#: bookings/views.py:85
+msgid "Cannot cancel within 48 hours of start date"
+msgstr "Cannot cancel within 48 hours of start date"
+
+#: bookings/views.py:89
+msgid "Booking cancelled"
+msgstr "Booking cancelled"
+
+#: listings/apps.py:9 listings/models.py:35
+msgid "Listings"
+msgstr "Listings"
+
+#: listings/models.py:10
+msgid "Description"
+msgstr "Description"
+
+#: listings/models.py:11
+msgid "Address"
+msgstr "Address"
+
+#: listings/models.py:12
+msgid "Price per night"
+msgstr "Price per night"
+
+#: listings/models.py:13
+msgid "Rooms"
+msgstr "Rooms"
+
+#: listings/models.py:14
+msgid "Property type"
+msgstr "Property type"
+
+#: listings/models.py:15
+msgid "Amenities"
+msgstr "Amenities"
+
+#: listings/models.py:16
+msgid "Photos"
+msgstr "Photos"
+
+#: listings/models.py:17
+msgid "Availability"
+msgstr "Availability"
+
+#: listings/models.py:18
+msgid "Is active"
+msgstr "Is active"
+
+#: listings/models.py:20
+msgid "Popularity"
+msgstr "Popularity"
+
+#: listings/permissions.py:7
+msgid "Only the listing owner can perform this action"
+msgstr "Only the listing owner can perform this action"
+
+#: listings/permissions.py:13
+msgid "Only landlords can perform this action"
+msgstr "Only landlords can perform this action"
+
+#: listings/serializers.py:23
+msgid "Photos must be a list"
+msgstr "Photos must be a list"
+
+#: listings/serializers.py:28
+msgid "Photo size must be ≤ 5MB"
+msgstr "Photo size must be ≤ 5MB"
+
+#: listings/serializers.py:30
+msgid "Photo must be JPEG or PNG"
+msgstr "Photo must be JPEG or PNG"
+
+#: listings/serializers.py:33
+msgid "Photo dimensions must be ≥ 200px"
+msgstr "Photo dimensions must be ≥ 200px"
+
+#: listings/serializers.py:39
+msgid "Amenities must be a list"
+msgstr "Amenities must be a list"
+
+#: listings/serializers.py:44
+msgid "Price per night must be positive"
+msgstr "Price per night must be positive"
+
+#: listings/serializers.py:49
+msgid "Rooms must be a positive integer or half-integer (e.g., 1, 1.5, 2)"
+msgstr "Rooms must be a positive integer or half-integer (e.g., 1, 1.5, 2)"
+
+#: listings/serializers.py:54
+msgid "Availability must be a dictionary"
+msgstr "Availability must be a dictionary"
+
+#: listings/serializers.py:57
+msgid "Availability must be a dictionary of date strings to boolean values"
+msgstr "Availability must be a dictionary of date strings to boolean values"
+
+#: listings/views.py:90
+msgid "Listing deleted successfully"
+msgstr "Listing deleted successfully"
+
+#: locations/apps.py:9 locations/models.py:41
+msgid "Locations"
+msgstr "Locations"
+
+#: locations/models.py:31
+msgid "Coordinates"
+msgstr ""
+
+#: locations/models.py:40
+msgid "Location"
+msgstr "Location"
+
+#: locations/serializers.py:15
+msgid "Postal code must be a 5-digit number"
+msgstr "Postal code must be a 5-digit number"
+
+#: locations/serializers.py:20
+msgid "Latitude must be between -90 and 90"
+msgstr "Latitude must be between -90 and 90"
+
+#: locations/serializers.py:25
+msgid "Longitude must be between -180 and 180"
+msgstr "Longitude must be between -180 and 180"
+
+#: reviews/apps.py:9 reviews/models.py:33
+msgid "Reviews"
+msgstr "Reviews"
+
+#: reviews/models.py:20 reviews/views.py:68
+msgid "Rating"
+msgstr "Rating"
+
+#: reviews/models.py:21 reviews/views.py:68
+msgid "Comment"
+msgstr "Comment"
+
+#: reviews/models.py:22
+msgid "Is approved"
+msgstr "Is approved"
+
+#: reviews/models.py:32
+msgid "Review"
+msgstr "Review"
+
+#: reviews/permissions.py:7
+msgid "Only the review owner or admin can perform this action"
+msgstr "Only the review owner or admin can perform this action"
+
+#: reviews/serializers.py:17
+msgid "Rating must be between 1 and 5"
+msgstr "Rating must be between 1 and 5"
+
+#: reviews/serializers.py:23
+msgid "Review can only be created for confirmed bookings"
+msgstr "Review can only be created for confirmed bookings"
+
+#: reviews/serializers.py:25
+msgid "Only the booking owner can create a review"
+msgstr "Only the booking owner can create a review"
+
+#: reviews/serializers.py:27
+msgid "Review can only be created after the booking end date"
+msgstr "Review can only be created after the booking end date"
+
+#: reviews/serializers.py:32
+msgid "Comment must be less than 1000 characters"
+msgstr "Comment must be less than 1000 characters"
+
+#: reviews/views.py:41
+msgid "Only tenants can create reviews"
+msgstr "Only tenants can create reviews"
+
+#: reviews/views.py:58
+msgid "Review approved"
+msgstr "Review approved"
+
+#: reviews/views.py:68
+msgid "Review ID"
+msgstr "Review ID"
+
+#: reviews/views.py:68
+#, fuzzy
+#| msgid "Is approved"
+msgid "Is Approved"
+msgstr "Is approved"
+
+#: reviews/views.py:68
+#, fuzzy
+#| msgid "Created at"
+msgid "Created At"
+msgstr "Created at"
+
+#: users/models.py:30
+msgid "Email is required"
+msgstr "Email is required"
+
+#: users/serializers.py:19
+msgid "Invalid role"
+msgstr "Invalid role"
+
+#: users/serializers.py:24
+msgid "Invalid phone number format"
+msgstr "Invalid phone number format"
+
+#: users/serializers.py:29
+msgid "Email already exists"
+msgstr "Email already exists"
+
+#: users/tasks.py:24
+msgid "Verify Your MietSystem Account"
+msgstr "Verify Your MietSystem Account"
+
+#: users/tasks.py:45
+msgid "Reset Your MietSystem Password"
+msgstr "Reset Your MietSystem Password"
+
+#: users/views.py:60
+msgid "Email already verified"
+msgstr "Email already verified"
+
+#: users/views.py:64
+msgid "Email verified"
+msgstr "Email verified"
+
+#: users/views.py:66 users/views.py:97
+msgid "Invalid or expired token"
+msgstr "Invalid or expired token"
+
+#: users/views.py:76
+msgid "Password reset email sent"
+msgstr "Password reset email sent"
+
+#: users/views.py:78
+msgid "User not found"
+msgstr "User not found"
+
+#: users/views.py:95
+msgid "Password reset successful"
+msgstr "Password reset successful"
+
+#~ msgid "Tenant"
+#~ msgstr "Tenant"
+
+#~ msgid "Landlord"
+#~ msgstr "Landlord"
+
+#~ msgid "Admin"
+#~ msgstr "Admin"
+
+#~ msgid "Country"
+#~ msgstr "Country"
+
+#~ msgid "City"
+#~ msgstr "City"

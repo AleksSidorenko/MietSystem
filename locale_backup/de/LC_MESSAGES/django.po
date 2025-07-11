@@ -1,0 +1,407 @@
+# ## locale/de/LC_MESSAGES/django.po
+
+msgid ""
+msgstr ""
+"Project-Id-Version: MietSystem\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-01 14:14+0200\n"
+"PO-Revision-Date: 2025-07-01 15:41+0200\n"
+"Last-Translator: \n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: analytics/apps.py:9
+msgid "Analytics"
+msgstr "Analytik"
+
+#: analytics/models.py:13 analytics/models.py:36 bookings/models.py:18
+#: reviews/models.py:12
+msgid "User"
+msgstr "Nutzer"
+
+#: analytics/models.py:15
+msgid "Query"
+msgstr "Abfrage"
+
+#: analytics/models.py:16 analytics/models.py:44 analytics/views.py:54
+msgid "Timestamp"
+msgstr "Zeitstempel"
+
+#: analytics/models.py:24
+msgid "Search History"
+msgstr "Suchverlauf"
+
+#: analytics/models.py:25
+msgid "Search Histories"
+msgstr "Suchverläufe"
+
+#: analytics/models.py:42 bookings/models.py:24 listings/models.py:34
+msgid "Listing"
+msgstr "Angebot"
+
+#: analytics/models.py:52
+msgid "View History"
+msgstr "Ansichtsverlauf"
+
+#: analytics/models.py:53
+msgid "View Histories"
+msgstr "Ansichtsverläufe"
+
+#: analytics/serializers.py:15
+msgid "Query must be between 1 and 255 characters"
+msgstr "Abfrage muss zwischen 1 und 255 Zeichen lang sein"
+
+#: analytics/views.py:39
+msgid "Invalid time frame. Use 'week' or 'month'"
+msgstr "Ungültiger Zeitrahmen. Verwenden Sie 'week' oder 'month'"
+
+#: analytics/views.py:54
+msgid "Listing ID"
+msgstr "Angebots-ID"
+
+#: analytics/views.py:54 listings/models.py:9
+msgid "Title"
+msgstr "Titel"
+
+#: analytics/views.py:54
+msgid "Views"
+msgstr "Ansichten"
+
+#: bookings/apps.py:9 bookings/models.py:53
+msgid "Bookings"
+msgstr "Buchungen"
+
+#: bookings/models.py:10
+msgid "Pending"
+msgstr "Ausstehend"
+
+#: bookings/models.py:11
+msgid "Confirmed"
+msgstr "Bestätigt"
+
+#: bookings/models.py:12
+msgid "Cancelled"
+msgstr "Abgebrochen"
+
+#: bookings/models.py:26
+msgid "Start date"
+msgstr "Startdatum"
+
+#: bookings/models.py:27
+msgid "End date"
+msgstr "Enddatum"
+
+#: bookings/models.py:31
+msgid "Total price"
+msgstr "Gesamtpreis"
+
+#: bookings/models.py:37
+msgid "Status"
+msgstr "Status"
+
+#: bookings/models.py:41 listings/models.py:19 reviews/models.py:23
+msgid "Created at"
+msgstr "Erstellt am"
+
+#: bookings/models.py:52 reviews/models.py:18
+msgid "Booking"
+msgstr "Buchung"
+
+#: bookings/models.py:57 bookings/serializers.py:25
+msgid "End date must be after start date"
+msgstr "Enddatum muss nach dem Startdatum liegen"
+
+#: bookings/models.py:59
+msgid "Total price must be non-negative"
+msgstr "Gesamtpreis muss nicht negativ sein"
+
+#: bookings/permissions.py:7
+msgid "Only the booking owner or landlord can perform this action"
+msgstr "Nur der Buchungsinhaber oder Vermieter kann diese Aktion ausführen"
+
+#: bookings/serializers.py:22
+msgid "Cannot book an inactive listing"
+msgstr "Inaktives Angebot kann nicht gebucht werden"
+
+#: bookings/serializers.py:28
+msgid "Start date cannot be in the past"
+msgstr "Startdatum darf nicht in der Vergangenheit liegen"
+
+#: bookings/serializers.py:32
+msgid "Booking duration must be between 1 and 30 days"
+msgstr "Buchungsdauer muss zwischen 1 und 30 Tagen liegen"
+
+#: bookings/serializers.py:40
+msgid "Dates overlap with existing booking"
+msgstr "Daten überschneiden sich mit bestehender Buchung"
+
+#: bookings/serializers.py:45
+msgid "Selected dates are not available"
+msgstr "Ausgewählte Daten sind nicht verfügbar"
+
+#: bookings/views.py:48
+msgid "Only tenants can create bookings"
+msgstr "Nur Mieter können Buchungen erstellen"
+
+#: bookings/views.py:69
+msgid "Only the landlord can confirm"
+msgstr "Nur der Vermieter kann bestätigen"
+
+#: bookings/views.py:71
+msgid "Only pending bookings can be confirmed"
+msgstr "Nur ausstehende Buchungen können bestätigt werden"
+
+#: bookings/views.py:75
+msgid "Booking confirmed"
+msgstr "Buchung bestätigt"
+
+#: bookings/views.py:83
+msgid "Only the user or landlord can cancel"
+msgstr "Nur der Nutzer oder Vermieter kann stornieren"
+
+#: bookings/views.py:85
+msgid "Cannot cancel within 48 hours of start date"
+msgstr "Stornierung innerhalb von 48 Stunden vor Startdatum nicht möglich"
+
+#: bookings/views.py:89
+msgid "Booking cancelled"
+msgstr "Buchung storniert"
+
+#: listings/apps.py:9 listings/models.py:35
+msgid "Listings"
+msgstr "Angebote"
+
+#: listings/models.py:10
+msgid "Description"
+msgstr "Beschreibung"
+
+#: listings/models.py:11
+msgid "Address"
+msgstr "Adresse"
+
+#: listings/models.py:12
+msgid "Price per night"
+msgstr "Preis pro Nacht"
+
+#: listings/models.py:13
+msgid "Rooms"
+msgstr "Zimmer"
+
+#: listings/models.py:14
+msgid "Property type"
+msgstr "Immobilientyp"
+
+#: listings/models.py:15
+msgid "Amenities"
+msgstr "Ausstattung"
+
+#: listings/models.py:16
+msgid "Photos"
+msgstr "Fotos"
+
+#: listings/models.py:17
+msgid "Availability"
+msgstr "Verfügbarkeit"
+
+#: listings/models.py:18
+msgid "Is active"
+msgstr "Ist aktiv"
+
+#: listings/models.py:20
+msgid "Popularity"
+msgstr "Beliebtheit"
+
+#: listings/permissions.py:7
+msgid "Only the listing owner can perform this action"
+msgstr "Nur der Angebotsinhaber kann diese Aktion ausführen"
+
+#: listings/permissions.py:13
+msgid "Only landlords can perform this action"
+msgstr "Nur Vermieter können diese Aktion ausführen"
+
+#: listings/serializers.py:23
+msgid "Photos must be a list"
+msgstr "Fotos müssen eine Liste sein"
+
+#: listings/serializers.py:28
+msgid "Photo size must be ≤ 5MB"
+msgstr "Fotogröße muss ≤ 5 MB sein"
+
+#: listings/serializers.py:30
+msgid "Photo must be JPEG or PNG"
+msgstr "Foto muss JPEG oder PNG sein"
+
+#: listings/serializers.py:33
+msgid "Photo dimensions must be ≥ 200px"
+msgstr "Fotoabmessungen müssen ≥ 200px sein"
+
+#: listings/serializers.py:39
+msgid "Amenities must be a list"
+msgstr "Ausstattung muss eine Liste sein"
+
+#: listings/serializers.py:44
+msgid "Price per night must be positive"
+msgstr "Preis pro Nacht muss positiv sein"
+
+#: listings/serializers.py:49
+msgid "Rooms must be a positive integer or half-integer (e.g., 1, 1.5, 2)"
+msgstr "Zimmer müssen eine positive Ganzzahl oder Halbzahl sein (z.B. 1, 1.5, 2)"
+
+#: listings/serializers.py:54
+msgid "Availability must be a dictionary"
+msgstr "Verfügbarkeit muss ein Wörterbuch sein"
+
+#: listings/serializers.py:57
+msgid "Availability must be a dictionary of date strings to boolean values"
+msgstr "Verfügbarkeit muss ein Wörterbuch aus Datumszeichenfolgen und booleschen Werten sein"
+
+#: listings/views.py:90
+msgid "Listing deleted successfully"
+msgstr "Angebot erfolgreich gelöscht"
+
+#: locations/apps.py:9 locations/models.py:38
+msgid "Locations"
+msgstr "Standorte"
+
+#: locations/models.py:37
+msgid "Location"
+msgstr "Standort"
+
+#: locations/serializers.py:15
+msgid "Postal code must be a 5-digit number"
+msgstr "Postleitzahl muss eine 5-stellige Zahl sein"
+
+#: locations/serializers.py:20
+msgid "Latitude must be between -90 and 90"
+msgstr "Breitengrad muss zwischen -90 und 90 liegen"
+
+#: locations/serializers.py:25
+msgid "Longitude must be between -180 and 180"
+msgstr "Längengrad muss zwischen -180 und 180 liegen"
+
+#: reviews/apps.py:9 reviews/models.py:33
+msgid "Reviews"
+msgstr "Bewertungen"
+
+#: reviews/models.py:20
+msgid "Rating"
+msgstr "Bewertung"
+
+#: reviews/models.py:21
+msgid "Comment"
+msgstr "Kommentar"
+
+#: reviews/models.py:22
+msgid "Is approved"
+msgstr "Genehmigt"
+
+#: reviews/models.py:32
+msgid "Review"
+msgstr "Bewertung"
+
+#: reviews/permissions.py:7
+msgid "Only the review owner or admin can perform this action"
+msgstr "Nur der Bewertungsinhaber oder Administrator kann diese Aktion ausführen"
+
+#: reviews/serializers.py:17
+msgid "Rating must be between 1 and 5"
+msgstr "Bewertung muss zwischen 1 und 5 liegen"
+
+#: reviews/serializers.py:23
+msgid "Review can only be created for confirmed bookings"
+msgstr "Bewertung kann nur für bestätigte Buchungen erstellt werden"
+
+#: reviews/serializers.py:25
+msgid "Only the booking owner can create a review"
+msgstr "Nur der Buchungsinhaber kann eine Bewertung erstellen"
+
+#: reviews/serializers.py:27
+msgid "Review can only be created after the booking end date"
+msgstr "Bewertung kann nur nach dem Enddatum der Buchung erstellt werden"
+
+#: reviews/views.py:41
+msgid "Only tenants can create reviews"
+msgstr "Nur Mieter können Bewertungen erstellen"
+
+#: reviews/views.py:56
+msgid "Review approved"
+msgstr "Bewertung genehmigt"
+
+#: users/models.py:30
+msgid "Email is required"
+msgstr "E-Mail ist erforderlich"
+
+#: users/serializers.py:19
+msgid "Invalid role"
+msgstr "Ungültige Rolle"
+
+#: users/serializers.py:24
+msgid "Invalid phone number format"
+msgstr "Ungültiges Telefonnummerformat"
+
+#: users/serializers.py:29
+msgid "Email already exists"
+msgstr "E-Mail existiert bereits"
+
+#: users/tasks.py:24
+msgid "Verify Your MietSystem Account"
+msgstr "Bestätigen Sie Ihr MietSystem-Konto"
+
+#: users/tasks.py:45
+msgid "Reset Your MietSystem Password"
+msgstr "Setzen Sie Ihr MietSystem-Passwort zurück"
+
+#: users/views.py:60
+msgid "Email already verified"
+msgstr "E-Mail bereits bestätigt"
+
+#: users/views.py:64
+msgid "Email verified"
+msgstr "E-Mail bestätigt"
+
+#: users/views.py:66 users/views.py:97
+msgid "Invalid or expired token"
+msgstr "Ungültiger oder abgelaufener Token"
+
+#: users/views.py:76
+msgid "Password reset email sent"
+msgstr "E-Mail zum Zurücksetzen des Passworts gesendet"
+
+#: users/views.py:78
+msgid "User not found"
+msgstr "Benutzer nicht gefunden"
+
+#: users/views.py:95
+msgid "Password reset successful"
+msgstr "Passwort erfolgreich zurückgesetzt"
+
+#: reviews/serializers.py:20
+msgid "Comment must be less than 1000 characters"
+msgstr "Kommentar darf nicht länger als 1000 Zeichen sein"
+
+#: reviews/views.py:65
+msgid "Review ID"
+msgstr "Bewertungs-ID"
+
+#: users/models.py:15
+msgid "Tenant"
+msgstr "Mieter"
+
+#: users/models.py:16
+msgid "Landlord"
+msgstr "Vermieter"
+
+#: users/models.py:17
+msgid "Admin"
+msgstr "Administrator"
+
+#: locations/models.py:9
+msgid "Country"
+msgstr "Land"
+
+#: locations/models.py:10
+msgid "City"
+msgstr "Stadt"
