@@ -18,8 +18,19 @@ ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1").split(","
 ADMIN_DEBUG_MODE = True  # True — подробный режим, False — компактный
 ADMIN_DETAILED_MODE = True
 
+LEAFLET_CONFIG = {
+    "DEFAULT_CENTER": (51.1657, 10.4515),  # Центр Германии
+    "DEFAULT_ZOOM": 6,
+    "MIN_ZOOM": 3,
+    "MAX_ZOOM": 18,
+    "SCALE": "both",
+    "RESET_VIEW": True,
+}
+
 INSTALLED_APPS = [
     "modeltranslation",
+    "django.contrib.gis",
+    "leaflet",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -33,7 +44,6 @@ INSTALLED_APPS = [
     "django_extensions",
     "django_otp",
     "django_otp.plugins.otp_totp",
-    "django.contrib.gis",
     "axes",
     "allauth",
     "allauth.account",
@@ -173,6 +183,12 @@ DATE_FORMAT = "j F Y"  # для формата "10 July 2025"
 # DATE_FORMAT = 'd.m.Y'  # для формата "10.07.2025"
 
 STATIC_URL = "/static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -1,4 +1,4 @@
-### Project_MietSystem/locations/models.py
+# Project_MietSystem/locations/models.py
 
 from enum import Enum
 
@@ -6,6 +6,8 @@ from django.contrib.gis.db import models as gis_models
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from simple_history.models import HistoricalRecords
+
+from listings.models import Listing  # если связь с Listing
 
 
 class FederalState(Enum):
@@ -57,6 +59,7 @@ class Location(models.Model):
     coordinates = gis_models.PointField(
         verbose_name=_("Coordinates"), null=True, blank=True
     )
+
     federal_state = models.CharField(
         max_length=100, choices=[(f.value, f.value) for f in FederalState]
     )

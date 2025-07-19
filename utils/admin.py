@@ -1,20 +1,19 @@
-### Project_MietSystem/utils/admin.py
-### Вариант 1: Централизованная админка
+# Project_MietSystem/utils/admin.py
+# Централизованная админка
 
 import csv
 
 from allauth.account.models import EmailAddress
 from axes.models import AccessAttempt, AccessFailureLog, AccessLog
+from django import forms
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin import SimpleListFilter
 from django.contrib.auth.models import Group
-from django.contrib.gis.geos import Point
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.utils import formats
 from django.utils.formats import date_format
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -26,11 +25,11 @@ from django_celery_beat.models import (
     SolarSchedule,
 )
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from leaflet.admin import LeafletGeoAdmin
+from leaflet.forms.widgets import LeafletWidget
 from modeltranslation.admin import TranslationAdmin
 from simple_history.admin import SimpleHistoryAdmin
 
-import listings.translation
-import locations.translation
 from analytics.models import SearchHistory, ViewHistory
 from bookings.models import Booking
 from listings.forms import ListingForm
@@ -38,6 +37,16 @@ from listings.models import Amenity, AvailabilitySlot, Listing
 from locations.models import Location
 from reviews.models import Review
 from users.models import User
+from utils.role_utils import user_has_role
+
+
+class DefaultLocationForm(forms.ModelForm):
+    class Meta:
+        model = Location
+        fields = "__all__"
+        widgets = {
+            "coordinates": LeafletWidget(),
+        }
 
 
 @admin.register(Amenity)
@@ -69,15 +78,6 @@ class AvailabilitySlotInline(admin.TabularInline):
 
     def has_delete_permission(self, request, obj=None):
         return self.has_change_permission(request, obj)
-
-
-# class AvailabilitySlotInline(admin.TabularInline):
-#     model = AvailabilitySlot
-#     extra = 3  # Показывать 3 пустых слота по умолчанию
-#     min_num = 0
-#     verbose_name = "Availability Slot"
-#     verbose_name_plural = "Availability Slots"
-#     classes = ['collapse']
 
 
 @admin.register(AvailabilitySlot)
@@ -117,16 +117,6 @@ class AvailabilitySlotAdmin(admin.ModelAdmin):
         return self.has_change_permission(request, obj)
 
 
-# @admin.register(AvailabilitySlot)
-# class AvailabilitySlotAdmin(admin.ModelAdmin):
-#     list_display = ['listing', 'date', 'is_available']
-#     list_filter = ['is_available', 'date']
-#     search_fields = ['listing__title']
-#     date_hierarchy = 'date'
-#     allowed_roles = ['ADMIN', 'LANDLORD']  # можно расширить при необходимости
-#     # pass
-
-
 class LocationInline(admin.StackedInline):
     model = Location
     extra = 1
@@ -149,9 +139,15 @@ class LocationInline(admin.StackedInline):
 
 
 def user_has_role(user, roles):
-    return user.is_authenticated and (
-        user.is_superuser or getattr(user, "role", None) in roles
-    )
+    """
+    Проверяет, имеет ли пользователь одну из указанных ролей.
+    Суперпользователь считается ADMIN.
+    """
+    if not user.is_authenticated:
+        return False
+    if user.is_superuser:
+        return True  # суперпользователь = ADMIN
+    return getattr(user, "role", None) in roles
 
 
 class RoleAccessMixin:
@@ -184,17 +180,17 @@ class RoleAccessMixin:
 class ExportCsvMixin:
     export_fields = []
 
-    # ✅ (1) Опционально скрываем action 'export_to_csv' для TENANT
+    # (1) Опционально скрываем action 'export_to_csv' для TENANT
     def get_actions(self, request):
         actions = super().get_actions(request)
         if not user_has_role(request.user, ["ADMIN", "LANDLORD"]):
             if "export_to_csv" in actions:
                 del actions[
                     "export_to_csv"
-                ]  # ❗️ Удаляем export, если роль — не ADMIN и не LANDLORD
+                ]  ##️ Удаляем export, если роль — не ADMIN и не LANDLORD
         return actions
 
-    # ✅ (2) Проверка разрешённых ролей внутри самого действия
+    # (2) Проверка разрешённых ролей внутри самого действия
     def export_to_csv(self, request, queryset):
         if not user_has_role(request.user, ["ADMIN", "LANDLORD"]):
             self.message_user(
@@ -202,7 +198,7 @@ class ExportCsvMixin:
                 "You do not have permission to export data.",
                 level=messages.ERROR,
             )
-            return None  # ❗️ Не даём экспортировать
+            return None  # Не даём экспортировать
 
         if not self.export_fields:
             self.message_user(
@@ -219,7 +215,7 @@ class ExportCsvMixin:
         for obj in queryset:
             row = []
             for field in self.export_fields:
-                # ✅ Поддержка полей с '__' (related fields)
+                # Поддержка полей с '__' (related fields)
                 try:
                     value = self._get_nested_attr(obj, field)
                 except AttributeError:
@@ -231,7 +227,7 @@ class ExportCsvMixin:
 
     export_to_csv.short_description = "Export selected to CSV"
 
-    # ✅ (3) Вспомогательная функция для __ цепочек, если ещё не была реализована
+    # (3) Вспомогательная функция для __ цепочек, если ещё не была реализована
     def _get_nested_attr(self, obj, attr):
         """Поддержка доступа к вложенным аттрибутам через '__'"""
         for part in attr.split("__"):
@@ -368,8 +364,8 @@ class UserAdmin(AdminDisplayModeMixin, BaseHistoryAdmin):
     simple_search_fields = ("email",)
     readonly_fields = ("date_joined", "last_login")
 
-    # --------------------------
-    # Изменение 2: Права редактирования Tenant и Landlord — разрешаем менять только имя, фамилию, email, телефон (если есть)
+    # Изменение 2: Права редактирования Tenant и Landlord — разрешаем менять только имя,
+    # фамилию, email, телефон (если есть)
     def get_readonly_fields(self, request, obj=None):
         user = request.user
 
@@ -387,9 +383,6 @@ class UserAdmin(AdminDisplayModeMixin, BaseHistoryAdmin):
 
         return super().get_readonly_fields(request, obj)
 
-    # --------------------------
-
-    # --------------------------
     # Изменение 1: get_queryset — Tenant и Landlord видят себя и других, связанных бронированиями
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -479,7 +472,7 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
     form = ListingForm
     filter_horizontal = ("amenities",)  # Использует виджет FilteredSelectMultiple
 
-    inlines = [AvailabilitySlotInline, LocationInline]
+    inlines = [AvailabilitySlotInline]  # , LocationInline]
     export_fields = [
         "title_en",
         "title_de",
@@ -515,7 +508,6 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
         "popularity",
         "created_at",
     )
-    # simple_list_display = ('title_en', 'user', 'price_per_night')
     simple_list_display = ("title_en", "user", "price_per_night", "photo_preview")
     readonly_fields = ("photo_preview",)
 
@@ -811,9 +803,6 @@ class ReviewAdmin(AdminDisplayModeMixin, ExportCsvMixin, BaseAdmin):
         ),
     )
 
-    # list_display_links = ('action_links',)
-    # list_display_links = None
-
     def action_links(self, obj):
         user = getattr(self, "request_user", None)
         if not user:
@@ -1050,203 +1039,152 @@ class ViewHistoryAdmin(ExportCsvMixin, BaseAdmin):
         return user_has_role(request.user, ["ADMIN"])
 
 
-@admin.register(Location)
-class LocationAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
-    allowed_roles = ["ADMIN", "TENANT"]
-    export_fields = ["listing__title_en", "city", "federal_state", "postal_code"]
-    actions = ["export_to_csv"]
-    # inlines = [LocationInline]
+class LocationForm(forms.ModelForm):
+    class Meta:
+        model = Location
+        fields = "__all__"
 
-    detailed_list_display = (
+
+@admin.register(Location)
+class LocationAdmin(AdminDisplayModeMixin, LeafletGeoAdmin, BaseHistoryAdmin):
+
+    allowed_roles = ["ADMIN", "LANDLORD", "TENANT"]
+    form = LocationForm
+
+    list_display = (
         "listing",
+        "street",
         "city",
         "federal_state",
-        "postal_code",
-        "street",
+        "country_display",
         "get_latitude",
         "get_longitude",
+        "photo_preview",
     )
-    simple_list_display = ("listing", "city", "postal_code")
-    detailed_list_filter = ("city", "federal_state")
-    simple_list_filter = ("city",)
-    detailed_search_fields = (
-        "listing__title_en",
-        "city",
-        "federal_state",
-        "street",
-        "postal_code",
-    )
-    simple_search_fields = ("city", "postal_code")
+    list_filter = ("city", "federal_state")
+    search_fields = ("street", "city", "federal_state", "listing__country__iexact")
 
-    history_list_display = ["city", "federal_state", "postal_code"]
+    def get_readonly_fields(self, request, obj=None):
+        base = ["photo_preview", "country_display"]
+        if getattr(request.user, "role", None) == "TENANT":
+            base.append("readonly_coordinates_map")
+        return base
 
+    def get_fieldsets(self, request, obj=None):
+        if getattr(request.user, "role", None) == "TENANT":
+            return (
+                (
+                    None,
+                    {
+                        "fields": (
+                            "listing",
+                            "street",
+                            "postal_code",
+                            "city",
+                            "federal_state",
+                            "country_display",
+                            "readonly_coordinates_map",
+                        )
+                    },
+                ),
+                (
+                    "Дополнительно",
+                    {"fields": ("photo_preview",), "classes": ("collapse",)},
+                ),
+            )
+        return (
+            (
+                None,
+                {
+                    "fields": (
+                        "listing",
+                        "street",
+                        "postal_code",
+                        "city",
+                        "federal_state",
+                        "country_display",
+                        "coordinates",
+                    )
+                },
+            ),
+            ("Дополнительно", {"fields": ("photo_preview",), "classes": ("collapse",)}),
+        )
+
+    # ==== HELPERS ====
     def get_latitude(self, obj):
-        # Получаем широту из поля coordinates
-        if obj.coordinates:
-            return obj.coordinates.y
-        return None
+        return obj.coordinates.y if obj.coordinates else None
+
+    get_latitude.short_description = "Latitude"
 
     def get_longitude(self, obj):
-        # Получаем долготу из поля coordinates
-        if obj.coordinates:
-            return obj.coordinates.x
-        return None
+        return obj.coordinates.x if obj.coordinates else None
 
-    # Устанавливаем короткие описания для методов
-    get_latitude.short_description = "Latitude"
     get_longitude.short_description = "Longitude"
 
+    def readonly_coordinates_map(self, obj):
+        if not obj or not obj.coordinates:
+            return "-"
+        lat, lon = obj.coordinates.y, obj.coordinates.x
+        return mark_safe(
+            f"""
+            <iframe width="100%" height="250" style="border:1px solid #ccc"
+                    src="https://www.openstreetmap.org/export/embed.html?bbox={lon-0.01}%2C{lat-0.01}%2C{lon+0.01}%2C{lat+0.01}&layer=mapnik&marker={lat}%2C{lon}">
+            </iframe>
+            <br><a href="https://www.openstreetmap.org/?mlat={lat}&mlon={lon}#map=15/{lat}/{lon}" target="_blank">View on OpenStreetMap</a>
+        """
+        )
+
+    readonly_coordinates_map.short_description = "Карта (только просмотр)"
+
+    def photo_preview(self, obj):
+        if obj.listing and obj.listing.photos:
+            tags = []
+            for url in (
+                obj.listing.photos
+                if isinstance(obj.listing.photos, (list, tuple))
+                else [obj.listing.photos]
+            ):
+                if url:
+                    tags.append(
+                        f'<img src="/{url}" style="max-height:100px; max-width:100px; object-fit:contain; margin:2px;" />'
+                    )
+            return mark_safe("".join(tags))
+        return "-"
+
+    photo_preview.short_description = "Photos"
+
+    def country_display(self, obj):
+        return obj.listing.country if obj.listing else "-"
+
+    country_display.short_description = "Country"
+
+    # ==== PERMISSIONS ====
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         user = request.user
         if user_has_role(user, ["ADMIN"]):
             return qs
+        if user_has_role(user, ["LANDLORD"]):
+            return qs.filter(listing__user=user).distinct()
         if user_has_role(user, ["TENANT"]):
-            return qs  # или ограничить доступ, например: qs.filter(listing__is_active=True)
+            return qs.filter(listing__is_active=True)
         return qs.none()
 
     def has_view_permission(self, request, obj=None):
-        return user_has_role(request.user, ["ADMIN", "TENANT"])
+        return user_has_role(request.user, ["ADMIN", "LANDLORD", "TENANT"])
 
     def has_module_permission(self, request):
-        return user_has_role(request.user, ["ADMIN", "TENANT"])
+        return user_has_role(request.user, ["ADMIN", "LANDLORD", "TENANT"])
 
     def has_add_permission(self, request):
-        return user_has_role(request.user, ["ADMIN"])  # Только Admin
+        return user_has_role(request.user, ["ADMIN", "LANDLORD"])
 
     def has_change_permission(self, request, obj=None):
-        return user_has_role(request.user, ["ADMIN"])  # Только Admin
+        user = request.user
+        return user_has_role(user, ["ADMIN", "LANDLORD"])
 
     def has_delete_permission(self, request, obj=None):
-        return user_has_role(request.user, ["ADMIN"])  # Только Admin
-
-
-# class ExportCsvMixin:
-#     """
-#     Миксин для добавления действия "Export to CSV" в админку.
-#     Требуется определить атрибут `export_fields` - список полей для экспорта.
-#     """
-#     export_fields = []
-#
-#     def export_to_csv(self, request, queryset):
-#         if not self.export_fields:
-#             self.message_user(request, "Export fields not defined", level=messages.ERROR)
-#             return
-#
-#         response = HttpResponse(content_type='text/csv')
-#         model_name = self.model._meta.verbose_name_plural.replace(' ', '_')
-#         response['Content-Disposition'] = f'attachment; filename="{model_name}.csv"'
-#
-#         writer = csv.writer(response)
-#         writer.writerow(self.export_fields)
-#
-#         for obj in queryset:
-#             row = []
-#             for field in self.export_fields:
-#                 value = obj
-#                 for attr in field.split('__'):
-#                     value = getattr(value, attr, '')
-#                     if callable(value):
-#                         value = value()
-#                     if value is None:
-#                         value = ''
-#                     if hasattr(value, 'strftime'):
-#                         value = formats.date_format(value, 'DATETIME_FORMAT')
-#                 row.append(str(value))
-#             writer.writerow(row)
-#         return response
-#
-#     export_to_csv.short_description = "Export selected to CSV"
-#
-
-
-# @admin.register(User)
-# class UserAdmin(AdminDisplayModeMixin, BaseHistoryAdmin):
-#     allowed_roles = ['ADMIN', 'TENANT', 'LANDLORD']
-#
-#     detailed_list_display = (
-#         'email', 'first_name', 'last_name', 'role', 'is_active',
-#         'is_verified', 'is_staff', 'is_superuser', 'date_joined',
-#     )
-#     simple_list_display = ('email', 'first_name', 'last_name', 'role')
-#     detailed_list_filter = ('role', 'is_active', 'is_verified', 'is_staff')
-#     simple_list_filter = ('role',)
-#     detailed_search_fields = ('email', 'first_name', 'last_name')
-#     simple_search_fields = ('email',)
-#     readonly_fields = ('date_joined', 'last_login')
-#     history_list_display = ['email', 'role', 'is_active', 'is_verified']
-#     actions = ['make_verified']
-#
-#     def get_readonly_fields(self, request, obj=None):
-#         if user_has_role(request.user, ['TENANT']) and obj == request.user:
-#             return [f.name for f in self.model._meta.fields if f.name not in ['first_name', 'last_name']]
-#         return super().get_readonly_fields(request, obj)
-#
-#     def get_queryset(self, request):
-#         qs = super().get_queryset(request)
-#         user = request.user
-#         if user_has_role(user, ['ADMIN']):
-#             return qs
-#         if user_has_role(user, ['TENANT', 'LANDLORD']):
-#             return qs.filter(pk=user.pk)  # видит только себя
-#         return qs.none()
-#
-#     def has_delete_permission(self, request, obj=None):
-#         user = request.user
-#         if user_has_role(user, ['ADMIN']):
-#             return True
-#         if user_has_role(user, ['LANDLORD']):
-#             return False
-#         if obj and user_has_role(user, ['TENANT']):
-#             return obj.pk == user.pk  # Только сам себя
-#         return False
-#
-#     @admin.action(description='Mark selected users as verified')
-#     def make_verified(self, request, queryset):
-#         queryset.update(is_verified=True)
-#     make_verified.short_description = "Mark selected users as verified"
-#
-#     # ✅ Фильтрация групп в зависимости от роли
-#     def formfield_for_manytomany(self, db_field, request, **kwargs):
-#         if db_field.name == "groups":
-#             if user_has_role(request.user, ['ADMIN']):
-#                 kwargs["queryset"] = Group.objects.all()
-#                 # Устанавливаем выбранную группу "Admin", если она еще не назначена
-#                 if not request.user.groups.filter(name='Admin').exists():
-#                     admin_group = Group.objects.filter(name='Admin').first()
-#                     if admin_group:
-#                         request.user.groups.add(admin_group)
-#             elif user_has_role(request.user, ['TENANT']):
-#                 kwargs["queryset"] = Group.objects.filter(name='Tenant')
-#             elif user_has_role(request.user, ['LANDLORD']):
-#                 kwargs["queryset"] = Group.objects.filter(name='Landlord')
-#             else:
-#                 kwargs["queryset"] = Group.objects.none()
-#         return super().formfield_for_manytomany(db_field, request, **kwargs)
-#
-#     def has_view_permission(self, request, obj=None):
-#         return user_has_role(request.user, self.get_allowed_roles())
-#
-#     def has_change_permission(self, request, obj=None):
-#         user = request.user
-#         if user_has_role(user, ['ADMIN']):
-#             return True
-#         if obj and user_has_role(user, ['TENANT', 'LANDLORD']):
-#             return obj.pk == user.pk
-#         # Разрешаем доступ к changelist для всех ролей
-#         if obj is None:
-#             return user_has_role(request.user, self.get_allowed_roles())
-#         return False
-#
-#     def has_module_permission(self, request):
-#         return user_has_role(request.user, self.get_allowed_roles())
-#
-#     def has_add_permission(self, request):
-#         # Только Admin может добавлять пользователей
-#         return user_has_role(request.user, ['ADMIN'])
-
-
-# class LocationInline(admin.StackedInline):
-#     model = Location
-#     extra = 1
-#     readonly_fields = ('latitude', 'longitude')  # если хочешь запретить редактирование координат вручную
+        user = request.user
+        if user_has_role(user, ["ADMIN"]):
+            return True
+        return obj and user_has_role(user, ["LANDLORD"]) and obj.listing.user == user
