@@ -1,5 +1,5 @@
-from IPython.utils.syspathcontext import appended_to_syspath
 import pytest
+from IPython.utils.syspathcontext import appended_to_syspath
 
 
 def test_append_deprecated():

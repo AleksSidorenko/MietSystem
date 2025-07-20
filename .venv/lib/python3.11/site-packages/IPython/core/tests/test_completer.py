@@ -5,34 +5,33 @@
 # Distributed under the terms of the Modified BSD License.
 
 import os
-import pytest
 import sys
 import textwrap
 import unittest
-
 from contextlib import contextmanager
 
-from traitlets.config.loader import Config
+import pytest
 from IPython import get_ipython
 from IPython.core import completer
-from IPython.utils.tempdir import TemporaryDirectory, TemporaryWorkingDirectory
-from IPython.utils.generics import complete_object
-from IPython.testing import decorators as dec
-
 from IPython.core.completer import (
     Completion,
-    provisionalcompleter,
-    match_dict_keys,
+    CompletionContext,
+    SimpleCompletion,
     _deduplicate_completions,
     _match_number_in_dict_key_prefix,
     completion_matcher,
-    SimpleCompletion,
-    CompletionContext,
+    match_dict_keys,
+    provisionalcompleter,
 )
+from IPython.testing import decorators as dec
+from IPython.utils.generics import complete_object
+from IPython.utils.tempdir import TemporaryDirectory, TemporaryWorkingDirectory
+from traitlets.config.loader import Config
 
 # -----------------------------------------------------------------------------
 # Test functions
 # -----------------------------------------------------------------------------
+
 
 def recompute_unicode_ranges():
     """
@@ -42,8 +41,9 @@ def recompute_unicode_ranges():
     """
     import itertools
     import unicodedata
+
     valid = []
-    for c in range(0,0x10FFFF + 1):
+    for c in range(0, 0x10FFFF + 1):
         try:
             unicodedata.name(chr(c))
         except ValueError:
@@ -58,14 +58,20 @@ def recompute_unicode_ranges():
     rg = list(ranges(valid))
     lens = []
     gap_lens = []
-    pstart, pstop = 0,0
+    pstart, pstop = 0, 0
     for start, stop in rg:
-        lens.append(stop-start)
-        gap_lens.append((start - pstop, hex(pstop), hex(start), f'{round((start - pstop)/0xe01f0*100)}%'))
+        lens.append(stop - start)
+        gap_lens.append(
+            (
+                start - pstop,
+                hex(pstop),
+                hex(start),
+                f"{round((start - pstop)/0xe01f0*100)}%",
+            )
+        )
         pstart, pstop = start, stop
 
     return sorted(gap_lens)[-1]
-
 
 
 def test_unicode_range():
@@ -73,7 +79,7 @@ def test_unicode_range():
     Test that the ranges we test for unicode names give the same number of
     results than testing the full length.
     """
-    from IPython.core.completer import  _unicode_name_compute, _UNICODE_RANGES
+    from IPython.core.completer import _UNICODE_RANGES, _unicode_name_compute
 
     expected_list = _unicode_name_compute([(0, 0x110000)])
     test = _unicode_name_compute(_UNICODE_RANGES)
@@ -98,7 +104,7 @@ def test_unicode_range():
         """
     assert len_exp == len_test, message
 
-    # fail if new unicode symbols have been added. 
+    # fail if new unicode symbols have been added.
     assert len_exp <= 143041, message
 
 
@@ -182,6 +188,7 @@ def check_line_split(splitter, test_specs):
         out = splitter.split_line(line, cursor_pos)
         assert out == split
 
+
 def test_line_split():
     """Basic line splitter test with default specs."""
     sp = completer.CompletionSplitter()
@@ -258,15 +265,15 @@ class TestCompleter(unittest.TestCase):
         """Test that errors from custom attribute completers are silenced."""
         ip = get_ipython()
 
-        _, matches = ip.complete('in')
-        assert matches.index('input') < matches.index('int')
+        _, matches = ip.complete("in")
+        assert matches.index("input") < matches.index("int")
 
         def complete_example(a):
-            return ['example2', 'example1']
+            return ["example2", "example1"]
 
-        ip.Completer.custom_completers.add_re('ex*', complete_example)
-        _, matches = ip.complete('ex')
-        assert matches.index('example2') < matches.index('example1')
+        ip.Completer.custom_completers.add_re("ex*", complete_example)
+        _, matches = ip.complete("ex")
+        assert matches.index("example2") < matches.index("example1")
 
     def test_unicode_completions(self):
         ip = get_ipython()
@@ -283,8 +290,9 @@ class TestCompleter(unittest.TestCase):
             self.assertIsInstance(matches, list)
 
     def test_latex_completions(self):
-        from IPython.core.latex_symbols import latex_symbols
         import random
+
+        from IPython.core.latex_symbols import latex_symbols
 
         ip = get_ipython()
         # Test some random unicode symbols
@@ -444,7 +452,7 @@ class TestCompleter(unittest.TestCase):
                 matches = c.all_completions("TestClass.")
                 assert len(matches) > 2, (jedi_status, matches)
                 matches = c.all_completions("TestClass.a")
-                assert matches == ['TestClass.a', 'TestClass.a1'], jedi_status
+                assert matches == ["TestClass.a", "TestClass.a1"], jedi_status
 
     def test_jedi(self):
         """
@@ -659,7 +667,7 @@ class TestCompleter(unittest.TestCase):
 
     def test_limit_to__all__False_ok(self):
         """
-        Limit to all is deprecated, once we remove it this test can go away. 
+        Limit to all is deprecated, once we remove it this test can go away.
         """
         ip = get_ipython()
         c = ip.Completer
@@ -914,7 +922,7 @@ class TestCompleter(unittest.TestCase):
         """
         delims = " \t\n`!@#$^&*()=+[{]}\\|;:'\",<>?"
 
-        keys = [("foo", "bar"), ("foo", "oof"), ("foo", b"bar"), ('other', 'test')]
+        keys = [("foo", "bar"), ("foo", "oof"), ("foo", b"bar"), ("other", "test")]
 
         def match(*args, extra=None, **kwargs):
             quote, offset, matches = match_dict_keys(
@@ -1048,7 +1056,7 @@ class TestCompleter(unittest.TestCase):
             object(): None,
             5: None,
             ("abe", None): None,
-            (None, "abf"): None
+            (None, "abf"): None,
         }
 
         _, matches = complete(line_buffer="d['a")
@@ -1091,7 +1099,7 @@ class TestCompleter(unittest.TestCase):
             self.assertIn("before-after", matches)
 
         # check completion on tuple-of-string keys at different stage - on first key
-        ip.user_ns["d"] = {('foo', 'bar'): None}
+        ip.user_ns["d"] = {("foo", "bar"): None}
         _, matches = complete(line_buffer="d[")
         self.assertIn("'foo'", matches)
         self.assertNotIn("'foo']", matches)
@@ -1143,7 +1151,7 @@ class TestCompleter(unittest.TestCase):
         self.assertNotIn("bar", matches)
 
         # Can complete with longer tuple keys
-        ip.user_ns["d"] = {('foo', 'bar', 'foobar'): None}
+        ip.user_ns["d"] = {("foo", "bar", "foobar"): None}
 
         # - can complete second key
         _, matches = complete(line_buffer="d['foo', 'b")
@@ -1324,6 +1332,7 @@ class TestCompleter(unittest.TestCase):
             _, matches = complete(line_buffer="d[1]['my_head']['")
             self.assertTrue(any(["my_dt" in m for m in matches]))
             self.assertTrue(any(["my_df" in m for m in matches]))
+
         # complete on a nested level
         with greedy_completion():
             completes_on_nested()

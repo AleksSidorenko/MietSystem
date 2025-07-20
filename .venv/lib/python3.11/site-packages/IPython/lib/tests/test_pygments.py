@@ -1,10 +1,9 @@
 from typing import List
 
-import pytest
-import pygments.lexers
 import pygments.lexer
-
-from IPython.lib.lexers import IPythonConsoleLexer, IPythonLexer, IPython3Lexer
+import pygments.lexers
+import pytest
+from IPython.lib.lexers import IPython3Lexer, IPythonConsoleLexer, IPythonLexer
 
 #: the human-readable names of the IPython lexers with ``entry_points``
 EXPECTED_LEXER_NAMES = [

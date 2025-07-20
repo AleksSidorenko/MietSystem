@@ -2,8 +2,9 @@
 """Generic functions for extending IPython.
 """
 
-from IPython.core.error import TryNext
 from functools import singledispatch
+
+from IPython.core.error import TryNext
 
 
 @singledispatch

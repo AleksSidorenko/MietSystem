@@ -1,8 +1,8 @@
 # core/settings.py
-
 import os
 from datetime import timedelta
 from pathlib import Path
+
 import sentry_sdk
 from decouple import config
 from sentry_sdk.integrations.celery import CeleryIntegration
@@ -22,7 +22,7 @@ SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_BROWSER_XSS_FILTER = True
-X_FRAME_OPTIONS = 'DENY'
+X_FRAME_OPTIONS = "DENY"
 
 LEAFLET_CONFIG = {
     "DEFAULT_CENTER": (51.1657, 10.4515),
@@ -76,7 +76,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",  # Для мультиязычности
     "django.middleware.common.CommonMiddleware",
-    'django.middleware.csrf.CsrfViewMiddleware',
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -119,16 +119,16 @@ AUTH_USER_MODEL = "users.User"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.i18n',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.i18n",
             ],
         },
     },
@@ -173,14 +173,14 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
 ]
 
-LANGUAGE_CODE = 'en'  # Язык по умолчанию
+LANGUAGE_CODE = "en"  # Язык по умолчанию
 LANGUAGES = [
-    ('en', 'English'),
-    ('ru', 'Русский'),
-    ('de', 'Deutsch'),
+    ("en", "English"),
+    ("ru", "Русский"),
+    ("de", "Deutsch"),
 ]
 LOCALE_PATHS = [
-    BASE_DIR / 'locale',
+    BASE_DIR / "locale",
 ]
 USE_I18N = True
 USE_L10N = True
@@ -288,16 +288,16 @@ AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME", default="")
 AWS_S3_REGION_NAME = "eu-central-1"
 AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 
-SLACK_TOKEN = config('SLACK_TOKEN', default='')
+SLACK_TOKEN = config("SLACK_TOKEN", default="")
 
 AXES_ENABLED = True
 AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = timedelta(minutes=30)
 AXES_LOCK_OUT_AT_FAILURE = True
-AXES_LOCKOUT_TEMPLATE = 'core/lockout.html'
+AXES_LOCKOUT_TEMPLATE = "core/lockout.html"
 
 RATELIMIT_ENABLE = True
-RATELIMIT_RATE = '100/m'
+RATELIMIT_RATE = "100/m"
 RATELIMIT_BLOCK = True
 
 SENTRY_DSN = config("SENTRY_DSN", default="")
@@ -309,12 +309,21 @@ if SENTRY_DSN:
         send_default_pii=True,
     )
 
-SESSION_COOKIE_NAME = "miet_sessionid"
-CSRF_COOKIE_NAME = "miet_csrftoken"
-# SESSION_COOKIE_AGE = 1209600  # 2 недели
-# SESSION_COOKIE_SECURE = False  # Для разработки, установите True для HTTPS в продакшене
-SESSION_COOKIE_SECURE = True
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+LOGIN_URL = '/admin/login/'
+LOGIN_REDIRECT_URL = '/'
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 1209600  # 2 недели
+SESSION_COOKIE_SECURE = False  # Для локального тестирования
+SESSION_COOKIE_HTTPONLY = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Сессия завершается при закрытии браузера
+
+# SESSION_COOKIE_NAME = "miet_sessionid"
+# CSRF_COOKIE_NAME = "miet_csrftoken"
+# # SESSION_COOKIE_AGE = 1209600  # 2 недели
+# # SESSION_COOKIE_SECURE = False  # Для разработки, установите True для HTTPS в продакшене
+# SESSION_COOKIE_SECURE = True
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 ADMIN_SITE_HEADER = "MietSystem Admin"
 ADMIN_SITE_TITLE = "MietSystem"
@@ -323,7 +332,6 @@ ADMIN_INDEX_TITLE = "Добро пожаловать в админ-панель 
 SILENCED_SYSTEM_CHECKS = ["models.W036"]
 
 SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)
-LOGIN_URL = "/admin/login/"
 
 
 

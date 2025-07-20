@@ -1,284 +1,309 @@
 <!-- templates/core/status_page.html -->
 
-<!DOCTYPE html>
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Закомментировано автообновление для отладки -->
-    <!-- <meta http-equiv="refresh" content="60"> -->
     <title>{% trans "MietSystem — Dashboard" %}</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .dashboard-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            max-width: 960px;
-            width: 100%;
-        }
-        h1 {
-            font-size: 1.8rem;
-            color: #1a1a1a;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-        .section {
-            margin-bottom: 2rem;
-        }
-        .section h2 {
-            font-size: 1.4rem;
-            color: #333;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 0.5rem;
-        }
-        .status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1rem;
-        }
-        .status-indicator {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-        }
-        .online { background-color: #28a745; }
-        .offline { background-color: #dc3545; }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-        }
-        .stat-item {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-        .stat-item strong {
-            display: block;
-            font-size: 1.2rem;
-            color: #007bff;
-        }
-        .links-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-        }
-        .link-button {
-            background: #007bff;
-            color: white;
-            padding: 0.6rem 1.2rem;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: background 0.3s ease;
-        }
-        .link-button:hover {
-            background: #0056b3;
-        }
-        .language-form {
-            display: inline-block;
-        }
-        .language-form select {
-            padding: 0.6rem;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 0.9rem;
-        }
-        .debug-block {
-            background: #fff3cd;
-            padding: 1rem;
-            border-radius: 8px;
-            border: 1px solid #ffeeba;
-            margin-top: 1rem;
-        }
-        .debug-block ul {
-            margin: 0;
-            padding-left: 1.5rem;
-        }
-        .debug-language {
-            font-size: 0.9rem;
-            color: #555;
-            margin-top: 1rem;
-        }
-        @media (max-width: 600px) {
-            .dashboard-card {
-                padding: 1.5rem;
-            }
-            h1 { font-size: 1.5rem; }
-            .section h2 { font-size: 1.2rem; }
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
-<body>
-    {% if not request.user.is_authenticated and not show_debug %}
-        <div class="dashboard-card">
-            <h1>{% trans "Access Denied" %}</h1>
-            <p>{% trans "Please" %} <a href="{% url 'admin:login' %}?next={{ request.path|urlencode }}" class="link-button">{% trans "log in" %}</a> {% trans "to view the system status." %}</p>
+<body class="bg-gray-100 font-sans">
+    {% if not request.user.is_authenticated %}
+        <div class="container mx-auto p-4">
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                <h1 class="text-2xl font-bold text-red-600">{% trans "Access Denied" %}</h1>
+                <p>{% trans "Please" %} <a href="{% url 'admin:login' %}?next={{ request.path|urlencode }}" class="text-blue-500 hover:underline">{% trans "log in" %}</a> {% trans "to view the system status." %}</p>
+            </div>
         </div>
     {% else %}
-    <div class="dashboard-card">
-        <h1>{% trans "MietSystem — Dashboard" %}</h1>
-        <!-- Отладка текущего языка -->
-        {% if show_debug %}
-        <div class="debug-language">
-            {% trans "Current Language" %}: {{ LANGUAGE_CODE }}
+    <div class="container mx-auto p-4 max-w-5xl">
+        <h1 class="text-2xl font-bold mb-4 text-center">{% trans "MietSystem — Dashboard" %}</h1>
+        <p class="text-right mb-4">
+            {% if user_email %}
+                <span class="text-gray-700">
+                    {% trans "Welcome" %}, 
+                    {% if user_first_name or user_last_name %}
+                        {{ user_first_name }} {{ user_last_name }} ({{ user_role_display }})
+                    {% else %}
+                        {{ user_email }} ({{ user_role_display }})
+                    {% endif %}
+                </span>
+                <span class="mx-2">|</span>
+            {% endif %}
+            <a href="{% url 'logout' %}" class="text-blue-500 hover:underline">{% trans "Log out" %}</a>
+        </p>
+
+        <!-- Уведомления -->
+        {% if data.database.status == 'offline' or data.redis.status == 'offline' or data.celery.status == 'offline' or data.s3.status == 'offline' %}
+        <div class="bg-yellow-100 p-4 rounded-lg shadow-md mb-4">
+            <h2 class="text-xl font-semibold mb-2">{% trans "Notifications" %}</h2>
+            {% if data.database.status == 'offline' %}
+            <p class="text-red-600">❌ {% trans "Database is offline!" %}</p>
+            {% endif %}
+            {% if data.redis.status == 'offline' %}
+            <p class="text-red-600">❌ {% trans "Redis is offline!" %}</p>
+            {% endif %}
+            {% if data.celery.status == 'offline' %}
+            <p class="text-red-600">⚠️ {% trans "Celery is offline! Background tasks are not running." %}</p>
+            {% endif %}
+            {% if data.s3.status == 'offline' %}
+            <p class="text-red-600">❌ {% trans "S3 is not configured. File uploads are unavailable." %}</p>
+            {% endif %}
         </div>
+        <script>
+            {% if data.celery.status == 'offline' %}
+            Toastify({
+                text: "{% trans 'Celery is offline! Background tasks are not running.' %}",
+                duration: 5000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#dc2626",
+            }).showToast();
+            {% endif %}
+            {% if data.s3.status == 'offline' %}
+            Toastify({
+                text: "{% trans 'S3 is not configured. Click to configure.' %}",
+                duration: 5000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#dc2626",
+                onClick: () => window.location.href = "{% url 'configure_s3' %}"
+            }).showToast();
+            {% endif %}
+        </script>
         {% endif %}
 
         <!-- Системная информация -->
-        <div class="section">
-            <h2>📊 {% trans "System Information" %}</h2>
-            <div class="status-grid">
-                <div class="status-item">
-                    <span class="status-indicator online"></span>
-                    {% trans "Server Time" %}: {{ time_now|date:"j F Y H:i:s" }}
+        {% if request.user.role == 'ADMIN' %}
+        <div class="bg-white p-6 rounded-lg shadow-md mb-4">
+            <h2 class="text-xl font-semibold mb-2">📊 {% trans "System Information" %}</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
+                    <span>{% trans "Server Time" %}: {{ time_now|date:"j F Y H:i:s" }}</span>
                 </div>
-                <div class="status-item">
-                    <span class="status-indicator {{ data.database.status|yesno:'online,offline' }}"></span>
-                    {% trans "Database" %}: {{ data.database.status|capfirst }} {% if data.database.error %}({{ data.database.error }}){% endif %}
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full {{ data.database.status|yesno:'bg-green-500,bg-red-500' }} mr-2"></span>
+                    <span>{% trans "Database" %}: {{ data.database.status|capfirst }} {% if data.database.error %}({{ data.database.error }}){% endif %}</span>
                 </div>
-                <div class="status-item">
-                    <span class="status-indicator {{ data.redis.status|yesno:'online,offline' }}"></span>
-                    {% trans "Redis" %}: {{ data.redis.status|capfirst }} {% if data.redis.error %}({{ data.redis.error }}){% endif %}
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full {% if data.redis.status == 'online' %}bg-green-500{% elif data.redis.status == 'warning' %}bg-yellow-500{% else %}bg-red-500{% endif %} mr-2"></span>
+                    <span>{% trans "Redis" %}: {{ data.redis.status|capfirst }} {% if data.redis.latency_ms %}({{ data.redis.latency_ms }} ms){% endif %} {% if data.redis.error %}({{ data.redis.error }}){% endif %}</span>
                 </div>
-                <div class="status-item">
-                    <span class="status-indicator {{ data.celery.status|yesno:'online,offline' }}"></span>
-                    {% trans "Celery" %}: {{ data.celery.status|capfirst }} {% if data.celery.error %}({{ data.celery.error }}){% endif %}
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full {{ data.celery.status|yesno:'bg-green-500,bg-red-500' }} mr-2"></span>
+                    <span>{% trans "Celery" %}: {{ data.celery.status|capfirst }} {% if data.celery.error %}({{ data.celery.error }}){% endif %}</span>
+                    {% if data.celery.status == 'offline' %}
+                    <a href="{% url 'restart_celery' %}" class="ml-2 bg-blue-500 text-white p-1 rounded hover:bg-blue-600">{% trans "Restart" %}</a>
+                    {% endif %}
                 </div>
-                <div class="status-item">
-                    <span class="status-indicator {{ data.s3.status|yesno:'online,offline' }}"></span>
-                    {% trans "S3" %}: {{ data.s3.status|capfirst }} {% if data.s3.error %}({{ data.s3.error }}){% endif %}
-                </div>
-                <div class="status-item">
-                    <span class="status-indicator {{ data.localization.status|yesno:'online,offline' }}"></span>
-                    {% trans "Localization" %}: {{ data.localization.status|capfirst }} ({{ data.localization.languages|join:", " }}) {% if data.localization.error %}({{ data.localization.error }}){% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Пользователи -->
-        <div class="section">
-            <h2>👥 {% trans "Users" %}</h2>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <strong>{{ data.users.total }}</strong>
-                    {% trans "Total Users" %}
-                </div>
-                <div class="stat-item">
-                    <strong>{{ data.users.admins }}</strong>
-                    {% trans "Admins" %}
-                </div>
-                <div class="stat-item">
-                    <strong>{{ data.users.landlords }}</strong>
-                    {% trans "Landlords" %}
-                </div>
-                <div class="stat-item">
-                    <strong>{{ data.users.tenants }}</strong>
-                    {% trans "Tenants" %}
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full {{ data.s3.status|yesno:'bg-green-500,bg-red-500' }} mr-2"></span>
+                    <span class="{% if data.s3.status == 'offline' %}text-red-600{% endif %}">{% trans "S3" %}: {{ data.s3.status|capfirst }} {% if data.s3.error %}({{ data.s3.error }}){% endif %}</span>
+                    {% if data.s3.status == 'offline' %}
+                    <a href="{% url 'configure_s3' %}" class="ml-2 bg-blue-500 text-white p-1 rounded hover:bg-blue-600">{% trans "Configure" %}</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
-
-        <!-- Объекты в системе -->
-        <div class="section">
-            <h2>📢 {% trans "System Objects" %}</h2>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <strong>{{ data.stats.listings }}</strong>
-                    {% trans "Listings" %}
-                </div>
-                <div class="stat-item">
-                    <strong>{{ data.stats.bookings }}</strong>
-                    {% trans "Bookings" %}
-                </div>
-                <div class="stat-item">
-                    <strong>{{ data.stats.reviews }}</strong>
-                    {% trans "Reviews" %}
-                </div>
-                <div class="stat-item">
-                    <strong>{{ data.stats.locations }}</strong>
-                    {% trans "Locations" %}
-                </div>
-            </div>
-        </div>
+        {% endif %}
 
         <!-- Системные метрики -->
-        <div class="section">
-            <h2>📈 {% trans "System Metrics" %}</h2>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <strong>{{ data.system_metrics.cpu_percent }}%</strong>
-                    {% trans "CPU Usage" %}
+        {% if request.user.role == 'ADMIN' %}
+        <div class="bg-white p-6 rounded-lg shadow-md mb-4">
+            <h2 class="text-xl font-semibold mb-2">📈 {% trans "System Metrics" %} (Обновлено: {{ data.last_updated }})</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center">
+                    <canvas id="cpuChart" class="mx-auto" style="max-height: 150px;"></canvas>
+                    <p>{% trans "CPU Usage" %}: {{ data.system_metrics.cpu_percent }}%</p>
                 </div>
-                <div class="stat-item">
-                    <strong>{{ data.system_metrics.memory_percent }}%</strong>
-                    {% trans "Memory Usage" %}
+                <div class="text-center">
+                    <canvas id="memoryChart" class="mx-auto" style="max-height: 150px;"></canvas>
+                    <p>{% trans "Memory Usage" %}: {{ data.system_metrics.memory_percent }}%</p>
                 </div>
-                <div class="stat-item">
-                    <strong>{{ data.system_metrics.disk_free_gb }} GB</strong>
-                    {% trans "Free Disk Space" %}
-                </div>
-                <div class="stat-item">
-                    <strong>{{ data.system_metrics.celery_tasks }}</strong>
-                    {% trans "Celery Tasks" %}
+                <div class="text-center">
+                    <canvas id="diskChart" class="mx-auto" style="max-height: 150px;"></canvas>
+                    <p>{% trans "Free Disk Space" %}: {{ data.system_metrics.disk_free_gb }} GB</p>
                 </div>
             </div>
         </div>
+        <script>
+            const cpuColor = {{ data.system_metrics.cpu_percent }} > 90 ? '#dc2626' : {{ data.system_metrics.cpu_percent }} > 70 ? '#f59e0b' : '#22c55e';
+            const memoryColor = {{ data.system_metrics.memory_percent }} > 95 ? '#dc2626' : {{ data.system_metrics.memory_percent }} > 80 ? '#f59e0b' : '#22c55e';
+            const diskColor = {{ data.system_metrics.disk_free_gb }} < 5 ? '#dc2626' : {{ data.system_metrics.disk_free_gb }} < 20 ? '#f59e0b' : '#22c55e';
+            
+            new Chart(document.getElementById('cpuChart'), {
+                type: 'doughnut',
+                data: {
+                    datasets: [{ data: [{{ data.system_metrics.cpu_percent }}, 100-{{ data.system_metrics.cpu_percent }}], backgroundColor: [cpuColor, '#e5e7eb'] }]
+                },
+                options: { responsive: true, cutout: '80%' }
+            });
+            new Chart(document.getElementById('memoryChart'), {
+                type: 'doughnut',
+                data: {
+                    datasets: [{ data: [{{ data.system_metrics.memory_percent }}, 100-{{ data.system_metrics.memory_percent }}], backgroundColor: [memoryColor, '#e5e7eb'] }]
+                },
+                options: { responsive: true, cutout: '80%' }
+            });
+            new Chart(document.getElementById('diskChart'), {
+                type: 'doughnut',
+                data: {
+                    datasets: [{ data: [{{ data.system_metrics.disk_free_gb }}, 100-{{ data.system_metrics.disk_free_gb }}], backgroundColor: [diskColor, '#e5e7eb'] }]
+                },
+                options: { responsive: true, cutout: '80%' }
+            });
+        </script>
+        {% endif %}
 
-        <!-- Быстрые ссылки -->
-        <div class="section">
-            <h2>🔗 {% trans "Quick Links" %}</h2>
-            <div class="links-grid">
-                <a href="{% url 'admin:index' %}" class="link-button">{% trans "Admin Panel" %}</a>
-                <a href="{% url 'swagger-ui' %}" class="link-button">{% trans "Swagger" %}</a>
-                <a href="{% url 'redoc' %}" class="link-button">{% trans "Redoc" %}</a>
-                <a href="/api/users/me/" class="link-button">{% trans "Profile" %}</a>
-                <a href="/api/listings/" class="link-button">{% trans "Listings" %}</a>
-                <a href="/api/bookings/" class="link-button">{% trans "Bookings" %}</a>
-                <a href="/api/reviews/" class="link-button">{% trans "Reviews" %}</a>
-                <a href="/api/analytics/" class="link-button">{% trans "Analytics" %}</a>
-                <a href="/api/token/" class="link-button">{% trans "JWT Login" %}</a>
-                <form action="{% url 'set_language' %}" method="post" class="language-form">
+        <!-- Redis Statistics -->
+        {% if request.user.role == 'ADMIN' %}
+        <div class="bg-white p-6 rounded-lg shadow-md mb-4">
+            <h2 class="text-xl font-semibold mb-2">🗄️ {% trans "Redis Statistics" %}</h2>
+            <p>{% trans "Keys" %}: {{ data.redis.keys }}</p>
+            <p>{% trans "Hit Rate" %}: {{ data.redis.hit_rate }}%</p>
+        </div>
+        {% endif %}
+
+        <!-- Celery Tasks -->
+        {% if request.user.role == 'ADMIN' %}
+        <div class="bg-white p-6 rounded-lg shadow-md mb-4">
+            <h2 class="text-xl font-semibold mb-2">📋 {% trans "Celery Tasks" %}</h2>
+            {% if data.celery.status == 'online' %}
+            <p>{% trans "Active Tasks" %}: {{ data.celery.active_tasks }}</p>
+            <p>{% trans "Queued Tasks" %}: {{ data.celery.queued_tasks }}</p>
+            {% else %}
+            <p class="text-red-600">{% trans "Celery Tasks: Unavailable" %}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Пользователи и объекты -->
+        {% if request.user.role == 'ADMIN' %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-2">👥 {% trans "Users" %}</h2>
+                <canvas id="userChart" class="mb-4" style="max-height: 200px;"></canvas>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="text-center"><strong>{{ data.users.total }}</strong> {% trans "Total Users" %}</div>
+                    <div class="text-center"><strong>{{ data.users.admins }}</strong> {% trans "Admins" %}</div>
+                    <div class="text-center"><strong>{{ data.users.landlords }}</strong> {% trans "Landlords" %}</div>
+                    <div class="text-center"><strong>{{ data.users.tenants }}</strong> {% trans "Tenants" %}</div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-2">📢 {% trans "System Objects" %}</h2>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="text-center"><strong>{{ data.stats.listings }}</strong> {% trans "Listings" %}</div>
+                    <div class="text-center"><strong>{{ data.stats.bookings }}</strong> {% trans "Bookings" %}</div>
+                    <div class="text-center"><strong>{{ data.stats.reviews }}</strong> {% trans "Reviews" %}</div>
+                    <div class="text-center"><strong>{{ data.stats.locations }}</strong> {% trans "Locations" %}</div>
+                </div>
+            </div>
+        </div>
+        <script>
+            new Chart(document.getElementById('userChart'), {
+                type: 'pie',
+                data: {
+                    labels: ['{% trans "Admins" %}', '{% trans "Landlords" %}', '{% trans "Tenants" %}'],
+                    datasets: [{
+                        data: [{{ data.users.admins }}, {{ data.users.landlords }}, {{ data.users.tenants }}],
+                        backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b']
+                    }]
+                },
+                options: { responsive: true }
+            });
+        </script>
+        {% endif %}
+
+        <!-- Управление пользователями -->
+        {% if request.user.role == 'ADMIN' %}
+        <div class="bg-white p-6 rounded-lg shadow-md mb-4">
+            <h2 class="text-xl font-semibold mb-2">👤 {% trans "User Management" %}</h2>
+            <div class="flex space-x-4 mb-4">
+                <a href="?role=ADMIN" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">{% trans "Admins" %}</a>
+                <a href="?role=LANDLORD" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">{% trans "Landlords" %}</a>
+                <a href="?role=TENANT" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">{% trans "Tenants" %}</a>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">{% trans "Recent Login Attempts" %}</h3>
+            <ul class="list-disc pl-5">
+                {% for attempt in data.login_attempts %}
+                <li>{{ attempt.username }} - {{ attempt.attempt_time|date:"j F Y H:i" }} ({{ attempt.failures_since_start }} {% trans "failures" %})</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Личный кабинет -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-4">
+            <h2 class="text-xl font-semibold mb-2">{% trans "My Dashboard" %}</h2>
+            {% if request.user.role == 'LANDLORD' %}
+            <p>{% trans "My Listings" %}: {{ data.stats.listings }}</p>
+            <p>{% trans "New Bookings" %}: {{ data.stats.bookings }}</p>
+            {% elif request.user.role == 'TENANT' %}
+            <p>{% trans "My Bookings" %}: {{ data.stats.bookings }}</p>
+            <p>{% trans "Viewed Listings" %}: {{ data.stats.views }}</p>
+            {% elif request.user.role == 'ADMIN' %}
+            <p>{% trans "You have full access to system monitoring and user management." %}</p>
+            {% endif %}
+        </div>
+
+        <!-- API Testing -->
+        {% if request.user.role == 'ADMIN' %}
+        <div class="bg-white p-6 rounded-lg shadow-md mb-4">
+            <h2 class="text-xl font-semibold mb-2">🛠️ {% trans "API Testing" %}</h2>
+            <p>{% trans "Number of Endpoints" %}: {{ data.endpoints }}</p>
+            <div class="flex space-x-4">
+                <a href="{% url 'swagger-ui' %}" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">{% trans "Test API (Swagger)" %}</a>
+                <a href="{% url 'redoc' %}" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">{% trans "Redoc" %}</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Quick Links -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-4">
+            <h2 class="text-xl font-semibold mb-2">🔗 {% trans "Quick Links" %}</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {% if request.user.role == 'ADMIN' %}
+                <a href="{% url 'admin:index' %}" class="bg-blue-500 text-white p-2 rounded text-center hover:bg-blue-600"><i class="fas fa-user-shield mr-1"></i>{% trans "Admin Panel" %}</a>
+                <a href="{% url 'swagger-ui' %}" class="bg-blue-500 text-white p-2 rounded text-center hover:bg-blue-600"><i class="fas fa-book mr-1"></i>{% trans "Swagger" %}</a>
+                <a href="{% url 'redoc' %}" class="bg-blue-500 text-white p-2 rounded text-center hover:bg-blue-600"><i class="fas fa-book-open mr-1"></i>{% trans "Redoc" %}</a>
+                {% else %}
+                <a href="{% url 'admin:index' %}" class="bg-blue-500 text-white p-2 rounded text-center hover:bg-blue-600"><i class="fas fa-user-shield mr-1"></i>{% trans "Admin Panel" %}</a>
+                {% endif %}
+                <a href="/api/users/me/" class="bg-blue-500 text-white p-2 rounded text-center hover:bg-blue-600"><i class="fas fa-user mr-1"></i>{% trans "Profile" %}</a>
+                <a href="/api/listings/" class="bg-blue-500 text-white p-2 rounded text-center hover:bg-blue-600"><i class="fas fa-home mr-1"></i>{% trans "Listings" %}</a>
+                <a href="/api/bookings/" class="bg-blue-500 text-white p-2 rounded text-center hover:bg-blue-600"><i class="fas fa-calendar-check mr-1"></i>{% trans "Bookings" %}</a>
+                <a href="/api/reviews/" class="bg-blue-500 text-white p-2 rounded text-center hover:bg-blue-600"><i class="fas fa-star mr-1"></i>{% trans "Reviews" %}</a>
+                <a href="/api/analytics/" class="bg-blue-500 text-white p-2 rounded text-center hover:bg-blue-600"><i class="fas fa-chart-line mr-1"></i>{% trans "Analytics" %}</a>
+            </div>
+            <div class="mt-4">
+                <form action="{% url 'set_language' %}" method="post" class="inline-block">
                     {% csrf_token %}
                     <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                    <select name="language" onchange="this.form.submit()">
+                    <select name="language" onchange="this.form.submit()" class="p-2 border rounded bg-gray-100">
                         {% get_available_languages as LANGUAGES %}
                         {% get_language_info_list for LANGUAGES as languages %}
                         {% for lang in languages %}
-                            <option value="{{ lang.code }}" {% if lang.code == LANGUAGE_CODE %}selected{% endif %}>{{ lang.name_local }}</option>
+                        <option value="{{ lang.code }}" {% if lang.code == LANGUAGE_CODE %}selected{% endif %}>{{ lang.name_local }}</option>
                         {% endfor %}
                     </select>
                 </form>
             </div>
         </div>
 
-        <!-- Debug информация -->
-        {% if show_debug %}
-        <div class="debug-block">
-            <h2>🧪 {% trans "Debug Information" %}</h2>
-            <ul>
+        <!-- Debug Information -->
+        {% if settings.DEBUG and request.user.role == 'ADMIN' %}
+        <div class="bg-yellow-100 p-4 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-2">🧪 {% trans "Debug Information" %}</h2>
+            <ul class="list-disc pl-5">
                 <li>tenant1 / pass123</li>
                 <li>landlord1 / pass456</li>
                 <li>admin / adminpass</li>
@@ -287,14 +312,5 @@
         {% endif %}
     </div>
     {% endif %}
-
-    <!-- Закомментировано автообновление через JS для отладки -->
-    <!--
-    <script>
-        setTimeout(() => {
-            window.location.reload();
-        }, 60000);
-    </script>
-    -->
 </body>
 </html>

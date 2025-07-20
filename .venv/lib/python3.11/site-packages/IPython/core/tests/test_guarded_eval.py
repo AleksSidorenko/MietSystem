@@ -1,14 +1,15 @@
 from contextlib import contextmanager
-from typing import NamedTuple
 from functools import partial
+from typing import NamedTuple
+
+import pytest
 from IPython.core.guarded_eval import (
     EvaluationContext,
     GuardRejection,
-    guarded_eval,
     _unbind_method,
+    guarded_eval,
 )
 from IPython.testing import decorators as dec
-import pytest
 
 
 def create_context(evaluation: str, **kwargs):

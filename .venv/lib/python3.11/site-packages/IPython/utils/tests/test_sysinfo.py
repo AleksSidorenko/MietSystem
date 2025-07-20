@@ -5,8 +5,8 @@
 # Distributed under the terms of the Modified BSD License.
 
 import json
-import pytest
 
+import pytest
 from IPython.utils import sysinfo
 
 

@@ -1,14 +1,12 @@
 """Tests to ensure that the html5lib tree builder generates good trees."""
 
-import pytest
 import warnings
 
+import pytest
 from bs4 import BeautifulSoup
 from bs4.filter import SoupStrainer
-from . import (
-    HTML5LIB_PRESENT,
-    HTML5TreeBuilderSmokeTest,
-)
+
+from . import HTML5LIB_PRESENT, HTML5TreeBuilderSmokeTest
 
 
 @pytest.mark.skipif(

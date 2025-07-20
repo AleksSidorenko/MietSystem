@@ -36,7 +36,7 @@ CRT_S3_CLIENT = None
 BOTOCORE_CRT_SERIALIZER = None
 
 CLIENT_CREATION_LOCK = threading.Lock()
-PROCESS_LOCK_NAME = 'boto3'
+PROCESS_LOCK_NAME = "boto3"
 
 
 def _create_crt_client(session, config, region_name, cred_provider):
@@ -46,22 +46,20 @@ def _create_crt_client(session, config, region_name, cred_provider):
     system resource exhaustion.
     """
     create_crt_client_kwargs = {
-        'region': region_name,
-        'use_ssl': True,
-        'crt_credentials_provider': cred_provider,
+        "region": region_name,
+        "use_ssl": True,
+        "crt_credentials_provider": cred_provider,
     }
     return create_s3_crt_client(**create_crt_client_kwargs)
 
 
 def _create_crt_request_serializer(session, region_name):
     return BotocoreCRTRequestSerializer(
-        session, {'region_name': region_name, 'endpoint_url': None}
+        session, {"region_name": region_name, "endpoint_url": None}
     )
 
 
-def _create_crt_s3_client(
-    session, config, region_name, credentials, lock, **kwargs
-):
+def _create_crt_s3_client(session, config, region_name, credentials, lock, **kwargs):
     """Create boto3 wrapper class to manage crt lock reference and S3 client."""
     cred_wrapper = BotocoreCRTCredentialsWrapper(credentials)
     cred_provider = cred_wrapper.to_crt_credentials_provider()
@@ -86,9 +84,7 @@ def _initialize_crt_transfer_primatives(client, config):
     credentials = client._get_credentials()
 
     serializer = _create_crt_request_serializer(session, region_name)
-    s3_client = _create_crt_s3_client(
-        session, config, region_name, credentials, lock
-    )
+    s3_client = _create_crt_s3_client(session, config, region_name, credentials, lock)
     return serializer, s3_client
 
 
@@ -98,9 +94,7 @@ def get_crt_s3_client(client, config):
 
     with CLIENT_CREATION_LOCK:
         if CRT_S3_CLIENT is None:
-            serializer, s3_client = _initialize_crt_transfer_primatives(
-                client, config
-            )
+            serializer, s3_client = _initialize_crt_transfer_primatives(client, config)
             BOTOCORE_CRT_SERIALIZER = serializer
             CRT_S3_CLIENT = s3_client
 
@@ -161,7 +155,5 @@ def create_crt_transfer_manager(client, config):
     """Create a CRTTransferManager for optimized data transfer."""
     crt_s3_client = get_crt_s3_client(client, config)
     if is_crt_compatible_request(client, crt_s3_client):
-        return CRTTransferManager(
-            crt_s3_client.crt_client, BOTOCORE_CRT_SERIALIZER
-        )
+        return CRTTransferManager(crt_s3_client.crt_client, BOTOCORE_CRT_SERIALIZER)
     return None

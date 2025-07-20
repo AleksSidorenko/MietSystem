@@ -3,41 +3,25 @@
 
 import logging
 import pickle
-import pytest
-from typing import Iterable
-
-from bs4 import (
-    BeautifulSoup,
-    GuessedAtParserWarning,
-    dammit,
-)
-from bs4.builder import (
-    TreeBuilder,
-)
-from bs4.element import (
-    AttributeValueList,
-    XMLAttributeDict,
-    Comment,
-    PYTHON_SPECIFIC_ENCODINGS,
-    Tag,
-    NavigableString,
-)
-from bs4.filter import SoupStrainer
-from bs4.exceptions import (
-    ParserRejectedMarkup,
-)
-from bs4._warnings import (
-    MarkupResemblesLocatorWarning,
-)
-
-
-from . import (
-    default_builder,
-    LXML_PRESENT,
-    SoupTest,
-)
 import warnings
-from typing import Type
+from typing import Iterable, Type
+
+import pytest
+from bs4 import BeautifulSoup, GuessedAtParserWarning, dammit
+from bs4._warnings import MarkupResemblesLocatorWarning
+from bs4.builder import TreeBuilder
+from bs4.element import (
+    PYTHON_SPECIFIC_ENCODINGS,
+    AttributeValueList,
+    Comment,
+    NavigableString,
+    Tag,
+    XMLAttributeDict,
+)
+from bs4.exceptions import ParserRejectedMarkup
+from bs4.filter import SoupStrainer
+
+from . import LXML_PRESENT, SoupTest, default_builder
 
 
 class TestConstructor(SoupTest):
@@ -133,7 +117,6 @@ class TestConstructor(SoupTest):
             # but feed() will reject both of them.
             yield markup, None, None, False
             yield markup, None, None, False
-
 
         with pytest.raises(ParserRejectedMarkup) as exc_info:
             BeautifulSoup("", builder=Mock)

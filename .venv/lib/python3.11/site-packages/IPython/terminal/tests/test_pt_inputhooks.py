@@ -1,10 +1,8 @@
-import os
 import importlib
+import os
 
 import pytest
-
-from IPython.terminal.pt_inputhooks import set_qt_api, get_inputhook_name_and_func
-
+from IPython.terminal.pt_inputhooks import get_inputhook_name_and_func, set_qt_api
 
 guis_avail = []
 

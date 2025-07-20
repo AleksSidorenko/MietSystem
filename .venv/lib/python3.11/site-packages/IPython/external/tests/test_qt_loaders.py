@@ -1,4 +1,5 @@
 import importlib
+
 import pytest
 from IPython.external.qt_loaders import ID
 

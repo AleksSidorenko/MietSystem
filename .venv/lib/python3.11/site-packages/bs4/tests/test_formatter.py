@@ -1,11 +1,7 @@
 import pytest
-
 from bs4.element import Tag
-from bs4.formatter import (
-    Formatter,
-    HTMLFormatter,
-    XMLFormatter,
-)
+from bs4.formatter import Formatter, HTMLFormatter, XMLFormatter
+
 from . import SoupTest
 
 
@@ -109,13 +105,15 @@ class TestFormatter(SoupTest):
         formatter = Formatter()
         assert formatter.indent == " "
 
-    @pytest.mark.parametrize("formatter,expect",
+    @pytest.mark.parametrize(
+        "formatter,expect",
         [
             (HTMLFormatter(indent=1), "<p>\n a\n</p>\n"),
             (HTMLFormatter(indent=2), "<p>\n  a\n</p>\n"),
             (XMLFormatter(indent=1), "<p>\n a\n</p>\n"),
             (XMLFormatter(indent="\t"), "<p>\n\ta\n</p>\n"),
-        ]                             )
+        ],
+    )
     def test_indent_subclasses(self, formatter, expect):
         soup = self.soup("<p>a</p>")
         assert expect == soup.p.prettify(formatter=formatter)

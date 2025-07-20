@@ -1,5 +1,5 @@
-from IPython.utils.shimmodule import ShimModule
 import IPython
+from IPython.utils.shimmodule import ShimModule
 
 
 def test_shimmodule_repr_does_not_fail_on_import_error():

@@ -1,30 +1,21 @@
 """Tests of the builder registry."""
 
-import pytest
 import warnings
 from typing import Type
 
+import pytest
 from bs4 import BeautifulSoup
-from bs4.builder import (
-    builder_registry as registry,
-    TreeBuilder,
-    TreeBuilderRegistry,
-)
+from bs4.builder import TreeBuilder, TreeBuilderRegistry
+from bs4.builder import builder_registry as registry
 from bs4.builder._htmlparser import HTMLParserTreeBuilder
 
-from . import (
-    HTML5LIB_PRESENT,
-    LXML_PRESENT,
-)
+from . import HTML5LIB_PRESENT, LXML_PRESENT
 
 if HTML5LIB_PRESENT:
     from bs4.builder._html5lib import HTML5TreeBuilder
 
 if LXML_PRESENT:
-    from bs4.builder._lxml import (
-        LXMLTreeBuilderForXML,
-        LXMLTreeBuilder,
-    )
+    from bs4.builder._lxml import LXMLTreeBuilder, LXMLTreeBuilderForXML
 
 
 # TODO: Split out the lxml and html5lib tests into their own classes

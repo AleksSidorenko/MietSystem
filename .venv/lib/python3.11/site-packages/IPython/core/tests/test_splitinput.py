@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from IPython.core.splitinput import split_user_input, LineInfo
+from IPython.core.splitinput import LineInfo, split_user_input
 from IPython.testing import tools as tt
 
 tests = [

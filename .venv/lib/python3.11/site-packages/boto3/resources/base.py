@@ -48,7 +48,7 @@ class ResourceMeta:
         self.resource_model = resource_model
 
     def __repr__(self):
-        return f'ResourceMeta(\'{self.service_name}\', identifiers={self.identifiers})'
+        return f"ResourceMeta('{self.service_name}', identifiers={self.identifiers})"
 
     def __eq__(self, other):
         # Two metas are equal if their components are all equal
@@ -62,7 +62,7 @@ class ResourceMeta:
         Create a copy of this metadata object.
         """
         params = self.__dict__.copy()
-        service_name = params.pop('service_name')
+        service_name = params.pop("service_name")
         return ResourceMeta(service_name, **params)
 
 
@@ -96,41 +96,39 @@ class ServiceResource:
         self.meta = self.meta.copy()
 
         # Create a default client if none was passed
-        if kwargs.get('client') is not None:
-            self.meta.client = kwargs.get('client')
+        if kwargs.get("client") is not None:
+            self.meta.client = kwargs.get("client")
         else:
             self.meta.client = boto3.client(self.meta.service_name)
 
         # Allow setting identifiers as positional arguments in the order
         # in which they were defined in the ResourceJSON.
         for i, value in enumerate(args):
-            setattr(self, '_' + self.meta.identifiers[i], value)
+            setattr(self, "_" + self.meta.identifiers[i], value)
 
         # Allow setting identifiers via keyword arguments. Here we need
         # extra logic to ignore other keyword arguments like ``client``.
         for name, value in kwargs.items():
-            if name == 'client':
+            if name == "client":
                 continue
 
             if name not in self.meta.identifiers:
-                raise ValueError(f'Unknown keyword argument: {name}')
+                raise ValueError(f"Unknown keyword argument: {name}")
 
-            setattr(self, '_' + name, value)
+            setattr(self, "_" + name, value)
 
         # Validate that all identifiers have been set.
         for identifier in self.meta.identifiers:
             if getattr(self, identifier) is None:
-                raise ValueError(f'Required parameter {identifier} not set')
+                raise ValueError(f"Required parameter {identifier} not set")
 
     def __repr__(self):
         identifiers = []
         for identifier in self.meta.identifiers:
-            identifiers.append(
-                f'{identifier}={repr(getattr(self, identifier))}'
-            )
+            identifiers.append(f"{identifier}={repr(getattr(self, identifier))}")
         return "{}({})".format(
             self.__class__.__name__,
-            ', '.join(identifiers),
+            ", ".join(identifiers),
         )
 
     def __eq__(self, other):

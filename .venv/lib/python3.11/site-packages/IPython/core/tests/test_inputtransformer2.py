@@ -4,13 +4,13 @@ Line-based transformers are the simpler ones; token-based transformers are
 more complex. See test_inputtransformer2_line for tests for line-based
 transformations.
 """
+
 import platform
 import string
 import sys
 from textwrap import dedent
 
 import pytest
-
 from IPython.core import inputtransformer2 as ipt2
 from IPython.core.inputtransformer2 import _find_assign_op, make_tokens_by_line
 
@@ -74,16 +74,24 @@ g()
     ),
 )
 
-MULTILINE_SYSTEM_ASSIGN = ("""\
+MULTILINE_SYSTEM_ASSIGN = (
+    """\
 a = f()
 b = !foo \\
   bar
 g()
-""".splitlines(keepends=True), (2, 4), """\
+""".splitlines(
+        keepends=True
+    ),
+    (2, 4),
+    """\
 a = f()
 b = get_ipython().getoutput('foo    bar')
 g()
-""".splitlines(keepends=True))
+""".splitlines(
+        keepends=True
+    ),
+)
 
 #####
 

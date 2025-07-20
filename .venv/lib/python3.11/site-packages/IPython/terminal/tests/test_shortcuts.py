@@ -1,25 +1,24 @@
+from unittest.mock import Mock, patch
+
 import pytest
+from IPython.terminal.shortcuts import create_ipython_shortcuts
+from IPython.terminal.shortcuts.auto_match import skip_over
 from IPython.terminal.shortcuts.auto_suggest import (
+    NavigableAutoSuggestFromHistory,
     accept,
+    accept_and_keep_cursor,
+    accept_character,
     accept_or_jump_to_end,
     accept_token,
-    accept_character,
     accept_word,
-    accept_and_keep_cursor,
     discard,
-    NavigableAutoSuggestFromHistory,
-    swap_autosuggestion_up,
     swap_autosuggestion_down,
+    swap_autosuggestion_up,
 )
-from IPython.terminal.shortcuts.auto_match import skip_over
-from IPython.terminal.shortcuts import create_ipython_shortcuts
-
-from prompt_toolkit.history import InMemoryHistory
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.document import Document
-from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
-
-from unittest.mock import patch, Mock
+from prompt_toolkit.history import InMemoryHistory
 
 
 def test_deprected():

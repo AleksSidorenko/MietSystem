@@ -1,21 +1,18 @@
 """Tests to ensure that the lxml tree builder generates good trees."""
 
 import pickle
-import pytest
 import warnings
+
+import pytest
+
 from . import LXML_PRESENT, LXML_VERSION
 
 if LXML_PRESENT:
     from bs4.builder._lxml import LXMLTreeBuilder, LXMLTreeBuilderForXML
 
-from bs4 import (
-    BeautifulStoneSoup,
-)
-from . import (
-    HTMLTreeBuilderSmokeTest,
-    XMLTreeBuilderSmokeTest,
-    SOUP_SIEVE_PRESENT,
-)
+from bs4 import BeautifulStoneSoup
+
+from . import SOUP_SIEVE_PRESENT, HTMLTreeBuilderSmokeTest, XMLTreeBuilderSmokeTest
 
 
 @pytest.mark.skipif(

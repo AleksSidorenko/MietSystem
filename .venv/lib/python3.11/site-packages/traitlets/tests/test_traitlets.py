@@ -19,7 +19,9 @@ class TraitTestBase(TestCase):
         if hasattr(self, "_good_values"):
             for value in self._good_values:
                 self.assign(value)
-                self.assertEqual(self.obj.value, self.coerce(value))  # type:ignore[attr-defined]
+                self.assertEqual(
+                    self.obj.value, self.coerce(value)
+                )  # type:ignore[attr-defined]
 
     def test_bad_values(self) -> None:
         if hasattr(self, "_bad_values"):
@@ -31,7 +33,9 @@ class TraitTestBase(TestCase):
 
     def test_default_value(self) -> None:
         if hasattr(self, "_default_value"):
-            self.assertEqual(self._default_value, self.obj.value)  # type:ignore[attr-defined]
+            self.assertEqual(
+                self._default_value, self.obj.value
+            )  # type:ignore[attr-defined]
 
     def test_allow_none(self) -> None:
         if (

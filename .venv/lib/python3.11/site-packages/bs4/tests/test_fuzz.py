@@ -9,16 +9,15 @@ cases represent the same problem, and puts the test cases in close
 proximity to code that can trigger the problems.
 """
 
-import os
 import importlib
+import os
+
 import pytest
-from bs4 import (
-    BeautifulSoup,
-    ParserRejectedMarkup,
-)
+from bs4 import BeautifulSoup, ParserRejectedMarkup
 
 try:
     from soupsieve.util import SelectorSyntaxError
+
     has_lxml = importlib.util.find_spec("lxml")
     has_html5lib = importlib.util.find_spec("html5lib")
     fully_fuzzable = has_lxml != None and has_html5lib != None

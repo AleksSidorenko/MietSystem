@@ -1,6 +1,5 @@
-from IPython.utils.dir2 import dir2
-
 import pytest
+from IPython.utils.dir2 import dir2
 
 
 class Base(object):

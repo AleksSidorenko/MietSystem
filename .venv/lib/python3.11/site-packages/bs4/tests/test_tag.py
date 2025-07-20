@@ -1,8 +1,7 @@
 import warnings
-from bs4.element import (
-    Comment,
-    NavigableString,
-)
+
+from bs4.element import Comment, NavigableString
+
 from . import SoupTest
 
 

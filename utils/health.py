@@ -1,5 +1,4 @@
 # utils/health.py
-
 import os
 import psutil
 from django.contrib.auth import get_user_model
@@ -11,18 +10,19 @@ from bookings.models import Booking
 from listings.models import Listing
 from reviews.models import Review
 from locations.models import Location
+from analytics.models import ViewHistory
 from django.conf import settings
 import sentry_sdk
 from redis import Redis
-from celery import current_app as celery_app
-import boto3
+from core.celery import app as celery_app
 from botocore.exceptions import ClientError
 from decouple import config
+import boto3
 
 try:
     from slack_sdk import WebClient
 except ImportError:
-    WebClient = None  # Graceful degradation if slack-sdk not installed
+    WebClient = None
 
 class HealthCheckService:
     def __init__(self):
@@ -31,7 +31,7 @@ class HealthCheckService:
         self.s3_bucket = settings.AWS_STORAGE_BUCKET_NAME
         self.slack_client = WebClient(token=config('SLACK_TOKEN', default='')) if WebClient and config('SLACK_TOKEN', default='') else None
 
-    def run_all_checks(self):
+    def run_all_checks(self, user=None):
         User = get_user_model()
         data = {
             "time": now(),
@@ -47,10 +47,11 @@ class HealthCheckService:
                 "tenants": User.objects.filter(role="TENANT").count(),
             },
             "stats": {
-                "listings": Listing.objects.count(),
-                "bookings": Booking.objects.count(),
+                "listings": Listing.objects.filter(user=user).count() if user and user.role == "LANDLORD" else Listing.objects.count(),
+                "bookings": Booking.objects.filter(user=user).count() if user and user.role == "TENANT" else Booking.objects.count(),
                 "reviews": Review.objects.count(),
                 "locations": Location.objects.count(),
+                "views": ViewHistory.objects.filter(user=user).count() if user and user.role == "TENANT" else ViewHistory.objects.count(),
             },
             "system_metrics": {
                 "cpu_percent": psutil.cpu_percent(),
@@ -59,7 +60,7 @@ class HealthCheckService:
                 "celery_tasks": PeriodicTask.objects.count(),
             },
         }
-        # Уведомления при сбоях
+        # [Изменение] Добавлен параметр user для фильтрации stats по текущему пользователю
         failed_services = [
             key for key, value in data.items()
             if key in ['database', 'redis', 'celery', 's3', 'localization'] and value['status'] == 'offline'
@@ -78,15 +79,41 @@ class HealthCheckService:
 
     def check_redis(self):
         try:
+            start = now()
             cache.set("healthcheck_test", "ok", timeout=5)
-            return {"status": "online"}
+            info = self.redis_client.info()
+            keys = info['db0']['keys'] if 'db0' in info else 0
+            hits = info.get('keyspace_hits', 0)
+            misses = info.get('keyspace_misses', 0)
+            hit_rate = (hits / (hits + misses) * 100) if (hits + misses) > 0 else 0
+            latency = (now() - start).total_seconds() * 1000
+            status = "online" if latency < 100 else "warning"
+            return {
+                "status": status,
+                "latency_ms": round(latency, 2),
+                "keys": keys,
+                "hit_rate": round(hit_rate, 2)
+            }
         except Exception as e:
             return {"status": "offline", "error": str(e)}
 
     def check_celery(self):
         try:
-            stats = celery_app.control.inspect().stats()
-            return {"status": "online" if stats else "offline"}
+            inspect = celery_app.control.inspect()
+
+            stats = inspect.stats()
+            active_tasks_raw = inspect.active() or {}
+            scheduled_tasks_raw = inspect.scheduled() or {}
+
+            active_tasks = sum(len(tasks) for tasks in active_tasks_raw.values()) if active_tasks_raw else 0
+            scheduled_tasks = sum(len(tasks) for tasks in scheduled_tasks_raw.values()) if scheduled_tasks_raw else 0
+
+            return {
+                "status": "online" if stats else "offline",
+                "active_tasks": active_tasks,
+                "queued_tasks": scheduled_tasks
+            }
+
         except Exception as e:
             return {"status": "offline", "error": str(e)}
 
