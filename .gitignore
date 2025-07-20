@@ -13,7 +13,6 @@ venv.bak/
 # Django
 *.pot
 *.mo
-*.pyc
 media/*
 !media/.gitkeep
 logs/*
@@ -57,3 +56,5 @@ Mailtrap.io.md
 README.md
 
 Untitled.sql
+
+

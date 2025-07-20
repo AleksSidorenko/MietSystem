@@ -1,8 +1,7 @@
-# Project_MietSystem/listings/translation.py
+# listings/translation.py
 
 from modeltranslation.translator import TranslationOptions, register
-
-from .models import Listing
+from listings.models import Listing
 
 
 @register(Listing)

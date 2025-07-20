@@ -1,4 +1,4 @@
-# Project_MietSystem/locations/models.py
+# locations/models.py
 
 from enum import Enum
 

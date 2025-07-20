@@ -1,10 +1,10 @@
-# ## locale/ru/LC_MESSAGES/django.po
+# locale/ru/LC_MESSAGES/django.po
 msgid ""
 msgstr ""
 "Project-Id-Version: MietSystem\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-01 18:32+0200\n"
-"PO-Revision-Date: 2025-07-01 15:41+0200\n"
+"POT-Creation-Date: 2025-07-20 08:03+0200\n"
+"PO-Revision-Date: 2025-07-20 08:30+0200\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -12,410 +12,637 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: analytics/apps.py:9
-msgid "Analytics"
-msgstr "Аналитика"
-
-#: analytics/models.py:13 analytics/models.py:36 bookings/models.py:18
-#: reviews/models.py:12 reviews/views.py:68
+#: analytics/models.py:14 analytics/models.py:39 bookings/models.py:19
+#: reviews/models.py:13 reviews/views.py:79 users/models.py:116
 msgid "User"
 msgstr "Пользователь"
 
-#: analytics/models.py:15
+#: analytics/models.py:16
 msgid "Query"
 msgstr "Запрос"
 
-#: analytics/models.py:16 analytics/models.py:44 analytics/views.py:54
+#: analytics/models.py:17 analytics/models.py:47 analytics/views.py:65
 msgid "Timestamp"
 msgstr "Время"
 
-#: analytics/models.py:24
+#: analytics/models.py:25
 msgid "Search History"
 msgstr "История поиска"
 
-#: analytics/models.py:25
-msgid "Search Histories"
-msgstr "Истории поиска"
-
-#: analytics/models.py:42 bookings/models.py:24 listings/models.py:34
-#: reviews/views.py:68
+#: analytics/models.py:45 bookings/models.py:25 listings/models.py:24
+#: listings/models.py:137 reviews/views.py:80
 msgid "Listing"
 msgstr "Объявление"
 
-#: analytics/models.py:52
+#: analytics/models.py:55
 msgid "View History"
 msgstr "История просмотров"
 
-#: analytics/models.py:53
-msgid "View Histories"
-msgstr "Истории просмотров"
-
-#: analytics/serializers.py:18
+#: analytics/serializers.py:19
 msgid "Query must be between 1 and 255 characters"
 msgstr "Запрос должен содержать от 1 до 255 символов"
 
-#: analytics/views.py:39
+#: analytics/views.py:44
 msgid "Invalid time frame. Use 'week' or 'month'"
 msgstr "Недопустимый временной интервал. Используйте 'week' или 'month'"
 
-#: analytics/views.py:54
+#: analytics/views.py:65
 msgid "Listing ID"
 msgstr "ID объявления"
 
-#: analytics/views.py:54 listings/models.py:9
+#: analytics/views.py:65 listings/models.py:48
 msgid "Title"
 msgstr "Название"
 
-#: analytics/views.py:54
+#: analytics/views.py:65
 msgid "Views"
 msgstr "Просмотры"
 
-#: bookings/apps.py:9 bookings/models.py:53
-msgid "Bookings"
-msgstr "Бронирования"
-
-#: bookings/models.py:10
+#: bookings/models.py:11
 msgid "Pending"
 msgstr "Ожидает"
 
-#: bookings/models.py:11
+#: bookings/models.py:12
 msgid "Confirmed"
 msgstr "Подтверждено"
 
-#: bookings/models.py:12
+#: bookings/models.py:13
 msgid "Cancelled"
 msgstr "Отменено"
 
-#: bookings/models.py:26
+#: bookings/models.py:27
 msgid "Start date"
 msgstr "Дата начала"
 
-#: bookings/models.py:27
+#: bookings/models.py:28
 msgid "End date"
 msgstr "Дата окончания"
 
-#: bookings/models.py:31
+#: bookings/models.py:30
 msgid "Total price"
 msgstr "Общая цена"
 
-#: bookings/models.py:37
+#: bookings/models.py:36
 msgid "Status"
 msgstr "Статус"
 
-#: bookings/models.py:41 listings/models.py:19 reviews/models.py:23
+#: bookings/models.py:38 listings/models.py:108 reviews/models.py:24
 msgid "Created at"
 msgstr "Создано"
 
-#: bookings/models.py:52 reviews/models.py:18
+#: bookings/models.py:48 reviews/models.py:19
 msgid "Booking"
 msgstr "Бронирование"
 
-#: bookings/models.py:57 bookings/serializers.py:28
+#: bookings/models.py:54
 msgid "End date must be after start date"
 msgstr "Дата окончания должна быть позже даты начала"
 
-#: bookings/models.py:59
+#: bookings/models.py:56
 msgid "Total price must be non-negative"
 msgstr "Общая цена должна быть неотрицательной"
 
-#: bookings/permissions.py:7
-msgid "Only the booking owner or landlord can perform this action"
-msgstr ""
-"Только владелец бронирования или арендодатель могут выполнить это действие"
-
-#: bookings/serializers.py:25
-msgid "Cannot book an inactive listing"
-msgstr "Нельзя забронировать неактивное объявление"
-
-#: bookings/serializers.py:31
-msgid "Start date cannot be in the past"
-msgstr "Дата начала не может быть в прошлом"
-
-#: bookings/serializers.py:35
-msgid "Booking duration must be between 1 and 30 days"
-msgstr "Продолжительность бронирования должна быть от 1 до 30 дней"
-
-#: bookings/serializers.py:43
-msgid "Dates overlap with existing booking"
-msgstr "Даты пересекаются с существующим бронированием"
-
-#: bookings/serializers.py:48
-msgid "Selected dates are not available"
-msgstr "Выбранные даты недоступны"
-
-#: bookings/views.py:48
-msgid "Only tenants can create bookings"
+#: bookings/views.py:53 bookings/views.py:72
+#, fuzzy
+#| msgid "Only tenants can create bookings"
+msgid "Only tenants can create bookings."
 msgstr "Только арендаторы могут создавать бронирования"
 
-#: bookings/views.py:69
-msgid "Only the landlord can confirm"
+#: bookings/views.py:127
+#, fuzzy
+#| msgid "Only the landlord can confirm"
+msgid "Only the landlord of this listing can confirm this booking."
 msgstr "Только арендодатель может подтвердить"
 
-#: bookings/views.py:71
-msgid "Only pending bookings can be confirmed"
+#: bookings/views.py:132
+#, fuzzy
+#| msgid "Only pending bookings can be confirmed"
+msgid "Only pending bookings can be confirmed."
 msgstr "Только ожидающие бронирования могут быть подтверждены"
 
-#: bookings/views.py:75
-msgid "Booking confirmed"
-msgstr "Бронирование подтверждено"
+#: bookings/views.py:151
+msgid "You are not authorized to cancel this booking."
+msgstr ""
 
-#: bookings/views.py:83
-msgid "Only the user or landlord can cancel"
-msgstr "Только пользователь или арендодатель могут отменить"
-
-#: bookings/views.py:85
-msgid "Cannot cancel within 48 hours of start date"
+#: bookings/views.py:155
+#, fuzzy
+#| msgid "Cannot cancel within 48 hours of start date"
+msgid "Cannot cancel within 48 hours of start date."
 msgstr "Нельзя отменить менее чем за 48 часов до даты начала"
 
-#: bookings/views.py:89
-msgid "Booking cancelled"
+#: bookings/views.py:161
+#, fuzzy
+#| msgid "Booking cancelled"
+msgid "Booking is already cancelled."
 msgstr "Бронирование отменено"
 
-#: listings/apps.py:9 listings/models.py:35
-msgid "Listings"
-msgstr "Объявления"
+#: listings/models.py:9 listings/models.py:12
+#, fuzzy
+#| msgid "Amenities"
+msgid "Amenity"
+msgstr "Удобства"
 
-#: listings/models.py:10
+#: listings/models.py:26
+msgid "Date"
+msgstr ""
+
+#: listings/models.py:27
+#, fuzzy
+#| msgid "Availability"
+msgid "Is Available"
+msgstr "Доступность"
+
+#: listings/models.py:35
+#, fuzzy
+#| msgid "Availability"
+msgid "Availability Slot"
+msgstr "Доступность"
+
+#: listings/models.py:49
 msgid "Description"
 msgstr "Описание"
 
-#: listings/models.py:11
+#: listings/models.py:50
 msgid "Address"
 msgstr "Адрес"
 
-#: listings/models.py:12
+#: listings/models.py:52
+msgid "City"
+msgstr ""
+
+#: listings/models.py:55
+msgid "Country"
+msgstr ""
+
+#: listings/models.py:60
+msgid "Latitude"
+msgstr ""
+
+#: listings/models.py:67
+msgid "Longitude"
+msgstr ""
+
+#: listings/models.py:72
 msgid "Price per night"
 msgstr "Цена за ночь"
 
-#: listings/models.py:13
+#: listings/models.py:74
 msgid "Rooms"
 msgstr "Комнаты"
 
-#: listings/models.py:14
+#: listings/models.py:77
+msgid "Apartment"
+msgstr ""
+
+#: listings/models.py:78
+msgid "House"
+msgstr ""
+
+#: listings/models.py:79
+msgid "Studio"
+msgstr ""
+
+#: listings/models.py:80
+msgid "Shared Room"
+msgstr ""
+
+#: listings/models.py:81
+msgid "Villa"
+msgstr ""
+
+#: listings/models.py:82
+msgid "One-Room Apartment"
+msgstr ""
+
+#: listings/models.py:83
+msgid "Two-Room Apartment"
+msgstr ""
+
+#: listings/models.py:84
+msgid "Three-Room Apartment"
+msgstr ""
+
+#: listings/models.py:85
+msgid "Four-Room Apartment"
+msgstr ""
+
+#: listings/models.py:86
+msgid "Dormitory"
+msgstr ""
+
+#: listings/models.py:87
+msgid "Penthouse"
+msgstr ""
+
+#: listings/models.py:88
+msgid "Townhouse"
+msgstr ""
+
+#: listings/models.py:89
+msgid "Cottage"
+msgstr ""
+
+#: listings/models.py:90
+msgid "Condominium"
+msgstr ""
+
+#: listings/models.py:91
+msgid "Loft"
+msgstr ""
+
+#: listings/models.py:92
+msgid "Duplex"
+msgstr ""
+
+#: listings/models.py:93
+msgid "Bungalow"
+msgstr ""
+
+#: listings/models.py:98
 msgid "Property type"
 msgstr "Тип недвижимости"
 
-#: listings/models.py:15
+#: listings/models.py:103
 msgid "Amenities"
 msgstr "Удобства"
 
-#: listings/models.py:16
+#: listings/models.py:106
 msgid "Photos"
 msgstr "Фотографии"
 
-#: listings/models.py:17
-msgid "Availability"
-msgstr "Доступность"
-
-#: listings/models.py:18
+#: listings/models.py:107
 msgid "Is active"
 msgstr "Активно"
 
-#: listings/models.py:20
+#: listings/models.py:109
 msgid "Popularity"
 msgstr "Популярность"
 
-#: listings/permissions.py:7
+#: listings/permissions.py:8
 msgid "Only the listing owner can perform this action"
 msgstr "Только владелец объявления может выполнить это действие"
 
-#: listings/permissions.py:13
+#: listings/permissions.py:15
 msgid "Only landlords can perform this action"
 msgstr "Только арендодатели могут выполнять это действие"
 
-#: listings/serializers.py:23
+#: listings/serializers.py:41
 msgid "Photos must be a list"
 msgstr "Фотографии должны быть списком"
 
-#: listings/serializers.py:28
+#: listings/serializers.py:46
 msgid "Photo size must be ≤ 5MB"
 msgstr "Размер фото должен быть ≤ 5 МБ"
 
-#: listings/serializers.py:30
+#: listings/serializers.py:48
 msgid "Photo must be JPEG or PNG"
 msgstr "Фото должно быть в формате JPEG или PNG"
 
-#: listings/serializers.py:33
+#: listings/serializers.py:52
 msgid "Photo dimensions must be ≥ 200px"
 msgstr "Размеры фото должны быть ≥ 200 пикселей"
 
-#: listings/serializers.py:39
+#: listings/serializers.py:59
 msgid "Amenities must be a list"
 msgstr "Удобства должны быть списком"
 
-#: listings/serializers.py:44
+#: listings/serializers.py:64
 msgid "Price per night must be positive"
 msgstr "Цена за ночь должна быть положительной"
 
-#: listings/serializers.py:49
+#: listings/serializers.py:70
 msgid "Rooms must be a positive integer or half-integer (e.g., 1, 1.5, 2)"
 msgstr ""
 "Количество комнат должно быть положительным целым числом или полуцелым "
 "(например, 1, 1.5, 2)"
 
-#: listings/serializers.py:54
+#: listings/serializers.py:76
 msgid "Availability must be a dictionary"
 msgstr "Доступность должна быть словарем"
 
-#: listings/serializers.py:57
+#: listings/serializers.py:81
 msgid "Availability must be a dictionary of date strings to boolean values"
 msgstr "Доступность должна быть словарем строк дат с булевыми значениями"
 
-#: listings/views.py:90
+#: listings/views.py:99
 msgid "Listing deleted successfully"
 msgstr "Объявление успешно удалено"
 
-#: locations/apps.py:9 locations/models.py:41
-msgid "Locations"
-msgstr "Локации"
-
-#: locations/models.py:31
+#: locations/models.py:60
 msgid "Coordinates"
-msgstr ""
+msgstr "Координаты"
 
-#: locations/models.py:40
+#: locations/models.py:88
 msgid "Location"
 msgstr "Локация"
 
-#: locations/serializers.py:15
+#: locations/serializers.py:27
 msgid "Postal code must be a 5-digit number"
 msgstr "Почтовый индекс должен быть 5-значным числом"
 
-#: locations/serializers.py:20
+#: locations/serializers.py:32
 msgid "Latitude must be between -90 and 90"
 msgstr "Широта должна быть от -90 до 90"
 
-#: locations/serializers.py:25
+#: locations/serializers.py:38
 msgid "Longitude must be between -180 and 180"
 msgstr "Долгота должна быть от -180 до 180"
 
-#: reviews/apps.py:9 reviews/models.py:33
-msgid "Reviews"
-msgstr "Отзывы"
-
-#: reviews/models.py:20 reviews/views.py:68
+#: reviews/models.py:21 reviews/views.py:81
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: reviews/models.py:21 reviews/views.py:68
+#: reviews/models.py:22 reviews/views.py:82
 msgid "Comment"
 msgstr "Комментарий"
 
-#: reviews/models.py:22
+#: reviews/models.py:23
 msgid "Is approved"
 msgstr "Одобрен"
 
-#: reviews/models.py:32
+#: reviews/models.py:37
 msgid "Review"
 msgstr "Отзыв"
 
-#: reviews/permissions.py:7
+#: reviews/permissions.py:8
 msgid "Only the review owner or admin can perform this action"
 msgstr "Только владелец отзыва или администратор могут выполнить это действие"
 
-#: reviews/serializers.py:17
+#: reviews/serializers.py:28
 msgid "Rating must be between 1 and 5"
 msgstr "Рейтинг должен быть от 1 до 5"
 
-#: reviews/serializers.py:23
+#: reviews/serializers.py:35
 msgid "Review can only be created for confirmed bookings"
 msgstr "Отзыв можно создать только для подтвержденных бронирований"
 
-#: reviews/serializers.py:25
+#: reviews/serializers.py:39
+#, fuzzy
+#| msgid "Only the booking owner or admin can create a review"
 msgid "Only the booking owner can create a review"
-msgstr "Только владелец бронирования может создать отзыв"
+msgstr "Только владелец бронирования или администратор могут создать отзыв"
 
-#: reviews/serializers.py:27
+#: reviews/serializers.py:43
 msgid "Review can only be created after the booking end date"
 msgstr "Отзыв можно создать только после даты окончания бронирования"
 
-#: reviews/serializers.py:32
+#: reviews/serializers.py:50
 msgid "Comment must be less than 1000 characters"
 msgstr "Комментарий должен быть короче 1000 символов"
 
-#: reviews/views.py:41
+#: reviews/views.py:46
 msgid "Only tenants can create reviews"
 msgstr "Только арендаторы могут создавать отзывы"
 
-#: reviews/views.py:58
+#: reviews/views.py:65
 msgid "Review approved"
 msgstr "Отзыв одобрен"
 
-#: reviews/views.py:68
+#: reviews/views.py:78
 msgid "Review ID"
 msgstr "ID отзыва"
 
-#: reviews/views.py:68
-#, fuzzy
-#| msgid "Is approved"
+#: reviews/views.py:83
 msgid "Is Approved"
 msgstr "Одобрен"
 
-#: reviews/views.py:68
-#, fuzzy
-#| msgid "Created at"
+#: reviews/views.py:84
 msgid "Created At"
 msgstr "Создано"
 
-#: users/models.py:30
+#: templates/core/lockout.html:10 templates/core/lockout.html:57
+msgid "Access Blocked"
+msgstr "Доступ заблокирован"
+
+#: templates/core/lockout.html:58
+msgid "Too many login attempts. Please try again later or contact support."
+msgstr ""
+"Слишком много попыток входа. Попробуйте снова позже или обратитесь в "
+"поддержку."
+
+#: templates/core/lockout.html:59
+msgid "Back to Home"
+msgstr "Вернуться на главную"
+
+#: templates/core/status_page.html:11 templates/core/status_page.html:141
+msgid "MietSystem — Dashboard"
+msgstr "MietSystem — Панель управления"
+
+#: templates/core/status_page.html:136
+msgid "Access Denied"
+msgstr "Доступ запрещен"
+
+#: templates/core/status_page.html:137
+msgid "Please"
+msgstr "Пожалуйста"
+
+#: templates/core/status_page.html:137
+msgid "log in"
+msgstr "войдите"
+
+#: templates/core/status_page.html:137
+msgid "to view the system status."
+msgstr "чтобы просмотреть статус системы."
+
+#: templates/core/status_page.html:145
+msgid "Current Language"
+msgstr "Текущий язык"
+
+#: templates/core/status_page.html:151
+msgid "System Information"
+msgstr "Системная информация"
+
+#: templates/core/status_page.html:155
+msgid "Server Time"
+msgstr "Время сервера"
+
+#: templates/core/status_page.html:159
+msgid "Database"
+msgstr "База данных"
+
+#: templates/core/status_page.html:163
+msgid "Redis"
+msgstr "Redis"
+
+#: templates/core/status_page.html:167
+msgid "Celery"
+msgstr "Celery"
+
+#: templates/core/status_page.html:171
+msgid "S3"
+msgstr "S3"
+
+#: templates/core/status_page.html:175
+msgid "Localization"
+msgstr "Локализация"
+
+#: templates/core/status_page.html:182
+msgid "Users"
+msgstr "Пользователи"
+
+#: templates/core/status_page.html:186
+msgid "Total Users"
+msgstr "Всего пользователей"
+
+#: templates/core/status_page.html:190
+msgid "Admins"
+msgstr "Администраторы"
+
+#: templates/core/status_page.html:194
+msgid "Landlords"
+msgstr "Арендодатели"
+
+#: templates/core/status_page.html:198
+msgid "Tenants"
+msgstr "Арендаторы"
+
+#: templates/core/status_page.html:205
+msgid "System Objects"
+msgstr "Объекты в системе"
+
+#: templates/core/status_page.html:209 templates/core/status_page.html:257
+msgid "Listings"
+msgstr "Объявления"
+
+#: templates/core/status_page.html:213 templates/core/status_page.html:258
+msgid "Bookings"
+msgstr "Бронирования"
+
+#: templates/core/status_page.html:217 templates/core/status_page.html:259
+msgid "Reviews"
+msgstr "Отзывы"
+
+#: templates/core/status_page.html:221
+msgid "Locations"
+msgstr "Локации"
+
+#: templates/core/status_page.html:228
+msgid "System Metrics"
+msgstr "Системные метрики"
+
+#: templates/core/status_page.html:232
+msgid "CPU Usage"
+msgstr "Использование CPU"
+
+#: templates/core/status_page.html:236
+msgid "Memory Usage"
+msgstr "Использование памяти"
+
+#: templates/core/status_page.html:240
+msgid "Free Disk Space"
+msgstr "Свободное место на диске"
+
+#: templates/core/status_page.html:244
+msgid "Celery Tasks"
+msgstr "Задачи Celery"
+
+#: templates/core/status_page.html:251
+msgid "Quick Links"
+msgstr "Быстрые ссылки"
+
+#: templates/core/status_page.html:253
+msgid "Admin Panel"
+msgstr "Панель администратора"
+
+#: templates/core/status_page.html:254
+msgid "Swagger"
+msgstr "Swagger"
+
+#: templates/core/status_page.html:255
+msgid "Redoc"
+msgstr "Redoc"
+
+#: templates/core/status_page.html:256
+msgid "Profile"
+msgstr "Профиль"
+
+#: templates/core/status_page.html:260
+msgid "Analytics"
+msgstr "Аналитика"
+
+#: templates/core/status_page.html:261
+msgid "JWT Login"
+msgstr "JWT вход"
+
+#: templates/core/status_page.html:277
+msgid "Debug Information"
+msgstr "Отладочная информация"
+
+#: users/models.py:40
 msgid "Email is required"
 msgstr "Требуется email"
 
-#: users/serializers.py:19
+#: users/serializers.py:33
 msgid "Invalid role"
 msgstr "Недопустимая роль"
 
-#: users/serializers.py:24
+#: users/serializers.py:38
 msgid "Invalid phone number format"
 msgstr "Недопустимый формат номера телефона"
 
-#: users/serializers.py:29
+#: users/serializers.py:43
 msgid "Email already exists"
 msgstr "Email уже существует"
 
-#: users/tasks.py:24
+#: users/tasks.py:26
 msgid "Verify Your MietSystem Account"
 msgstr "Подтвердите ваш аккаунт MietSystem"
 
-#: users/tasks.py:45
+#: users/tasks.py:46
 msgid "Reset Your MietSystem Password"
 msgstr "Сбросьте ваш пароль MietSystem"
 
-#: users/views.py:60
+#: users/views.py:63
 msgid "Email already verified"
 msgstr "Email уже подтвержден"
 
-#: users/views.py:64
+#: users/views.py:69
 msgid "Email verified"
 msgstr "Email подтвержден"
 
-#: users/views.py:66 users/views.py:97
+#: users/views.py:72 users/views.py:111
 msgid "Invalid or expired token"
 msgstr "Недействительный или просроченный токен"
 
-#: users/views.py:76
+#: users/views.py:85
 msgid "Password reset email sent"
 msgstr "Письмо для сброса пароля отправлено"
 
-#: users/views.py:78
+#: users/views.py:89
 msgid "User not found"
 msgstr "Пользователь не найден"
 
-#: users/views.py:95
+#: users/views.py:107
 msgid "Password reset successful"
 msgstr "Пароль успешно сброшен"
 
-#~ msgid "Tenant"
-#~ msgstr "Арендатор"
+#~ msgid "Search Histories"
+#~ msgstr "Истории поиска"
 
-#~ msgid "Landlord"
-#~ msgstr "Арендодатель"
+#~ msgid "View Histories"
+#~ msgstr "Истории просмотров"
 
-#~ msgid "Admin"
-#~ msgstr "Администратор"
+#~ msgid "Only the booking owner or landlord can perform this action"
+#~ msgstr ""
+#~ "Только владелец бронирования или арендодатель могут выполнить это действие"
 
-#~ msgid "Country"
-#~ msgstr "Страна"
+#~ msgid "Cannot book an inactive listing"
+#~ msgstr "Нельзя забронировать неактивное объявление"
 
-#~ msgid "City"
-#~ msgstr "Город"
+#~ msgid "Start date cannot be in the past"
+#~ msgstr "Дата начала не может быть в прошлом"
+
+#~ msgid "Booking duration must be between 1 and 30 days"
+#~ msgstr "Продолжительность бронирования должна быть от 1 до 30 дней"
+
+#~ msgid "Dates overlap with existing booking"
+#~ msgstr "Даты пересекаются с существующим бронированием"
+
+#~ msgid "Selected dates are not available"
+#~ msgstr "Выбранные даты недоступны"
+
+#~ msgid "Booking confirmed"
+#~ msgstr "Бронирование подтверждено"
+
+#~ msgid "Only the user or landlord can cancel"
+#~ msgstr "Только пользователь или арендодатель могут отменить"
