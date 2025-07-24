@@ -1,10 +1,8 @@
-#### `locations/serializers.py`
+# locations/serializers.py
 
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
-
 from utils.translation import TranslationSerializerMixin
-
 from .models import Location
 
 
@@ -14,8 +12,8 @@ class LocationSerializer(TranslationSerializerMixin, serializers.ModelSerializer
         fields = [
             "id",
             "listing",
-            "latitude",
-            "longitude",
+            # "latitude",
+            # "longitude",
             "federal_state",
             "city",
             "postal_code",
@@ -38,12 +36,3 @@ class LocationSerializer(TranslationSerializerMixin, serializers.ModelSerializer
                 _("Longitude must be between -180 and 180")
             )
         return value
-
-
-# from rest_framework import serializers
-# from .models import Location
-#
-# class LocationSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Location
-#         fields = ['id', 'listing', 'latitude', 'longitude', 'federal_state', 'city', 'postal_code', 'street']

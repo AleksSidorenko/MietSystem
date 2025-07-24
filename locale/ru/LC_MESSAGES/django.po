@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MietSystem\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-20 08:03+0200\n"
+"POT-Creation-Date: 2025-07-22 16:47-0500\n"
 "PO-Revision-Date: 2025-07-20 08:30+0200\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: analytics/models.py:14 analytics/models.py:39 bookings/models.py:19
-#: reviews/models.py:13 reviews/views.py:79 users/models.py:116
+#: reviews/models.py:13 users/models.py:114
 msgid "User"
 msgstr "Пользователь"
 
@@ -21,7 +21,7 @@ msgstr "Пользователь"
 msgid "Query"
 msgstr "Запрос"
 
-#: analytics/models.py:17 analytics/models.py:47 analytics/views.py:65
+#: analytics/models.py:17 analytics/models.py:47 analytics/views.py:49
 msgid "Timestamp"
 msgstr "Время"
 
@@ -30,7 +30,7 @@ msgid "Search History"
 msgstr "История поиска"
 
 #: analytics/models.py:45 bookings/models.py:25 listings/models.py:24
-#: listings/models.py:137 reviews/views.py:80
+#: listings/models.py:137
 msgid "Listing"
 msgstr "Объявление"
 
@@ -38,23 +38,23 @@ msgstr "Объявление"
 msgid "View History"
 msgstr "История просмотров"
 
-#: analytics/serializers.py:19
+#: analytics/serializers.py:18
 msgid "Query must be between 1 and 255 characters"
 msgstr "Запрос должен содержать от 1 до 255 символов"
 
-#: analytics/views.py:44
+#: analytics/views.py:31
 msgid "Invalid time frame. Use 'week' or 'month'"
 msgstr "Недопустимый временной интервал. Используйте 'week' или 'month'"
 
-#: analytics/views.py:65
+#: analytics/views.py:49
 msgid "Listing ID"
 msgstr "ID объявления"
 
-#: analytics/views.py:65 listings/models.py:48
+#: analytics/views.py:49 listings/models.py:48
 msgid "Title"
 msgstr "Название"
 
-#: analytics/views.py:65
+#: analytics/views.py:49
 msgid "Views"
 msgstr "Просмотры"
 
@@ -82,7 +82,7 @@ msgstr "Дата окончания"
 msgid "Total price"
 msgstr "Общая цена"
 
-#: bookings/models.py:36
+#: bookings/models.py:36 templates/core/status_page_v_3.html:340
 msgid "Status"
 msgstr "Статус"
 
@@ -102,35 +102,35 @@ msgstr "Дата окончания должна быть позже даты н
 msgid "Total price must be non-negative"
 msgstr "Общая цена должна быть неотрицательной"
 
-#: bookings/views.py:53 bookings/views.py:72
+#: bookings/views.py:53 bookings/views.py:65
 #, fuzzy
 #| msgid "Only tenants can create bookings"
 msgid "Only tenants can create bookings."
 msgstr "Только арендаторы могут создавать бронирования"
 
-#: bookings/views.py:127
+#: bookings/views.py:87
 #, fuzzy
 #| msgid "Only the landlord can confirm"
 msgid "Only the landlord of this listing can confirm this booking."
 msgstr "Только арендодатель может подтвердить"
 
-#: bookings/views.py:132
+#: bookings/views.py:90
 #, fuzzy
 #| msgid "Only pending bookings can be confirmed"
 msgid "Only pending bookings can be confirmed."
 msgstr "Только ожидающие бронирования могут быть подтверждены"
 
-#: bookings/views.py:151
+#: bookings/views.py:105
 msgid "You are not authorized to cancel this booking."
 msgstr ""
 
-#: bookings/views.py:155
+#: bookings/views.py:108
 #, fuzzy
 #| msgid "Cannot cancel within 48 hours of start date"
 msgid "Cannot cancel within 48 hours of start date."
 msgstr "Нельзя отменить менее чем за 48 часов до даты начала"
 
-#: bookings/views.py:161
+#: bookings/views.py:111
 #, fuzzy
 #| msgid "Booking cancelled"
 msgid "Booking is already cancelled."
@@ -278,53 +278,57 @@ msgstr "Активно"
 msgid "Popularity"
 msgstr "Популярность"
 
-#: listings/permissions.py:8
+#: listings/permissions.py:7
 msgid "Only the listing owner can perform this action"
 msgstr "Только владелец объявления может выполнить это действие"
 
-#: listings/permissions.py:15
+#: listings/permissions.py:14
 msgid "Only landlords can perform this action"
 msgstr "Только арендодатели могут выполнять это действие"
 
-#: listings/serializers.py:41
+#: listings/serializers.py:37
 msgid "Photos must be a list"
 msgstr "Фотографии должны быть списком"
 
-#: listings/serializers.py:46
+#: listings/serializers.py:42
 msgid "Photo size must be ≤ 5MB"
 msgstr "Размер фото должен быть ≤ 5 МБ"
 
-#: listings/serializers.py:48
+#: listings/serializers.py:44
 msgid "Photo must be JPEG or PNG"
 msgstr "Фото должно быть в формате JPEG или PNG"
 
-#: listings/serializers.py:52
+#: listings/serializers.py:48
 msgid "Photo dimensions must be ≥ 200px"
 msgstr "Размеры фото должны быть ≥ 200 пикселей"
 
-#: listings/serializers.py:59
+#: listings/serializers.py:55
 msgid "Amenities must be a list"
 msgstr "Удобства должны быть списком"
 
-#: listings/serializers.py:64
+#: listings/serializers.py:60
 msgid "Price per night must be positive"
 msgstr "Цена за ночь должна быть положительной"
 
-#: listings/serializers.py:70
+#: listings/serializers.py:66
 msgid "Rooms must be a positive integer or half-integer (e.g., 1, 1.5, 2)"
 msgstr ""
 "Количество комнат должно быть положительным целым числом или полуцелым "
 "(например, 1, 1.5, 2)"
 
-#: listings/serializers.py:76
+#: listings/serializers.py:72
 msgid "Availability must be a dictionary"
 msgstr "Доступность должна быть словарем"
 
-#: listings/serializers.py:81
+#: listings/serializers.py:77
 msgid "Availability must be a dictionary of date strings to boolean values"
 msgstr "Доступность должна быть словарем строк дат с булевыми значениями"
 
-#: listings/views.py:99
+#: listings/views.py:61
+msgid "You do not have permission for this action."
+msgstr ""
+
+#: listings/views.py:234
 msgid "Listing deleted successfully"
 msgstr "Объявление успешно удалено"
 
@@ -336,23 +340,23 @@ msgstr "Координаты"
 msgid "Location"
 msgstr "Локация"
 
-#: locations/serializers.py:27
+#: locations/serializers.py:25
 msgid "Postal code must be a 5-digit number"
 msgstr "Почтовый индекс должен быть 5-значным числом"
 
-#: locations/serializers.py:32
+#: locations/serializers.py:30
 msgid "Latitude must be between -90 and 90"
 msgstr "Широта должна быть от -90 до 90"
 
-#: locations/serializers.py:38
+#: locations/serializers.py:36
 msgid "Longitude must be between -180 and 180"
 msgstr "Долгота должна быть от -180 до 180"
 
-#: reviews/models.py:21 reviews/views.py:81
+#: reviews/models.py:21
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: reviews/models.py:22 reviews/views.py:82
+#: reviews/models.py:22
 msgid "Comment"
 msgstr "Комментарий"
 
@@ -364,51 +368,81 @@ msgstr "Одобрен"
 msgid "Review"
 msgstr "Отзыв"
 
-#: reviews/permissions.py:8
+#: reviews/permissions.py:7
 msgid "Only the review owner or admin can perform this action"
 msgstr "Только владелец отзыва или администратор могут выполнить это действие"
 
-#: reviews/serializers.py:28
+#: reviews/serializers.py:26
 msgid "Rating must be between 1 and 5"
 msgstr "Рейтинг должен быть от 1 до 5"
 
-#: reviews/serializers.py:35
+#: reviews/serializers.py:33
 msgid "Review can only be created for confirmed bookings"
 msgstr "Отзыв можно создать только для подтвержденных бронирований"
 
-#: reviews/serializers.py:39
+#: reviews/serializers.py:37
 #, fuzzy
 #| msgid "Only the booking owner or admin can create a review"
 msgid "Only the booking owner can create a review"
 msgstr "Только владелец бронирования или администратор могут создать отзыв"
 
-#: reviews/serializers.py:43
+#: reviews/serializers.py:41
 msgid "Review can only be created after the booking end date"
 msgstr "Отзыв можно создать только после даты окончания бронирования"
 
-#: reviews/serializers.py:50
+#: reviews/serializers.py:48
 msgid "Comment must be less than 1000 characters"
 msgstr "Комментарий должен быть короче 1000 символов"
 
-#: reviews/views.py:46
-msgid "Only tenants can create reviews"
+#: reviews/views.py:42
+#, fuzzy
+#| msgid "Only tenants can create reviews"
+msgid "Only tenants can create reviews."
 msgstr "Только арендаторы могут создавать отзывы"
 
-#: reviews/views.py:65
+#: reviews/views.py:55
 msgid "Review approved"
 msgstr "Отзыв одобрен"
 
-#: reviews/views.py:78
-msgid "Review ID"
-msgstr "ID отзыва"
+#: templates/admin/base_site.html:7
+#, fuzzy
+#| msgid "System Information"
+msgid "MietSystem Administration"
+msgstr "Системная информация"
 
-#: reviews/views.py:83
-msgid "Is Approved"
-msgstr "Одобрен"
+#: templates/admin/base_site.html:12
+#, fuzzy
+#| msgid "Back to Home"
+msgid "Back to Dashboard"
+msgstr "Вернуться на главную"
 
-#: reviews/views.py:84
-msgid "Created At"
-msgstr "Создано"
+#: templates/admin/base_site.html:13 templates/core/status_page_v_1.html:40
+#: templates/core/status_page_v_2.html:40
+#: templates/core/status_page_v_3.html:40
+msgid "Log out"
+msgstr ""
+
+#: templates/core/configure_s3.html:9 templates/core/configure_s3.html:14
+#, fuzzy
+#| msgid "Confirmed"
+msgid "Configure S3"
+msgstr "Подтверждено"
+
+#: templates/core/configure_s3.html:18
+msgid "S3 Bucket Name"
+msgstr ""
+
+#: templates/core/configure_s3.html:22
+msgid "AWS Access Key ID"
+msgstr ""
+
+#: templates/core/configure_s3.html:26
+msgid "AWS Secret Access Key"
+msgstr ""
+
+#: templates/core/configure_s3.html:29
+msgid "Save"
+msgstr ""
 
 #: templates/core/lockout.html:10 templates/core/lockout.html:57
 msgid "Access Blocked"
@@ -424,163 +458,1531 @@ msgstr ""
 msgid "Back to Home"
 msgstr "Вернуться на главную"
 
-#: templates/core/status_page.html:11 templates/core/status_page.html:141
+#: templates/core/login.html:10
+msgid "Log In - MietSystem"
+msgstr ""
+
+#: templates/core/login.html:17
+msgid "Log In to MietSystem"
+msgstr ""
+
+#: templates/core/login.html:26 templates/core/status_page.html:329
+#: templates/core/status_page_v_3.html:377
+#: templates/core/status_page_v_4.html:329
+msgid "Email"
+msgstr ""
+
+#: templates/core/login.html:29
+msgid "Enter your email"
+msgstr ""
+
+#: templates/core/login.html:35
+msgid "Password"
+msgstr ""
+
+#: templates/core/login.html:38
+msgid "Enter your password"
+msgstr ""
+
+#: templates/core/login.html:44
+msgid "Log In"
+msgstr ""
+
+#: templates/core/logout.html:10
+msgid "Logged Out - MietSystem"
+msgstr ""
+
+#: templates/core/logout.html:17
+msgid "You have been logged out"
+msgstr ""
+
+#: templates/core/logout.html:18
+msgid "Thank you for using MietSystem."
+msgstr ""
+
+#: templates/core/logout.html:20
+msgid "Log in again"
+msgstr ""
+
+#: templates/core/status_page.html:10 templates/core/status_page.html:27
+#: templates/core/status_page_v_1.html:10
+#: templates/core/status_page_v_1.html:27
+#: templates/core/status_page_v_2.html:10
+#: templates/core/status_page_v_2.html:27
+#: templates/core/status_page_v_3.html:10
+#: templates/core/status_page_v_3.html:27
+#: templates/core/status_page_v_4.html:10
+#: templates/core/status_page_v_4.html:27
 msgid "MietSystem — Dashboard"
 msgstr "MietSystem — Панель управления"
 
-#: templates/core/status_page.html:136
-msgid "Access Denied"
-msgstr "Доступ запрещен"
+#: templates/core/status_page.html:21 templates/core/status_page_v_4.html:21
+msgid "Доступ запрещен"
+msgstr ""
 
-#: templates/core/status_page.html:137
-msgid "Please"
-msgstr "Пожалуйста"
+#: templates/core/status_page.html:22 templates/core/status_page_v_4.html:22
+msgid "Пожалуйста"
+msgstr ""
 
-#: templates/core/status_page.html:137
-msgid "log in"
-msgstr "войдите"
+#: templates/core/status_page.html:22 templates/core/status_page_v_4.html:22
+msgid "войдите"
+msgstr ""
 
-#: templates/core/status_page.html:137
-msgid "to view the system status."
-msgstr "чтобы просмотреть статус системы."
+#: templates/core/status_page.html:22 templates/core/status_page_v_4.html:22
+msgid "для просмотра статуса системы."
+msgstr ""
 
-#: templates/core/status_page.html:145
-msgid "Current Language"
-msgstr "Текущий язык"
+#: templates/core/status_page.html:31 templates/core/status_page_v_4.html:31
+msgid "Добро пожаловать"
+msgstr ""
 
-#: templates/core/status_page.html:151
-msgid "System Information"
-msgstr "Системная информация"
+#: templates/core/status_page.html:40 templates/core/status_page_v_4.html:40
+msgid "Выйти"
+msgstr ""
 
-#: templates/core/status_page.html:155
-msgid "Server Time"
-msgstr "Время сервера"
+#: templates/core/status_page.html:45 templates/core/status_page_v_4.html:45
+msgid "Уведомления"
+msgstr ""
 
-#: templates/core/status_page.html:159
-msgid "Database"
-msgstr "База данных"
+#: templates/core/status_page.html:48 templates/core/status_page_v_4.html:48
+msgid "Все системы работают нормально."
+msgstr ""
 
-#: templates/core/status_page.html:163
+#: templates/core/status_page.html:51 templates/core/status_page_v_4.html:51
+msgid "База данных оффлайн!"
+msgstr ""
+
+#: templates/core/status_page.html:53 templates/core/status_page_v_4.html:53
+msgid "База данных: Предупреждение!"
+msgstr ""
+
+#: templates/core/status_page.html:55 templates/core/status_page_v_4.html:55
+msgid "База данных: Онлайн"
+msgstr ""
+
+#: templates/core/status_page.html:58 templates/core/status_page_v_4.html:58
+msgid "Redis оффлайн!"
+msgstr ""
+
+#: templates/core/status_page.html:60 templates/core/status_page_v_4.html:60
+msgid "Redis: Предупреждение!"
+msgstr ""
+
+#: templates/core/status_page.html:62 templates/core/status_page_v_4.html:62
+msgid "Redis: Онлайн"
+msgstr ""
+
+#: templates/core/status_page.html:65 templates/core/status_page.html:83
+#: templates/core/status_page_v_4.html:65
+#: templates/core/status_page_v_4.html:83
+msgid "Celery оффлайн! Фоновые задачи не выполняются."
+msgstr ""
+
+#: templates/core/status_page.html:67 templates/core/status_page_v_4.html:67
+msgid "Celery: Предупреждение!"
+msgstr ""
+
+#: templates/core/status_page.html:69 templates/core/status_page_v_4.html:69
+msgid "Celery: Онлайн"
+msgstr ""
+
+#: templates/core/status_page.html:72 templates/core/status_page_v_4.html:72
+msgid "S3 не настроен. Загрузка файлов недоступна."
+msgstr ""
+
+#: templates/core/status_page.html:74 templates/core/status_page_v_4.html:74
+msgid "S3: Предупреждение!"
+msgstr ""
+
+#: templates/core/status_page.html:76 templates/core/status_page_v_4.html:76
+msgid "S3: Онлайн"
+msgstr ""
+
+#: templates/core/status_page.html:84 templates/core/status_page_v_4.html:84
+msgid "S3 не настроен. Нажмите для настройки."
+msgstr ""
+
+#: templates/core/status_page.html:91 templates/core/status_page_v_4.html:91
+msgid "Системная информация"
+msgstr ""
+
+#: templates/core/status_page.html:95 templates/core/status_page_v_4.html:95
+msgid "Время сервера"
+msgstr ""
+
+#: templates/core/status_page.html:99 templates/core/status_page_v_4.html:99
+msgid "База данных"
+msgstr ""
+
+#: templates/core/status_page.html:101 templates/core/status_page.html:107
+#: templates/core/status_page.html:116 templates/core/status_page.html:125
+#: templates/core/status_page_v_4.html:101
+#: templates/core/status_page_v_4.html:107
+#: templates/core/status_page_v_4.html:116
+#: templates/core/status_page_v_4.html:125
+msgid "Логи"
+msgstr ""
+
+#: templates/core/status_page.html:105 templates/core/status_page_v_1.html:98
+#: templates/core/status_page_v_2.html:114
+#: templates/core/status_page_v_3.html:119
+#: templates/core/status_page_v_4.html:105
 msgid "Redis"
 msgstr "Redis"
 
-#: templates/core/status_page.html:167
+#: templates/core/status_page.html:111 templates/core/status_page_v_1.html:102
+#: templates/core/status_page_v_2.html:118
+#: templates/core/status_page_v_3.html:123
+#: templates/core/status_page_v_4.html:111
 msgid "Celery"
 msgstr "Celery"
 
-#: templates/core/status_page.html:171
+#: templates/core/status_page.html:113 templates/core/status_page.html:252
+#: templates/core/status_page_v_4.html:113
+#: templates/core/status_page_v_4.html:252
+msgid "Перезапустить"
+msgstr ""
+
+#: templates/core/status_page.html:120 templates/core/status_page_v_1.html:109
+#: templates/core/status_page_v_2.html:125
+#: templates/core/status_page_v_3.html:130
+#: templates/core/status_page_v_4.html:120
 msgid "S3"
 msgstr "S3"
 
-#: templates/core/status_page.html:175
-msgid "Localization"
-msgstr "Локализация"
+#: templates/core/status_page.html:122 templates/core/status_page_v_4.html:122
+msgid "Настроить"
+msgstr ""
 
-#: templates/core/status_page.html:182
-msgid "Users"
-msgstr "Пользователи"
+#: templates/core/status_page.html:132 templates/core/status_page_v_4.html:132
+msgid "Системные метрики"
+msgstr ""
 
-#: templates/core/status_page.html:186
-msgid "Total Users"
-msgstr "Всего пользователей"
+#: templates/core/status_page.html:136 templates/core/status_page_v_4.html:136
+msgid "Использование CPU"
+msgstr ""
 
-#: templates/core/status_page.html:190
-msgid "Admins"
-msgstr "Администраторы"
+#: templates/core/status_page.html:137 templates/core/status_page.html:142
+#: templates/core/status_page_v_4.html:137
+#: templates/core/status_page_v_4.html:142
+msgid "Макс"
+msgstr ""
 
-#: templates/core/status_page.html:194
-msgid "Landlords"
-msgstr "Арендодатели"
+#: templates/core/status_page.html:141 templates/core/status_page_v_4.html:141
+msgid "Использование памяти"
+msgstr ""
 
-#: templates/core/status_page.html:198
-msgid "Tenants"
-msgstr "Арендаторы"
+#: templates/core/status_page.html:146 templates/core/status_page_v_4.html:146
+msgid "Свободное место"
+msgstr ""
 
-#: templates/core/status_page.html:205
-msgid "System Objects"
-msgstr "Объекты в системе"
+#: templates/core/status_page.html:147 templates/core/status_page_v_4.html:147
+msgid "Мин"
+msgstr ""
 
-#: templates/core/status_page.html:209 templates/core/status_page.html:257
-msgid "Listings"
-msgstr "Объявления"
+#: templates/core/status_page.html:165 templates/core/status_page_v_4.html:165
+msgid "Статистика Redis"
+msgstr ""
 
-#: templates/core/status_page.html:213 templates/core/status_page.html:258
-msgid "Bookings"
-msgstr "Бронирования"
+#: templates/core/status_page.html:166 templates/core/status_page_v_4.html:166
+msgid "Ключи"
+msgstr ""
 
-#: templates/core/status_page.html:217 templates/core/status_page.html:259
-msgid "Reviews"
-msgstr "Отзывы"
+#: templates/core/status_page.html:167 templates/core/status_page_v_4.html:167
+msgid "Размер данных"
+msgstr ""
 
-#: templates/core/status_page.html:221
-msgid "Locations"
-msgstr "Локации"
+#: templates/core/status_page.html:168 templates/core/status_page.html:212
+#: templates/core/status_page_v_4.html:168
+#: templates/core/status_page_v_4.html:212
+msgid "Уровень попаданий"
+msgstr ""
 
-#: templates/core/status_page.html:228
-msgid "System Metrics"
-msgstr "Системные метрики"
+#: templates/core/status_page.html:169 templates/core/status_page_v_4.html:169
+msgid "Последняя очистка"
+msgstr ""
 
-#: templates/core/status_page.html:232
-msgid "CPU Usage"
-msgstr "Использование CPU"
+#: templates/core/status_page.html:170 templates/core/status_page_v_4.html:170
+msgid "Очистить кеш"
+msgstr ""
 
-#: templates/core/status_page.html:236
-msgid "Memory Usage"
-msgstr "Использование памяти"
+#: templates/core/status_page.html:173 templates/core/status_page_v_4.html:173
+msgid "Последние 24 часа"
+msgstr ""
 
-#: templates/core/status_page.html:240
-msgid "Free Disk Space"
-msgstr "Свободное место на диске"
+#: templates/core/status_page.html:174 templates/core/status_page_v_4.html:174
+msgid "Последние 7 дней"
+msgstr ""
 
-#: templates/core/status_page.html:244
-msgid "Celery Tasks"
-msgstr "Задачи Celery"
+#: templates/core/status_page.html:182 templates/core/status_page_v_4.html:182
+msgid "Вы уверены, что хотите очистить кеш Redis? Действие необратимо."
+msgstr ""
 
-#: templates/core/status_page.html:251
-msgid "Quick Links"
-msgstr "Быстрые ссылки"
+#: templates/core/status_page.html:186 templates/core/status_page_v_4.html:186
+msgid "Кеш Redis успешно очищен!"
+msgstr ""
 
-#: templates/core/status_page.html:253
-msgid "Admin Panel"
-msgstr "Панель администратора"
+#: templates/core/status_page.html:189 templates/core/status_page_v_4.html:189
+msgid "Ошибка очистки кеша: "
+msgstr ""
 
-#: templates/core/status_page.html:254
+#: templates/core/status_page.html:190 templates/core/status_page_v_4.html:190
+msgid "Ошибка при очистке кеша."
+msgstr ""
+
+#: templates/core/status_page.html:227 templates/core/status_page_v_4.html:227
+#, python-format
+msgid "Уровень попаданий (%%)"
+msgstr ""
+
+#: templates/core/status_page.html:230 templates/core/status_page.html:286
+#: templates/core/status_page.html:431 templates/core/status_page_v_4.html:230
+#: templates/core/status_page_v_4.html:286
+#: templates/core/status_page_v_4.html:431
+msgid "Время"
+msgstr ""
+
+#: templates/core/status_page.html:243 templates/core/status_page_v_4.html:243
+msgid "Задачи Celery"
+msgstr ""
+
+#: templates/core/status_page.html:247 templates/core/status_page_v_4.html:247
+msgid "Активные задачи"
+msgstr ""
+
+#: templates/core/status_page.html:250 templates/core/status_page_v_4.html:250
+msgid "Начало"
+msgstr ""
+
+#: templates/core/status_page.html:251 templates/core/status_page.html:264
+#: templates/core/status_page_v_4.html:251
+#: templates/core/status_page_v_4.html:264
+msgid "Детали"
+msgstr ""
+
+#: templates/core/status_page.html:255 templates/core/status_page_v_4.html:255
+msgid "Нет активных задач."
+msgstr ""
+
+#: templates/core/status_page.html:260 templates/core/status_page_v_4.html:260
+msgid "Запланированные задачи"
+msgstr ""
+
+#: templates/core/status_page.html:267 templates/core/status_page_v_4.html:267
+msgid "Нет запланированных задач."
+msgstr ""
+
+#: templates/core/status_page.html:273 templates/core/status_page_v_4.html:273
+msgid "Успешные задачи"
+msgstr ""
+
+#: templates/core/status_page.html:274 templates/core/status_page_v_4.html:274
+msgid "Неуспешные задачи"
+msgstr ""
+
+#: templates/core/status_page.html:277 templates/core/status_page_v_4.html:277
+msgid "Задачи Celery: Недоступно"
+msgstr ""
+
+#: templates/core/status_page.html:282 templates/core/status_page_v_4.html:282
+msgid "Детали задачи"
+msgstr ""
+
+#: templates/core/status_page.html:283 templates/core/status_page_v_4.html:283
+msgid "ID задачи"
+msgstr ""
+
+#: templates/core/status_page.html:284 templates/core/status_page_v_4.html:284
+msgid "Название"
+msgstr ""
+
+#: templates/core/status_page.html:285 templates/core/status_page_v_4.html:285
+msgid "Статус"
+msgstr ""
+
+#: templates/core/status_page.html:287 templates/core/status_page_v_4.html:287
+msgid "Прогресс"
+msgstr ""
+
+#: templates/core/status_page.html:288 templates/core/status_page_v_4.html:288
+msgid "Закрыть"
+msgstr ""
+
+#: templates/core/status_page.html:296 templates/core/status_page_v_4.html:296
+msgid "Активна"
+msgstr ""
+
+#: templates/core/status_page.html:296 templates/core/status_page_v_4.html:296
+msgid "Запланирована"
+msgstr ""
+
+#: templates/core/status_page.html:302 templates/core/status_page_v_4.html:302
+msgid "Перезапустить задачу?"
+msgstr ""
+
+#: templates/core/status_page.html:313 templates/core/status_page_v_4.html:313
+msgid "Пользователи"
+msgstr ""
+
+#: templates/core/status_page.html:316 templates/core/status_page_v_4.html:316
+msgid "Всего"
+msgstr ""
+
+#: templates/core/status_page.html:317 templates/core/status_page.html:353
+#: templates/core/status_page_v_4.html:317
+#: templates/core/status_page_v_4.html:353
+msgid "Админы"
+msgstr ""
+
+#: templates/core/status_page.html:318 templates/core/status_page.html:353
+#: templates/core/status_page_v_4.html:318
+#: templates/core/status_page_v_4.html:353
+msgid "Ландлорды"
+msgstr ""
+
+#: templates/core/status_page.html:319 templates/core/status_page.html:353
+#: templates/core/status_page_v_4.html:319
+#: templates/core/status_page_v_4.html:353
+msgid "Тенанты"
+msgstr ""
+
+#: templates/core/status_page.html:322 templates/core/status_page_v_4.html:322
+msgid "Список пользователей"
+msgstr ""
+
+#: templates/core/status_page.html:324 templates/core/status_page_v_4.html:324
+msgid "Поиск пользователей..."
+msgstr ""
+
+#: templates/core/status_page.html:325 templates/core/status_page_v_4.html:325
+msgid "Скачать CSV"
+msgstr ""
+
+#: templates/core/status_page.html:329 templates/core/status_page_v_4.html:329
+msgid "Роль"
+msgstr ""
+
+#: templates/core/status_page.html:329 templates/core/status_page_v_4.html:329
+msgid "Дата регистрации"
+msgstr ""
+
+#: templates/core/status_page.html:329 templates/core/status_page.html:431
+#: templates/core/status_page_v_4.html:329
+#: templates/core/status_page_v_4.html:431
+msgid "Действия"
+msgstr ""
+
+#: templates/core/status_page.html:337 templates/core/status_page.html:379
+#: templates/core/status_page_v_4.html:337
+#: templates/core/status_page_v_4.html:379
+msgid "Блокировать"
+msgstr ""
+
+#: templates/core/status_page.html:338 templates/core/status_page.html:379
+#: templates/core/status_page_v_4.html:338
+#: templates/core/status_page_v_4.html:379
+msgid "Сброс пароля"
+msgstr ""
+
+#: templates/core/status_page.html:342 templates/core/status_page.html:381
+#: templates/core/status_page_v_4.html:342
+#: templates/core/status_page_v_4.html:381
+msgid "Нет пользователей."
+msgstr ""
+
+#: templates/core/status_page.html:348 templates/core/status_page.html:451
+#: templates/core/status_page_v_4.html:348
+#: templates/core/status_page_v_4.html:451
+msgid "Загрузить еще"
+msgstr ""
+
+#: templates/core/status_page.html:406 templates/core/status_page_v_4.html:406
+msgid "Блокировать пользователя?"
+msgstr ""
+
+#: templates/core/status_page.html:411 templates/core/status_page_v_4.html:411
+msgid "Сбросить пароль?"
+msgstr ""
+
+#: templates/core/status_page.html:420 templates/core/status_page_v_4.html:420
+msgid "Попытки входа"
+msgstr ""
+
+#: templates/core/status_page.html:423 templates/core/status_page_v_4.html:423
+msgid "Все"
+msgstr ""
+
+#: templates/core/status_page.html:424 templates/core/status_page_v_4.html:424
+msgid "Успешно"
+msgstr ""
+
+#: templates/core/status_page.html:425 templates/core/status_page_v_4.html:425
+msgid "Неуспешно"
+msgstr ""
+
+#: templates/core/status_page.html:431 templates/core/status_page_v_4.html:431
+msgid "Пользователь/Email"
+msgstr ""
+
+#: templates/core/status_page.html:431 templates/core/status_page_v_4.html:431
+msgid "IP"
+msgstr ""
+
+#: templates/core/status_page.html:431 templates/core/status_page_v_4.html:431
+msgid "Результат"
+msgstr ""
+
+#: templates/core/status_page.html:438 templates/core/status_page_v_4.html:438
+msgid "раз"
+msgstr ""
+
+#: templates/core/status_page.html:440 templates/core/status_page_v_4.html:440
+msgid "Блокировать IP"
+msgstr ""
+
+#: templates/core/status_page.html:441 templates/core/status_page_v_4.html:441
+msgid "Уведомить"
+msgstr ""
+
+#: templates/core/status_page.html:445 templates/core/status_page.html:482
+#: templates/core/status_page_v_4.html:445
+#: templates/core/status_page_v_4.html:482
+msgid "Нет попыток входа."
+msgstr ""
+
+#: templates/core/status_page.html:485 templates/core/status_page_v_4.html:485
+msgid "Блокировать IP?"
+msgstr ""
+
+#: templates/core/status_page.html:489 templates/core/status_page_v_4.html:489
+msgid "Отправить уведомление?"
+msgstr ""
+
+#: templates/core/status_page.html:489 templates/core/status_page_v_4.html:489
+msgid "Попытка входа в ваш аккаунт."
+msgstr ""
+
+#: templates/core/status_page.html:491 templates/core/status_page_v_4.html:491
+msgid "Пользователь не найден."
+msgstr ""
+
+#: templates/core/status_page.html:498 templates/core/status_page_v_4.html:498
+msgid "Моя панель"
+msgstr ""
+
+#: templates/core/status_page.html:500 templates/core/status_page_v_4.html:500
+msgid "Мои объявления"
+msgstr ""
+
+#: templates/core/status_page.html:500 templates/core/status_page.html:501
+#: templates/core/status_page.html:504 templates/core/status_page.html:505
+#: templates/core/status_page_v_4.html:500
+#: templates/core/status_page_v_4.html:501
+#: templates/core/status_page_v_4.html:504
+#: templates/core/status_page_v_4.html:505
+msgid "Просмотреть все"
+msgstr ""
+
+#: templates/core/status_page.html:500 templates/core/status_page_v_4.html:500
+msgid "активно"
+msgstr ""
+
+#: templates/core/status_page.html:501 templates/core/status_page_v_4.html:501
+msgid "Новые брони"
+msgstr ""
+
+#: templates/core/status_page.html:502 templates/core/status_page_v_4.html:502
+msgid "Управление доходами"
+msgstr ""
+
+#: templates/core/status_page.html:502 templates/core/status_page_v_4.html:502
+msgid "Просмотреть"
+msgstr ""
+
+#: templates/core/status_page.html:504 templates/core/status_page_v_4.html:504
+msgid "Мои брони"
+msgstr ""
+
+#: templates/core/status_page.html:505 templates/core/status_page_v_4.html:505
+msgid "Просмотренные объявления"
+msgstr ""
+
+#: templates/core/status_page.html:506 templates/core/status_page.html:586
+#: templates/core/status_page_v_4.html:506
+#: templates/core/status_page_v_4.html:586
+msgid "Платежи"
+msgstr ""
+
+#: templates/core/status_page.html:506 templates/core/status_page_v_4.html:506
+msgid "Мои платежи"
+msgstr ""
+
+#: templates/core/status_page.html:508 templates/core/status_page_v_4.html:508
+msgid "У вас полный доступ к мониторингу и управлению."
+msgstr ""
+
+#: templates/core/status_page.html:515 templates/core/status_page_v_4.html:515
+msgid "Тестирование API"
+msgstr ""
+
+#: templates/core/status_page.html:516 templates/core/status_page_v_4.html:516
+msgid "Всего эндпоинтов"
+msgstr ""
+
+#: templates/core/status_page.html:517 templates/core/status_page_v_4.html:517
+msgid "GET"
+msgstr ""
+
+#: templates/core/status_page.html:518 templates/core/status_page_v_4.html:518
+msgid "POST"
+msgstr ""
+
+#: templates/core/status_page.html:519 templates/core/status_page_v_4.html:519
+msgid "PUT"
+msgstr ""
+
+#: templates/core/status_page.html:520 templates/core/status_page_v_4.html:520
+msgid "DELETE"
+msgstr ""
+
+#: templates/core/status_page.html:522 templates/core/status_page.html:574
+#: templates/core/status_page_v_1.html:276
+#: templates/core/status_page_v_2.html:368
+#: templates/core/status_page_v_3.html:755
+#: templates/core/status_page_v_4.html:522
+#: templates/core/status_page_v_4.html:574
 msgid "Swagger"
 msgstr "Swagger"
 
-#: templates/core/status_page.html:255
+#: templates/core/status_page.html:523 templates/core/status_page.html:575
+#: templates/core/status_page_v_1.html:265
+#: templates/core/status_page_v_1.html:277
+#: templates/core/status_page_v_2.html:348
+#: templates/core/status_page_v_2.html:369
+#: templates/core/status_page_v_3.html:673
+#: templates/core/status_page_v_3.html:756
+#: templates/core/status_page_v_4.html:523
+#: templates/core/status_page_v_4.html:575
 msgid "Redoc"
 msgstr "Redoc"
 
-#: templates/core/status_page.html:256
+#: templates/core/status_page.html:526 templates/core/status_page_v_4.html:526
+msgid "Тест эндпоинта"
+msgstr ""
+
+#: templates/core/status_page.html:527 templates/core/status_page_v_4.html:527
+msgid "Введите URL эндпоинта (например, /api/users/me/)"
+msgstr ""
+
+#: templates/core/status_page.html:537 templates/core/status_page_v_4.html:537
+msgid "Введите тело запроса JSON для POST/PUT (опционально)"
+msgstr ""
+
+#: templates/core/status_page.html:538 templates/core/status_page_v_4.html:538
+msgid "Тестировать"
+msgstr ""
+
+#: templates/core/status_page.html:539 templates/core/status_page_v_4.html:539
+msgid "Ответ API появится здесь."
+msgstr ""
+
+#: templates/core/status_page.html:546 templates/core/status_page_v_4.html:546
+msgid "Неверный формат URL."
+msgstr ""
+
+#: templates/core/status_page.html:552 templates/core/status_page_v_4.html:552
+msgid "Тестирование..."
+msgstr ""
+
+#: templates/core/status_page.html:557 templates/core/status_page_v_4.html:557
+msgid "Неверный JSON."
+msgstr ""
+
+#: templates/core/status_page.html:562 templates/core/status_page_v_4.html:562
+msgid "Тест завершен со статусом:"
+msgstr ""
+
+#: templates/core/status_page.html:563 templates/core/status_page_v_4.html:563
+msgid "Ошибка:"
+msgstr ""
+
+#: templates/core/status_page.html:563 templates/core/status_page_v_4.html:563
+msgid "Ошибка теста API."
+msgstr ""
+
+#: templates/core/status_page.html:570 templates/core/status_page_v_4.html:570
+msgid "Быстрые ссылки"
+msgstr ""
+
+#: templates/core/status_page.html:573 templates/core/status_page.html:577
+#: templates/core/status_page_v_4.html:573
+#: templates/core/status_page_v_4.html:577
+msgid "Панель админа"
+msgstr ""
+
+#: templates/core/status_page.html:579 templates/core/status_page_v_4.html:579
+msgid "Профиль"
+msgstr ""
+
+#: templates/core/status_page.html:580 templates/core/status_page_v_4.html:580
+msgid "Объявления"
+msgstr ""
+
+#: templates/core/status_page.html:581 templates/core/status_page_v_4.html:581
+msgid "Брони"
+msgstr ""
+
+#: templates/core/status_page.html:582 templates/core/status_page_v_4.html:582
+msgid "Отзывы"
+msgstr ""
+
+#: templates/core/status_page.html:584 templates/core/status_page_v_4.html:584
+msgid "Аналитика"
+msgstr ""
+
+#: templates/core/status_page.html:612 templates/core/status_page_v_4.html:606
+msgid "Информация для отладки"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:21
+#: templates/core/status_page_v_2.html:21
+#: templates/core/status_page_v_3.html:21
+msgid "Access Denied"
+msgstr "Доступ запрещен"
+
+#: templates/core/status_page_v_1.html:22
+#: templates/core/status_page_v_2.html:22
+#: templates/core/status_page_v_3.html:22
+msgid "Please"
+msgstr "Пожалуйста"
+
+#: templates/core/status_page_v_1.html:22
+#: templates/core/status_page_v_2.html:22
+#: templates/core/status_page_v_3.html:22
+msgid "log in"
+msgstr "войдите"
+
+#: templates/core/status_page_v_1.html:22
+#: templates/core/status_page_v_2.html:22
+#: templates/core/status_page_v_3.html:22
+msgid "to view the system status."
+msgstr "чтобы просмотреть статус системы."
+
+#: templates/core/status_page_v_1.html:31
+#: templates/core/status_page_v_2.html:31
+#: templates/core/status_page_v_3.html:31
+msgid "Welcome"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:46
+#: templates/core/status_page_v_2.html:46
+#: templates/core/status_page_v_3.html:44
+#, fuzzy
+#| msgid "Locations"
+msgid "Notifications"
+msgstr "Локации"
+
+#: templates/core/status_page_v_1.html:48
+#: templates/core/status_page_v_2.html:52
+#: templates/core/status_page_v_3.html:50
+msgid "Database is offline!"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:51
+#: templates/core/status_page_v_2.html:59
+#: templates/core/status_page_v_3.html:58
+msgid "Redis is offline!"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:54
+#: templates/core/status_page_v_1.html:63
+#: templates/core/status_page_v_2.html:66
+#: templates/core/status_page_v_2.html:79
+#: templates/core/status_page_v_3.html:66
+#: templates/core/status_page_v_3.html:86
+msgid "Celery is offline! Background tasks are not running."
+msgstr ""
+
+#: templates/core/status_page_v_1.html:57
+#: templates/core/status_page_v_2.html:73
+#: templates/core/status_page_v_3.html:74
+msgid "S3 is not configured. File uploads are unavailable."
+msgstr ""
+
+#: templates/core/status_page_v_1.html:72
+#: templates/core/status_page_v_2.html:88
+#: templates/core/status_page_v_3.html:95
+msgid "S3 is not configured. Click to configure."
+msgstr ""
+
+#: templates/core/status_page_v_1.html:86
+#: templates/core/status_page_v_2.html:102
+#: templates/core/status_page_v_3.html:107
+msgid "System Information"
+msgstr "Системная информация"
+
+#: templates/core/status_page_v_1.html:90
+#: templates/core/status_page_v_2.html:106
+#: templates/core/status_page_v_3.html:111
+msgid "Server Time"
+msgstr "Время сервера"
+
+#: templates/core/status_page_v_1.html:94
+#: templates/core/status_page_v_2.html:110
+#: templates/core/status_page_v_3.html:115
+msgid "Database"
+msgstr "База данных"
+
+#: templates/core/status_page_v_1.html:104
+#: templates/core/status_page_v_2.html:120
+#: templates/core/status_page_v_3.html:125
+msgid "Restart"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:111
+#: templates/core/status_page_v_2.html:127
+#: templates/core/status_page_v_3.html:132
+#, fuzzy
+#| msgid "Confirmed"
+msgid "Configure"
+msgstr "Подтверждено"
+
+#: templates/core/status_page_v_1.html:121
+#: templates/core/status_page_v_2.html:137
+#: templates/core/status_page_v_3.html:141
+msgid "System Metrics"
+msgstr "Системные метрики"
+
+#: templates/core/status_page_v_1.html:125
+#: templates/core/status_page_v_2.html:141
+#: templates/core/status_page_v_3.html:145
+msgid "CPU Usage"
+msgstr "Использование CPU"
+
+#: templates/core/status_page_v_1.html:129
+#: templates/core/status_page_v_2.html:145
+#: templates/core/status_page_v_3.html:150
+msgid "Memory Usage"
+msgstr "Использование памяти"
+
+#: templates/core/status_page_v_1.html:133
+#: templates/core/status_page_v_2.html:149
+#: templates/core/status_page_v_3.html:155
+msgid "Free Disk Space"
+msgstr "Свободное место на диске"
+
+#: templates/core/status_page_v_1.html:169
+#: templates/core/status_page_v_2.html:179
+#: templates/core/status_page_v_3.html:201
+msgid "Redis Statistics"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:170
+#: templates/core/status_page_v_2.html:180
+#: templates/core/status_page_v_3.html:202
+msgid "Keys"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:171
+#: templates/core/status_page_v_2.html:181
+#: templates/core/status_page_v_3.html:204
+#: templates/core/status_page_v_3.html:255
+msgid "Hit Rate"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:178
+#: templates/core/status_page_v_2.html:213
+#: templates/core/status_page_v_3.html:296
+msgid "Celery Tasks"
+msgstr "Задачи Celery"
+
+#: templates/core/status_page_v_1.html:180
+#: templates/core/status_page_v_2.html:215
+#: templates/core/status_page_v_3.html:300
+msgid "Active Tasks"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:181
+#: templates/core/status_page_v_2.html:216
+#: templates/core/status_page_v_3.html:313
+#, fuzzy
+#| msgid "Celery Tasks"
+msgid "Queued Tasks"
+msgstr "Задачи Celery"
+
+#: templates/core/status_page_v_1.html:183
+#: templates/core/status_page_v_2.html:226
+#: templates/core/status_page_v_3.html:331
+#, fuzzy
+#| msgid "Celery Tasks"
+msgid "Celery Tasks: Unavailable"
+msgstr "Задачи Celery"
+
+#: templates/core/status_page_v_1.html:192
+#: templates/core/status_page_v_2.html:239
+#: templates/core/status_page_v_3.html:360
+msgid "Users"
+msgstr "Пользователи"
+
+#: templates/core/status_page_v_1.html:195
+#: templates/core/status_page_v_2.html:242
+#: templates/core/status_page_v_3.html:363
+msgid "Total Users"
+msgstr "Всего пользователей"
+
+#: templates/core/status_page_v_1.html:196
+#: templates/core/status_page_v_1.html:215
+#: templates/core/status_page_v_1.html:231
+#: templates/core/status_page_v_2.html:243
+#: templates/core/status_page_v_2.html:270
+#: templates/core/status_page_v_2.html:300
+#: templates/core/status_page_v_3.html:364
+#: templates/core/status_page_v_3.html:415
+msgid "Admins"
+msgstr "Администраторы"
+
+#: templates/core/status_page_v_1.html:197
+#: templates/core/status_page_v_1.html:215
+#: templates/core/status_page_v_1.html:232
+#: templates/core/status_page_v_2.html:244
+#: templates/core/status_page_v_2.html:270
+#: templates/core/status_page_v_2.html:301
+#: templates/core/status_page_v_3.html:365
+#: templates/core/status_page_v_3.html:415
+msgid "Landlords"
+msgstr "Арендодатели"
+
+#: templates/core/status_page_v_1.html:198
+#: templates/core/status_page_v_1.html:215
+#: templates/core/status_page_v_1.html:233
+#: templates/core/status_page_v_2.html:245
+#: templates/core/status_page_v_2.html:270
+#: templates/core/status_page_v_2.html:302
+#: templates/core/status_page_v_3.html:366
+#: templates/core/status_page_v_3.html:415
+msgid "Tenants"
+msgstr "Арендаторы"
+
+#: templates/core/status_page_v_1.html:202
+#: templates/core/status_page_v_2.html:285
+#: templates/core/status_page_v_3.html:403
+msgid "System Objects"
+msgstr "Объекты в системе"
+
+#: templates/core/status_page_v_1.html:204
+#: templates/core/status_page_v_1.html:282
+#: templates/core/status_page_v_2.html:287
+#: templates/core/status_page_v_2.html:374
+#: templates/core/status_page_v_3.html:405
+#: templates/core/status_page_v_3.html:761
+msgid "Listings"
+msgstr "Объявления"
+
+#: templates/core/status_page_v_1.html:205
+#: templates/core/status_page_v_1.html:283
+#: templates/core/status_page_v_2.html:288
+#: templates/core/status_page_v_2.html:375
+#: templates/core/status_page_v_3.html:406
+#: templates/core/status_page_v_3.html:762
+msgid "Bookings"
+msgstr "Бронирования"
+
+#: templates/core/status_page_v_1.html:206
+#: templates/core/status_page_v_1.html:284
+#: templates/core/status_page_v_2.html:289
+#: templates/core/status_page_v_2.html:376
+#: templates/core/status_page_v_3.html:407
+#: templates/core/status_page_v_3.html:763
+msgid "Reviews"
+msgstr "Отзывы"
+
+#: templates/core/status_page_v_1.html:207
+#: templates/core/status_page_v_2.html:290
+#: templates/core/status_page_v_3.html:408
+msgid "Locations"
+msgstr "Локации"
+
+#: templates/core/status_page_v_1.html:229
+#: templates/core/status_page_v_2.html:298
+msgid "User Management"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:235
+#: templates/core/status_page_v_2.html:304
+msgid "Recent Login Attempts"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:238
+msgid "failures"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:246
+#: templates/core/status_page_v_2.html:321
+#: templates/core/status_page_v_3.html:651
+#, fuzzy
+#| msgid "MietSystem — Dashboard"
+msgid "My Dashboard"
+msgstr "MietSystem — Панель управления"
+
+#: templates/core/status_page_v_1.html:248
+#: templates/core/status_page_v_2.html:323
+#: templates/core/status_page_v_3.html:653
+#, fuzzy
+#| msgid "Listings"
+msgid "My Listings"
+msgstr "Объявления"
+
+#: templates/core/status_page_v_1.html:249
+#: templates/core/status_page_v_2.html:324
+#: templates/core/status_page_v_3.html:654
+#, fuzzy
+#| msgid "Bookings"
+msgid "New Bookings"
+msgstr "Бронирования"
+
+#: templates/core/status_page_v_1.html:251
+#: templates/core/status_page_v_2.html:326
+#: templates/core/status_page_v_3.html:656
+#, fuzzy
+#| msgid "Bookings"
+msgid "My Bookings"
+msgstr "Бронирования"
+
+#: templates/core/status_page_v_1.html:252
+#: templates/core/status_page_v_2.html:327
+#: templates/core/status_page_v_3.html:657
+#, fuzzy
+#| msgid "Listings"
+msgid "Viewed Listings"
+msgstr "Объявления"
+
+#: templates/core/status_page_v_1.html:254
+#: templates/core/status_page_v_2.html:329
+#: templates/core/status_page_v_3.html:659
+msgid "You have full access to system monitoring and user management."
+msgstr ""
+
+#: templates/core/status_page_v_1.html:261
+#: templates/core/status_page_v_2.html:336
+#: templates/core/status_page_v_3.html:665
+msgid "API Testing"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:262
+#: templates/core/status_page_v_2.html:337
+msgid "Number of Endpoints"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:264
+#: templates/core/status_page_v_2.html:347
+#: templates/core/status_page_v_3.html:672
+msgid "Test API (Swagger)"
+msgstr ""
+
+#: templates/core/status_page_v_1.html:272
+#: templates/core/status_page_v_2.html:364
+#: templates/core/status_page_v_3.html:751
+msgid "Quick Links"
+msgstr "Быстрые ссылки"
+
+#: templates/core/status_page_v_1.html:275
+#: templates/core/status_page_v_1.html:279
+#: templates/core/status_page_v_2.html:367
+#: templates/core/status_page_v_2.html:371
+#: templates/core/status_page_v_3.html:754
+#: templates/core/status_page_v_3.html:758
+msgid "Admin Panel"
+msgstr "Панель администратора"
+
+#: templates/core/status_page_v_1.html:281
+#: templates/core/status_page_v_2.html:373
+#: templates/core/status_page_v_3.html:760
 msgid "Profile"
 msgstr "Профиль"
 
-#: templates/core/status_page.html:260
+#: templates/core/status_page_v_1.html:285
+#: templates/core/status_page_v_2.html:378
+#: templates/core/status_page_v_3.html:765
 msgid "Analytics"
 msgstr "Аналитика"
 
-#: templates/core/status_page.html:261
-msgid "JWT Login"
-msgstr "JWT вход"
-
-#: templates/core/status_page.html:277
+#: templates/core/status_page_v_1.html:305
+#: templates/core/status_page_v_2.html:399
+#: templates/core/status_page_v_3.html:785
 msgid "Debug Information"
 msgstr "Отладочная информация"
 
-#: users/models.py:40
+#: templates/core/status_page_v_2.html:48
+msgid "Database is online!"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:50
+msgid "Database has warnings!"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:55
+msgid "Redis is online!"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:57
+msgid "Redis has warnings!"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:62
+msgid "Celery is online!"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:64
+#, fuzzy
+#| msgid "Celery Tasks"
+msgid "Celery has warnings!"
+msgstr "Задачи Celery"
+
+#: templates/core/status_page_v_2.html:69
+msgid "S3 is online!"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:71
+msgid "S3 has warnings!"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:182
+#: templates/core/status_page_v_3.html:203
+msgid "Data Size"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:183
+#: templates/core/status_page_v_3.html:205
+msgid "Clear Cache"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:217
+#: templates/core/status_page_v_3.html:327
+msgid "Successful Tasks"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:218
+#: templates/core/status_page_v_3.html:328
+#, fuzzy
+#| msgid "Celery Tasks"
+msgid "Failed Tasks"
+msgstr "Задачи Celery"
+
+#: templates/core/status_page_v_2.html:219
+msgid "View Task Details"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:247
+msgid "Show Admins Only"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:310
+#: templates/core/status_page_v_3.html:580
+msgid "Block IP"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:311
+msgid "Send Notification"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:323
+#: templates/core/status_page_v_2.html:327
+#: templates/core/status_page_v_3.html:653
+#: templates/core/status_page_v_3.html:657
+#, fuzzy
+#| msgid "View Histories"
+msgid "View all listings"
+msgstr "Истории просмотров"
+
+#: templates/core/status_page_v_2.html:324
+#: templates/core/status_page_v_2.html:326
+#: templates/core/status_page_v_3.html:654
+#: templates/core/status_page_v_3.html:656
+msgid "View all bookings"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:338
+msgid "Methods"
+msgstr ""
+
+#: templates/core/status_page_v_2.html:345
+#: templates/core/status_page_v_3.html:685
+msgid "Test Endpoint"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:47
+msgid "All systems are operating normally."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:52
+#, fuzzy
+#| msgid "Database"
+msgid "Database: Warning!"
+msgstr "База данных"
+
+#: templates/core/status_page_v_3.html:54
+#, fuzzy
+#| msgid "Database"
+msgid "Database: Online"
+msgstr "База данных"
+
+#: templates/core/status_page_v_3.html:60
+msgid "Redis: Warning!"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:62
+msgid "Redis: Online"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:68
+msgid "Celery: Warning!"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:70
+#, fuzzy
+#| msgid "Celery"
+msgid "Celery: Online"
+msgstr "Celery"
+
+#: templates/core/status_page_v_3.html:76
+msgid "S3: Warning!"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:78
+msgid "S3: Online"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:146
+#: templates/core/status_page_v_3.html:151
+msgid "Max"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:156
+msgid "Min"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:207
+msgid "Hit Rate (Last 24 Hours)"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:213
+msgid ""
+"Are you sure you want to clear Redis cache? This action cannot be undone."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:225
+#, fuzzy
+#| msgid "Listing deleted successfully"
+msgid "Redis cache cleared successfully!"
+msgstr "Объявление успешно удалено"
+
+#: templates/core/status_page_v_3.html:233
+msgid "Failed to clear Redis cache: "
+msgstr ""
+
+#: templates/core/status_page_v_3.html:242
+msgid "An error occurred while clearing Redis cache."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:274
+#, python-format
+msgid "Hit Rate (%%)"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:280
+#: templates/core/status_page_v_3.html:341
+#: templates/core/status_page_v_3.html:562
+#, fuzzy
+#| msgid "Timestamp"
+msgid "Time"
+msgstr "Время"
+
+#: templates/core/status_page_v_3.html:304
+#, fuzzy
+#| msgid "Start date"
+msgid "Started"
+msgstr "Дата начала"
+
+#: templates/core/status_page_v_3.html:305
+#: templates/core/status_page_v_3.html:318
+msgid "Details"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:308
+msgid "No active tasks."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:321
+msgid "No queued tasks."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:337
+msgid "Task Details"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:338
+msgid "Task ID"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:339
+msgid "Task Name"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:342
+msgid "Close"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:350
+#, fuzzy
+#| msgid "Is active"
+msgid "Active"
+msgstr "Активно"
+
+#: templates/core/status_page_v_3.html:350
+msgid "Queued"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:370
+#, fuzzy
+#| msgid "Users"
+msgid "User List"
+msgstr "Пользователи"
+
+#: templates/core/status_page_v_3.html:372
+#, fuzzy
+#| msgid "Search Histories"
+msgid "Search for users..."
+msgstr "Истории поиска"
+
+#: templates/core/status_page_v_3.html:378
+msgid "Role"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:379
+#: templates/core/status_page_v_3.html:564
+#, fuzzy
+#| msgid "Locations"
+msgid "Actions"
+msgstr "Локации"
+
+#: templates/core/status_page_v_3.html:446
+msgid "Loading users..."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:456
+msgid "Failed to load users."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:469
+msgid "No users found for this filter."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:481
+msgid "Block"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:482
+msgid "Reset Pass"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:518
+msgid "Are you sure you want to block user ID:"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:526
+#, fuzzy
+#| msgid "User"
+msgid "User ID:"
+msgstr "Пользователь"
+
+#: templates/core/status_page_v_3.html:526
+#: templates/core/status_page_v_3.html:609
+msgid "blocked."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:528
+msgid "Failed to block user:"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:535
+msgid "Are you sure you want to reset password for user ID:"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:543
+msgid "Password for user ID:"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:543
+msgid "reset."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:545
+msgid "Failed to reset password:"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:555
+msgid "User Login Attempts"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:560
+msgid "User/Email"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:561
+#, fuzzy
+#| msgid "Address"
+msgid "IP Address"
+msgstr "Адрес"
+
+#: templates/core/status_page_v_3.html:563
+msgid "Result"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:575
+msgid "Success"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:575
+msgid "Failed"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:575
+msgid "times"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:582
+#, fuzzy
+#| msgid "Total Users"
+msgid "Notify User"
+msgstr "Всего пользователей"
+
+#: templates/core/status_page_v_3.html:587
+msgid "No recent login attempts."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:597
+msgid "Are you sure you want to block IP address:"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:609
+#, fuzzy
+#| msgid "Address"
+msgid "IP Address:"
+msgstr "Адрес"
+
+#: templates/core/status_page_v_3.html:611
+msgid "Failed to block IP:"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:616
+msgid "An error occurred while blocking IP."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:622
+msgid "Send notification to user:"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:629
+msgid "There was a recent login attempt on your account."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:634
+msgid "Notification sent to"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:636
+msgid "Failed to send notification:"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:641
+msgid "An error occurred while sending notification."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:644
+msgid "Cannot send notification: User email/username is missing."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:666
+#, fuzzy
+#| msgid "Total price"
+msgid "Total Endpoints"
+msgstr "Общая цена"
+
+#: templates/core/status_page_v_3.html:667
+msgid "GET Methods"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:668
+msgid "POST Methods"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:669
+msgid "PUT Methods"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:670
+msgid "DELETE Methods"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:676
+msgid "Test Single Endpoint"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:677
+msgid "Enter API endpoint URL (e.g., /api/users/me/)"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:684
+msgid "Enter JSON request body for POST/PUT (optional)"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:687
+msgid "API Response will appear here."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:699
+msgid "Please enter an API endpoint URL."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:703
+msgid "Testing..."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:718
+#, fuzzy
+#| msgid "Invalid role"
+msgid "Invalid JSON body."
+msgstr "Недопустимая роль"
+
+#: templates/core/status_page_v_3.html:719
+msgid "Error: Invalid JSON body."
+msgstr ""
+
+#: templates/core/status_page_v_3.html:739
+msgid "Test completed with status:"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:743
+msgid "Error during API test:"
+msgstr ""
+
+#: templates/core/status_page_v_3.html:744
+msgid "API Test Failed: "
+msgstr ""
+
+#: users/models.py:38
 msgid "Email is required"
 msgstr "Требуется email"
 
-#: users/serializers.py:33
+#: users/serializers.py:45
 msgid "Invalid role"
 msgstr "Недопустимая роль"
 
-#: users/serializers.py:38
+#: users/serializers.py:50
 msgid "Invalid phone number format"
 msgstr "Недопустимый формат номера телефона"
 
-#: users/serializers.py:43
+#: users/serializers.py:55
 msgid "Email already exists"
 msgstr "Email уже существует"
 
@@ -592,35 +1994,47 @@ msgstr "Подтвердите ваш аккаунт MietSystem"
 msgid "Reset Your MietSystem Password"
 msgstr "Сбросьте ваш пароль MietSystem"
 
-#: users/views.py:63
+#: users/views.py:139
 msgid "Email already verified"
 msgstr "Email уже подтвержден"
 
-#: users/views.py:69
+#: users/views.py:145
 msgid "Email verified"
 msgstr "Email подтвержден"
 
-#: users/views.py:72 users/views.py:111
+#: users/views.py:148 users/views.py:187
 msgid "Invalid or expired token"
 msgstr "Недействительный или просроченный токен"
 
-#: users/views.py:85
+#: users/views.py:161
 msgid "Password reset email sent"
 msgstr "Письмо для сброса пароля отправлено"
 
-#: users/views.py:89
+#: users/views.py:165
 msgid "User not found"
 msgstr "Пользователь не найден"
 
-#: users/views.py:107
+#: users/views.py:183
 msgid "Password reset successful"
 msgstr "Пароль успешно сброшен"
 
-#~ msgid "Search Histories"
-#~ msgstr "Истории поиска"
+#~ msgid "Review ID"
+#~ msgstr "ID отзыва"
 
-#~ msgid "View Histories"
-#~ msgstr "Истории просмотров"
+#~ msgid "Is Approved"
+#~ msgstr "Одобрен"
+
+#~ msgid "Created At"
+#~ msgstr "Создано"
+
+#~ msgid "Current Language"
+#~ msgstr "Текущий язык"
+
+#~ msgid "Localization"
+#~ msgstr "Локализация"
+
+#~ msgid "JWT Login"
+#~ msgstr "JWT вход"
 
 #~ msgid "Only the booking owner or landlord can perform this action"
 #~ msgstr ""

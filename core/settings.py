@@ -64,6 +64,9 @@ INSTALLED_APPS = [
     "reviews",
     "analytics",
     "locations",
+    'rangefilter',
+    'rest_framework.authtoken',
+    'drf_yasg',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -184,7 +187,7 @@ LOCALE_PATHS = [
 ]
 USE_I18N = True
 USE_L10N = True
-# USE_TZ = True
+USE_TZ = True
 
 # Modeltranslation settings
 MODELTRANSLATION_DEFAULT_LANGUAGE = "en"
@@ -203,6 +206,8 @@ DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        "core.authentication.CookieJWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
@@ -224,14 +229,16 @@ REST_FRAMEWORK = {
         "user": "100/minute",
     },
 }
-
 SPECTACULAR_SETTINGS = {
     "TITLE": "MietSystem API",
-    "DESCRIPTION": "API for MietSystem rental platform",
+    "DESCRIPTION": "Документация API для MietSystem",
     "VERSION": "1.0.0",
-    "SERVE_INCLUDE_SCHEMA": True,
-    "SERVE_PUBLIC": True,
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    # "SCHEMA_PATH_PREFIX_TRIM": True,
+    "SECURITY": [{"cookieJWT": []}],
 }
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
@@ -309,7 +316,6 @@ if SENTRY_DSN:
         send_default_pii=True,
     )
 
-LOGIN_URL = '/admin/login/'
 LOGIN_REDIRECT_URL = '/'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
@@ -332,6 +338,9 @@ ADMIN_INDEX_TITLE = "Добро пожаловать в админ-панель 
 SILENCED_SYSTEM_CHECKS = ["models.W036"]
 
 SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)
+
+
+LOGIN_URL = '/admin/login/'
 
 
 

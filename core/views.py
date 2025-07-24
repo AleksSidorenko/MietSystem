@@ -19,14 +19,23 @@ from core.router import router
 import subprocess
 import os
 from decouple import config, Config, RepositoryEnv
+from rest_framework import generics, serializers
 
-class HealthCheckAPIView(APIView):
+class EmptySerializer(serializers.Serializer):
+    pass
+
+class HealthCheckAPIView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = EmptySerializer
 
     def get(self, request):
-        service = HealthCheckService()
-        data = service.run_all_checks(user=request.user)
-        return Response(data)
+        # логика проверки здоровья, например
+        return Response({"status": "ok"})
+
+    # def get(self, request):
+    #     service = HealthCheckService()
+    #     data = service.run_all_checks(user=request.user)
+    #     return Response(data)
 
 def status_page_view(request):
     print(f"User: {request.user}, Authenticated: {request.user.is_authenticated}, Role: {getattr(request.user, 'role', 'None')}")  # Отладочный вывод

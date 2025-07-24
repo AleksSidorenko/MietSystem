@@ -1,38 +1,41 @@
-### `bookings/serializers.py`
-
+# bookings/serializers.py
 from datetime import date, timedelta
-
 from django.db.models import Q
 from rest_framework import serializers
-
 from bookings.models import Booking
-from listings.models import Listing
-from listings.serializers import ListingShortSerializer
-from users.serializers import UserShortSerializer
+# from listings.models import Listing
+# from listings.serializers import ListingShortSerializer
+# from users.serializers import UserShortSerializer
 
 
 class BookingSerializer(serializers.ModelSerializer):
-    # listing = serializers.PrimaryKeyRelatedField(queryset=Listing.objects.all())
-
-    listing = serializers.PrimaryKeyRelatedField(
-        queryset=Listing.objects.all(), write_only=True
-    )
-    listing_data = ListingShortSerializer(source="listing", read_only=True)
-    user = UserShortSerializer(read_only=True)
-
     class Meta:
         model = Booking
-        fields = [
-            "id",
-            "listing",  # write_only
-            "listing_data",  # read_only
-            "user",
-            "start_date",
-            "end_date",
-            "status",
-            "total_price",
-        ]
-        read_only_fields = ["id", "user", "status", "total_price"]
+        fields = '__all__'
+        read_only_fields = ['tenant', 'status']
+
+# class BookingSerializer(serializers.ModelSerializer):
+#     # listing = serializers.PrimaryKeyRelatedField(queryset=Listing.objects.all())
+#
+#     listing = serializers.PrimaryKeyRelatedField(
+#         queryset=Listing.objects.all(), write_only=True
+#     )
+#     listing_data = ListingShortSerializer(source="listing", read_only=True)
+#     user = UserShortSerializer(read_only=True)
+#
+#     class Meta:
+#         model = Booking
+#         fields = [
+#             "id",
+#             "listing",  # write_only
+#             "listing_data",  # read_only
+#             "user",
+#             "start_date",
+#             "end_date",
+#             "status",
+#             "total_price",
+#         ]
+#         read_only_fields = ["id", "user", "status", "total_price"]
 
     def validate_start_date(self, value):
         if value < date.today():
@@ -117,16 +120,11 @@ class BookingSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         request = self.context.get("request")
-        validated_data["user"] = request.user
+        validated_data["tenant"] = request.user
+        # validated_data["user"] = request.user
         return super().create(
             validated_data
         )  # или Booking.objects.create(**validated_data)
-
-    # def create(self, validated_data):
-    #     request = self.context.get('request')
-    #     user = request.user if request else None
-    #     validated_data['user'] = user
-    #     return Booking.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         # Пример для update: убедитесь, что total_price тоже пересчитывается

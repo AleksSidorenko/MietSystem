@@ -1,4 +1,4 @@
-#### `locations/views.py`
+# locations/views.py
 
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_protect
@@ -67,16 +67,3 @@ class LocationViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(locations, many=True)
         return Response(serializer.data)
 
-
-# from rest_framework import viewsets
-# from .models import Location
-# from .serializers import LocationSerializer
-# from users.permissions import IsAuthenticated
-#
-# class LocationViewSet(viewsets.ModelViewSet):
-#     queryset = Location.objects.all()
-#     serializer_class = LocationSerializer
-#     permission_classes = [IsAuthenticated]
-#
-#     def perform_create(self, serializer):
-#         serializer.save()

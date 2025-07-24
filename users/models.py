@@ -1,6 +1,4 @@
 # `users/models.py`
-
-
 from datetime import timedelta
 
 from django.contrib.auth.models import (  # <--- Добавили импорт Group и Permission

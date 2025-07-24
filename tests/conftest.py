@@ -1,10 +1,8 @@
 # tests/conftest.py
 
 from datetime import date, timedelta
-
 import pytest
 from rest_framework.test import APIClient  # Убедитесь, что это импортировано!
-
 from bookings.models import Booking
 from listings.models import Listing
 from users.models import User

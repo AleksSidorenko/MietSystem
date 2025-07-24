@@ -1,4 +1,4 @@
-#### `locations/urls.py`
+# locations/urls.py
 
 from rest_framework.routers import DefaultRouter
 
