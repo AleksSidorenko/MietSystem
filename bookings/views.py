@@ -1,8 +1,11 @@
 # booking/views.py
 from datetime import timedelta
+
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_ratelimit.decorators import ratelimit
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.pagination import PageNumberPagination
@@ -11,22 +14,20 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from bookings.models import Booking
-from bookings.permissions import IsOwnerOrLandlordOrAdmin, IsOwnerOrAdmin
+from bookings.permissions import IsOwnerOrAdmin, IsOwnerOrLandlordOrAdmin
 from bookings.serializers import BookingSerializer
 from bookings.tasks import send_booking_notification
-
-from rest_framework import viewsets, permissions, status
-from django.db.models import Q
-
-from users.permissions import IsTenant
-from .permissions import IsAdminOrOwnerOrLandlord
 from users.models import User
+from users.permissions import IsTenant
+
+from .permissions import IsAdminOrOwnerOrLandlord
 
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = "page_size"
     max_page_size = 100
+
 
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
@@ -39,16 +40,18 @@ class BookingViewSet(viewsets.ModelViewSet):
         if user.role == "ADMIN":
             return Booking.objects.all()
 
-        # user.role == "OWNER" соответствует владельцу объявления (landlord)
-        if user.role == "OWNER":
+        # user.role == "LANDLORD" соответствует владельцу объявления (landlord)
+        if user.role == "LANDLORD":
             # Объявления, которыми владеет текущий пользователь,
             # и бронирования, связанные с этими объявлениями
-            return Booking.objects.filter(listing__user=user) # <--- ИСПОЛЬЗУЕМ listing__user
+            return Booking.objects.filter(
+                listing__user=user
+            )  # <--- ИСПОЛЬЗУЕМ listing__user
 
         # user.role == "TENANT" соответствует пользователю, создавшему бронирование
         if user.role == "TENANT":
             # Бронирования, созданные текущим пользователем (арендатором)
-            return Booking.objects.filter(user=user) # <--- ИСПОЛЬЗУЕМ user=user
+            return Booking.objects.filter(user=user)  # <--- ИСПОЛЬЗУЕМ user=user
 
         return Booking.objects.none()
 
@@ -59,7 +62,9 @@ class BookingViewSet(viewsets.ModelViewSet):
         booking = self.get_object()
 
         if request.user.is_tenant and booking.tenant != request.user:
-            return Response({"detail": "Not allowed."}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"detail": "Not allowed."}, status=status.HTTP_403_FORBIDDEN
+            )
 
         return super().destroy(request, *args, **kwargs)
 
@@ -70,13 +75,19 @@ class BookingViewSet(viewsets.ModelViewSet):
         # Эта часть get_permissions тоже нуждается в проверке,
         # но ваша проблема с AttributeError связана именно с is_admin, is_landlord, is_tenant
         # в get_queryset и классах пермишенов.
-        if not hasattr(self, 'request') or self.request is None:
+        if not hasattr(self, "request") or self.request is None:
             return [IsAuthenticated()]
 
-        if self.action == 'create':
-            return [IsAuthenticated(), IsTenant()] # <-- IsTenant тоже нужно поправить, если он проверяет is_tenant
-        elif self.action in ['update', 'partial_update', 'destroy']:
-            return [IsAuthenticated(), IsOwnerOrAdmin()] # <-- IsOwnerOrAdmin тоже нужно поправить
+        if self.action == "create":
+            return [
+                IsAuthenticated(),
+                IsTenant(),
+            ]  # <-- IsTenant тоже нужно поправить, если он проверяет is_tenant
+        elif self.action in ["update", "partial_update", "destroy"]:
+            return [
+                IsAuthenticated(),
+                IsOwnerOrAdmin(),
+            ]  # <-- IsOwnerOrAdmin тоже нужно поправить
 
         return [IsAuthenticated()]
 
@@ -85,11 +96,18 @@ class BookingViewSet(viewsets.ModelViewSet):
     @ratelimit(group="ip", rate="100/m")
     def confirm(self, request, pk=None):
         booking = self.get_object()
-        if not (self.get_user_role() == "LANDLORD" and booking.listing.user == request.user):
-            raise PermissionDenied(_("Only the landlord of this listing can confirm this booking."))
+        if not (
+            self.get_user_role() == "LANDLORD" and booking.listing.user == request.user
+        ):
+            raise PermissionDenied(
+                _("Only the landlord of this listing can confirm this booking.")
+            )
 
         if booking.status != "PENDING":
-            return Response({"error": _("Only pending bookings can be confirmed.")}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": _("Only pending bookings can be confirmed.")},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         booking.status = "CONFIRMED"
         booking.save()
@@ -103,14 +121,23 @@ class BookingViewSet(viewsets.ModelViewSet):
         booking = self.get_object()
         role = self.get_user_role()
 
-        if not (booking.user == request.user or (role == "LANDLORD" and booking.listing.user == request.user)):
+        if not (
+            booking.user == request.user
+            or (role == "LANDLORD" and booking.listing.user == request.user)
+        ):
             raise PermissionDenied(_("You are not authorized to cancel this booking."))
 
         if booking.start_date < (timezone.now().date() + timedelta(days=2)):
-            return Response({"error": _("Cannot cancel within 48 hours of start date.")}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": _("Cannot cancel within 48 hours of start date.")},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if booking.status == "CANCELLED":
-            return Response({"error": _("Booking is already cancelled.")}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": _("Booking is already cancelled.")},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         listing = booking.listing
         current_date = booking.start_date
@@ -126,11 +153,6 @@ class BookingViewSet(viewsets.ModelViewSet):
         send_booking_notification.delay(booking.id, "Cancelled")
         serializer = self.get_serializer(booking)
         return Response({"data": serializer.data})
-
-
-
-
-
 
 
 # from datetime import timedelta

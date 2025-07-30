@@ -1,13 +1,15 @@
 # listings/serializers.py
 
 import io
+
 from django.utils.translation import gettext_lazy as _
+from drf_spectacular.utils import OpenApiTypes, extend_schema_field
 from PIL import Image
 from rest_framework import serializers
+
+from listings.models import Listing
 from locations.serializers import LocationSerializer
 from utils.translation import TranslationSerializerMixin
-from listings.models import Listing
-from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 
 class AvailabilitySlotSerializer(serializers.Serializer):
@@ -26,10 +28,10 @@ class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer)
                 "type": "object",
                 "properties": {
                     "date": {"type": "string", "format": "date"},
-                    "is_available": {"type": "boolean"}
+                    "is_available": {"type": "boolean"},
                 },
-                "required": ["date", "is_available"]
-            }
+                "required": ["date", "is_available"],
+            },
         }
     )
     def get_availability(self, obj):
@@ -38,10 +40,7 @@ class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer)
         Каждый словарь содержит 'date' (строка в формате ISO) и 'is_available' (булево).
         """
         return [
-            {
-                "date": slot.date.isoformat(),
-                "is_available": slot.is_available
-            }
+            {"date": slot.date.isoformat(), "is_available": slot.is_available}
             for slot in obj.availability_slots.all()
         ]
 
@@ -57,7 +56,7 @@ class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer)
             "rooms",
             "property_type",
             "amenities",
-            "photos",
+            "main_photo",
             "availability",
             "is_active",
             "created_at",
@@ -103,10 +102,14 @@ class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer)
 
     def validate_availability(self, value):
         if not isinstance(value, list):
-            raise serializers.ValidationError(_("Availability must be a list of dictionaries"))
+            raise serializers.ValidationError(
+                _("Availability must be a list of dictionaries")
+            )
         for item in value:
             if not isinstance(item, dict):
-                raise serializers.ValidationError(_("Each availability item must be a dictionary"))
+                raise serializers.ValidationError(
+                    _("Each availability item must be a dictionary")
+                )
             date_str = item.get("date")
             is_available = item.get("is_available")
 

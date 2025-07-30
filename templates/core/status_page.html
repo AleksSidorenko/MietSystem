@@ -28,6 +28,9 @@
         <p class="text-right mb-4">
             {% if user_email %}
                 <span class="text-gray-700">
+                    {% if user_avatar_url %} {# Предполагаем, что view передает user_avatar_url #}
+                        <img src="{{ user_avatar_url }}" alt="{% trans 'User Avatar' %}" class="w-8 h-8 rounded-full mr-2 object-cover">
+                    {% endif %}
                     {% trans "Welcome" %},
                     {% if user_first_name or user_last_name %}
                         {{ user_first_name }} {{ user_last_name }} ({{ user_role_display }})

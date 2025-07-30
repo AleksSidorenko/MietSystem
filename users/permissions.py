@@ -62,56 +62,64 @@
 #         return request.user.is_authenticated
 
 
-# users/permissions.py
+# # users/permissions.py
+#
+# from rest_framework.permissions import BasePermission
+#
+# class IsAdminUser(BasePermission):
+#     """Доступ только для админов"""
+#     def has_permission(self, request, view):
+#         return request.user and request.user.is_authenticated and request.user.role == "ADMIN"
+#
+# class IsSelfOrAdmin(BasePermission):
+#     """Пользователь может менять себя, либо админ"""
+#     def has_object_permission(self, request, view, obj):
+#         return request.user == obj or (request.user.is_authenticated and request.user.role == "ADMIN")
+#
+# class IsTenant(BasePermission):
+#     """Только TENANT"""
+#     def has_permission(self, request, view):
+#         return request.user.is_authenticated and request.user.role == "TENANT"
+#
+# class IsLandlord(BasePermission):
+#     """Только LANDLORD"""
+#     def has_permission(self, request, view):
+#         return request.user.is_authenticated and request.user.role == "LANDLORD"
+#
+# class IsAdmin(BasePermission):
+#     """Полные права для ADMIN"""
+#     def has_permission(self, request, view):
+#         return request.user.is_authenticated and (
+#             request.user.role == "ADMIN" or request.user.is_superuser
+#         )
+#     def has_object_permission(self, request, view, obj):
+#         return self.has_permission(request, view)
+#
+# class IsAuthenticated(BasePermission):
+#     """Любой авторизованный пользователь"""
+#     def has_permission(self, request, view):
+#         return request.user.is_authenticated
 
-from rest_framework.permissions import BasePermission
+
+# users/permissions.py
+from rest_framework.permissions import SAFE_METHODS, BasePermission
+
 
 class IsAdminUser(BasePermission):
-    """Доступ только для админов"""
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated and request.user.role == "ADMIN"
-
-class IsSelfOrAdmin(BasePermission):
-    """Пользователь может менять себя, либо админ"""
-    def has_object_permission(self, request, view, obj):
-        return request.user == obj or (request.user.is_authenticated and request.user.role == "ADMIN")
-
-class IsTenant(BasePermission):
-    """Только TENANT"""
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == "TENANT"
-
-class IsLandlord(BasePermission):
-    """Только LANDLORD"""
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == "LANDLORD"
-
-class IsAdmin(BasePermission):
-    """Полные права для ADMIN"""
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and (
-            request.user.role == "ADMIN" or request.user.is_superuser
+        return (
+            request.user
+            and request.user.is_authenticated
+            and request.user.role == "ADMIN"
         )
-    def has_object_permission(self, request, view, obj):
-        return self.has_permission(request, view)
 
-class IsAuthenticated(BasePermission):
-    """Любой авторизованный пользователь"""
-    def has_permission(self, request, view):
-        return request.user.is_authenticated
-
-
-
-# users/permissions.py
-from rest_framework.permissions import BasePermission, SAFE_METHODS
-
-class IsAdminUser(BasePermission):
-    def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated and request.user.role == "ADMIN"
 
 class IsSelfOrAdmin(BasePermission):
     def has_object_permission(self, request, view, obj):
-        return request.user == obj or (request.user.is_authenticated and request.user.role == "ADMIN")
+        return request.user == obj or (
+            request.user.is_authenticated and request.user.role == "ADMIN"
+        )
+
 
 class IsTenant(BasePermission):
     """

@@ -1,31 +1,39 @@
 # users/views.py
 
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_protect
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from django_ratelimit.decorators import ratelimit
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from bookings.permissions import IsOwnerOrAdmin
 from users.models import User, VerificationToken
-from users.permissions import IsAdmin, IsAuthenticated, IsTenant
+from users.permissions import (
+    IsAdmin,
+    IsAdminUser,
+    IsAuthenticated,
+    IsSelfOrAdmin,
+    IsTenant,
+)
+from users.serializers import (
+    CustomTokenObtainPairSerializer,
+    TOTPSerializer,
+    UserSerializer,
+)
 from users.tasks import send_reset_password_email, send_verification_email
-
-from users.serializers import CustomTokenObtainPairSerializer
-from rest_framework import viewsets, status
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.contrib.auth import get_user_model
-from users.serializers import UserSerializer, TOTPSerializer
-from users.permissions import IsAdminUser, IsSelfOrAdmin
-
 
 User = get_user_model()
 
+
 class CustomTokenObtainPairView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer  # Используем кастомный сериализатор
+    serializer_class = (
+        CustomTokenObtainPairSerializer  # Используем кастомный сериализатор
+    )
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -49,29 +57,23 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         )
         return response
 
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
     def get_permissions(self):
-        if not hasattr(self, 'request') or self.request is None:
-            return [IsAuthenticated()]  # ← позволяет drf-spectacular сгенерировать схему без авторизации
+        if not hasattr(self, "request") or self.request is None:
+            return [
+                IsAuthenticated()
+            ]  # ← позволяет drf-spectacular сгенерировать схему без авторизации
 
-        if self.action == 'create':
+        if self.action == "create":
             return [IsAuthenticated(), IsTenant()]
-        elif self.action in ['update', 'partial_update', 'destroy']:
+        elif self.action in ["update", "partial_update", "destroy"]:
             return [IsAuthenticated(), IsOwnerOrAdmin()]
 
         return [IsAuthenticated()]
-
-    # def get_permissions(self):
-    #     if self.action in ["list", "retrieve", "update", "partial_update", "destroy"]:
-    #         return [IsAdminUser()]
-    #     elif self.action in ["me"]:
-    #         return [IsAuthenticated()]
-    #     elif self.action == "create":
-    #         return [AllowAny()]
-    #     return super().get_permissions()
 
     def get_queryset(self):
         user = self.request.user
@@ -79,7 +81,12 @@ class UserViewSet(viewsets.ModelViewSet):
             return User.objects.all()
         return User.objects.none()  # Только админ видит других
 
-    @action(detail=False, methods=["get", "patch"], url_path="me", permission_classes=[IsAuthenticated])
+    @action(
+        detail=False,
+        methods=["get", "patch"],
+        url_path="me",
+        permission_classes=[IsAuthenticated],
+    )
     def me(self, request):
         user = request.user
 
@@ -88,8 +95,12 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
         elif request.method == "PATCH":
-            allowed_fields = ['first_name', 'last_name', 'email', 'phone_number']
-            data = {field: request.data[field] for field in allowed_fields if field in request.data}
+            allowed_fields = ["first_name", "last_name", "email", "phone_number"]
+            data = {
+                field: request.data[field]
+                for field in allowed_fields
+                if field in request.data
+            }
 
             serializer = self.get_serializer(user, data=data, partial=True)
             serializer.is_valid(raise_exception=True)

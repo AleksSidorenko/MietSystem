@@ -47,14 +47,13 @@ class City(Enum):
     KIEL = "Kiel"  # Schleswig-Holstein
     ERFURT = "Erfurt"  # Thüringen
     KÖLN = "Köln"  # Köln
-    # COLOGNE = 'Cologne'  # Köln
     LEIPZIG = "Leipzig"  # Leipzig
     FRANKFURT = "Frankfurt"  # Frankfurt
 
 
 class Location(models.Model):
-    listing = models.ForeignKey(
-        "listings.Listing", on_delete=models.CASCADE, related_name="locations"
+    listing = models.OneToOneField(
+        "listings.Listing", on_delete=models.CASCADE, related_name="location"
     )
     coordinates = gis_models.PointField(
         verbose_name=_("Coordinates"), null=True, blank=True

@@ -1,4 +1,4 @@
-# listings/models.py`
+# listings/models.py
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -54,20 +54,7 @@ class Listing(models.Model):
     country = models.CharField(
         max_length=100, verbose_name=_("Country"), blank=True, null=True
     )
-    latitude = models.DecimalField(
-        max_digits=9,
-        decimal_places=6,
-        verbose_name=_("Latitude"),
-        blank=True,
-        null=True,
-    )
-    longitude = models.DecimalField(
-        max_digits=9,
-        decimal_places=6,
-        verbose_name=_("Longitude"),
-        blank=True,
-        null=True,
-    )
+
     price_per_night = models.DecimalField(
         max_digits=10, decimal_places=2, verbose_name=_("Price per night")
     )
@@ -77,20 +64,13 @@ class Listing(models.Model):
         APARTMENT = "Apartment", _("Apartment")
         HOUSE = "House", _("House")
         STUDIO = "Studio", _("Studio")
-        SHARED = "Shared Room", _("Shared Room")
         VILLA = "Villa", _("Villa")
         ONE_ROOM = "ONE_ROOM", _("One-Room Apartment")
         TWO_ROOM = "TWO_ROOM", _("Two-Room Apartment")
         THREE_ROOM = "THREE_ROOM", _("Three-Room Apartment")
         FOUR_ROOM = "FOUR_ROOM", _("Four-Room Apartment")
-        DORMITORY = "Dormitory", _("Dormitory")
         PENTHOUSE = "Penthouse", _("Penthouse")
-        TOWNHOUSE = "Townhouse", _("Townhouse")
-        COTTAGE = "Cottage", _("Cottage")
-        CONDOMINIUM = "Condominium", _("Condominium")
         LOFT = "Loft", _("Loft")
-        DUPLEX = "Duplex", _("Duplex")
-        BUNGALOW = "Bungalow", _("Bungalow")
 
     property_type = models.CharField(
         max_length=50,
@@ -103,7 +83,6 @@ class Listing(models.Model):
         "Amenity", blank=True, verbose_name=_("Amenities")
     )
 
-    photos = models.JSONField(default=list, verbose_name=_("Photos"))
     is_active = models.BooleanField(default=True, verbose_name=_("Is active"))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created at"))
     popularity = models.PositiveIntegerField(default=0, verbose_name=_("Popularity"))
@@ -139,3 +118,20 @@ class Listing(models.Model):
 
     def __str__(self):
         return self.title
+
+
+# Дополнительная модель для неограниченного количества фото
+class ListingPhoto(models.Model):
+    listing = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name="gallery"
+    )
+    image = models.ImageField(upload_to="listings/photos/%Y/%m/")
+    order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ("order",)
+        verbose_name = _("Listing Photo")
+        verbose_name_plural = "Listing Photos"
+
+    def __str__(self):
+        return f"{self.listing.title} – {self.image.name}"

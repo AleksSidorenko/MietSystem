@@ -1,0 +1,23 @@
+# users/forms.py
+
+from django import forms
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+
+from .models import User
+
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = (
+            "email",
+            "first_name",
+            "last_name",
+            "role",
+        )  # можно добавить phone, avatar и др.
+
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = "__all__"

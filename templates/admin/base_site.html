@@ -1,15 +1,58 @@
 <!-- templates/admin/base_site.html -->
 
 {% extends "admin/base.html" %}
-{% load i18n %}
+{% load i18n static %}
+
+{% block title %}{{ title }} | {% translate "MietSystem Admin" %}{% endblock %}
 
 {% block branding %}
-    <h1 id="site-name"><a href="{% url 'admin:index' %}">{% trans "MietSystem Administration" %}</a></h1>
+    <h1 id="site-name"><a href="{% url 'admin:index' %}">{% translate "MietSystem Administration" %}</a></h1>
 {% endblock %}
 
+{# Удаляем стандартное приветствие, чтобы избежать дублирования email #}
+{% block welcome-msg %}{% endblock %}
+
 {% block nav-global %}
+    {# Этот блок nav-global содержит кнопки "Back to Dashboard" и "Log out" #}
     <div class="flex space-x-4 mt-2">
-        <a href="{% url 'status' %}" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">{% trans "Back to Dashboard" %}</a>
-        <a href="{% url 'logout' %}" class="bg-red-500 text-white p-2 rounded hover:bg-red-600">{% trans "Log out" %}</a>
+        {# Кнопка "Back to Dashboard" #}
+        <a href="{% url 'status' %}" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">{% translate "Back to Dashboard" %}</a>
+
+        {# Кнопка "Log out" - использует ваш кастомный URL и форму для POST-запроса #}
+        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-500 text-white p-2 rounded hover:bg-red-600" style="border: none; cursor: pointer;">
+                {% translate "Log out" %}
+            </button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block userlinks %}
+    {# Этот блок userlinks теперь содержит аватар, имя пользователя и ссылку "Change password" #}
+    <div style="display: flex; align-items: center; gap: 10px; margin-left: auto;"> {# margin-left: auto; для выравнивания вправо #}
+        {% if request.user.is_authenticated and request.user.avatar %}
+            <img src="{{ request.user.avatar.url }}" alt="User Avatar" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
+        {% endif %}
+        <span>
+            {# Отображаем имя и фамилию, если они есть, иначе email #}
+            <strong>
+                {% if request.user.first_name and request.user.last_name %}
+                    {{ request.user.first_name }} {{ request.user.last_name }}
+                {% elif request.user.first_name %}
+                    {{ request.user.first_name }}
+                {% else %}
+                    {{ request.user.email }}
+                {% endif %}
+            </strong>
+            {# Отображение группы (роли) #}
+            {% if request.user.role %}
+                 ({{ request.user.get_role_display }})
+            {% endif %}
+        </span>
+        {# Ссылка "Change password" #}
+        {% if request.user.is_active and request.user.has_usable_password %}
+            <a href="{% url 'admin:password_change' %}">{% translate 'Change password' %}</a>
+        {% endif %}
     </div>
 {% endblock %}
