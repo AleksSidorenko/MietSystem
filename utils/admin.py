@@ -9,6 +9,7 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin import SimpleListFilter
+from django.contrib.admin.filters import SimpleListFilter
 from django.contrib.auth.admin import (
     UserAdmin as BaseUserAdmin,  # Используем DjangoUserAdmin для совместимости
 )
@@ -45,6 +46,9 @@ from users.forms import CustomUserChangeForm, CustomUserCreationForm
 from users.models import User
 from utils.role_utils import user_has_role
 
+from django.core.exceptions import ObjectDoesNotExist
+
+
 
 class DefaultLocationForm(forms.ModelForm):
     class Meta:
@@ -53,7 +57,6 @@ class DefaultLocationForm(forms.ModelForm):
         widgets = {
             "coordinates": LeafletWidget(),
         }
-
 
 @admin.register(Amenity)
 class AmenityAdmin(admin.ModelAdmin):
@@ -136,44 +139,6 @@ class AvailabilitySlotAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return self.has_change_permission(request, obj)
-
-
-# @admin.register(AvailabilitySlot)
-# class AvailabilitySlotAdmin(admin.ModelAdmin):
-#     list_display = ["listing", "date", "is_available"]
-#     list_filter = ["is_available", "date"]
-#     search_fields = ["listing__title"]
-#     date_hierarchy = "date"
-#     allowed_roles = ["ADMIN", "LANDLORD"]
-#
-#     def get_queryset(self, request):
-#         qs = super().get_queryset(request)
-#         if user_has_role(request.user, ["ADMIN"]):
-#             return qs
-#         if user_has_role(request.user, ["LANDLORD"]):
-#             return qs.filter(listing__user=request.user)
-#         return qs.none()
-#
-#     def has_module_permission(self, request):
-#         return user_has_role(request.user, self.allowed_roles)
-#
-#     def has_change_permission(self, request, obj=None):
-#         if user_has_role(request.user, ["ADMIN"]):
-#             return True
-#         if (
-#             user_has_role(request.user, ["LANDLORD"])
-#             and obj
-#             and obj.listing.user == request.user
-#         ):
-#             return True
-#         return False
-#
-#     def has_add_permission(self, request):
-#         return user_has_role(request.user, ["ADMIN", "LANDLORD"])
-#
-#     def has_delete_permission(self, request, obj=None):
-#         return self.has_change_permission(request, obj)
-
 
 class LocationInline(admin.StackedInline):
     model = Location
@@ -342,7 +307,6 @@ class AdminDisplayModeMixin:
     @property
     def search_fields(self):
         return self._get_admin_attr("search_fields")
-
 
 # Отмена регистрации ненужных моделей
 admin.site.unregister(AccessLog)
@@ -658,30 +622,37 @@ class UserAdmin(AdminDisplayModeMixin, BaseHistoryAdmin, DjangoUserAdmin):
         qs = super().get_queryset(request)
         user = request.user
 
-        if user_has_role(user, ["ADMIN"]):
-            return qs
+        # Если это не Администратор, мы будем фильтровать QuerySet
+        if not (user.is_superuser or user_has_role(user, ["ADMIN"])):
+            # Получаем ID всех пользователей, к которым у текущего пользователя есть доступ
+            allowed_user_ids = {user.pk}
 
-        if user_has_role(user, ["LANDLORD"]):
-            # Landlord видит себя и Tenant, у которых есть брони его объявлений
-            tenant_ids = (
-                Booking.objects.filter(listing__user=user)
-                .values_list("user_id", flat=True)
-                .distinct()
-            )
-            return qs.filter(Q(pk=user.pk) | Q(pk__in=tenant_ids))
+            if user_has_role(user, ["LANDLORD"]):
+                # Landlord видит всех Тенантов, которые бронировали его объявления
+                tenant_ids = Booking.objects.filter(listing__user=user).values_list("user_id", flat=True)
+                allowed_user_ids.update(tenant_ids)
 
-        if user_has_role(user, ["TENANT"]):
-            # Tenant видит себя и Landlord, у которых у него брони
-            landlord_ids = (
-                Booking.objects.filter(user=user)
-                .values_list("listing__user_id", flat=True)
-                .distinct()
-            )
-            return qs.filter(Q(pk=user.pk) | Q(pk__in=landlord_ids))
+            elif user_has_role(user, ["TENANT"]):
+                # Tenant видит всех Лендлордов, у которых он бронировал
+                landlord_ids = Booking.objects.filter(user=user).values_list("listing__user_id", flat=True)
+                allowed_user_ids.update(landlord_ids)
 
-        return qs.none()
+            # !!! КЛЮЧЕВОЕ ИЗМЕНЕНИЕ !!!
+            # Если запрос идет на просмотр конкретного пользователя,
+            # мы должны добавить этого пользователя в QuerySet,
+            # чтобы избежать ошибки "User doesn't exist"
+            try:
+                # Извлекаем ID из URL-адреса, если он существует
+                object_id = request.resolver_match.kwargs.get("object_id")
+                if object_id:
+                    allowed_user_ids.add(int(object_id))
+            except (ValueError, AttributeError):
+                pass
 
-    # --- Права доступа (проверить внимательно) ---
+            return qs.filter(pk__in=allowed_user_ids)
+
+        # Для Администраторов и Суперпользователей возвращаем полный QuerySet
+        return qs
 
     # has_add_permission: Добавлять пользователей может только Admin
     def has_add_permission(self, request):
@@ -735,463 +706,50 @@ class UserAdmin(AdminDisplayModeMixin, BaseHistoryAdmin, DjangoUserAdmin):
                 kwargs["queryset"] = Group.objects.none()
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
-
-# # users/admin.py или utils/admin.py
-#
-#
-#
-#
-# # Если AdminDisplayModeMixin и BaseHistoryAdmin нужны, убедитесь, что они импортированы
-# # from yourapp.mixins import AdminDisplayModeMixin, BaseHistoryAdmin # Пример импорта
-#
-# @admin.register(User)
-# class UserAdmin(AdminDisplayModeMixin, BaseHistoryAdmin, DjangoUserAdmin):  # Убедитесь в правильности наследования
-#     add_form = CustomUserCreationForm
-#     form = CustomUserChangeForm
-#     ordering = ['email']
-#
-#     allowed_roles = ["ADMIN", "TENANT", "LANDLORD"]
-#     actions = ["make_verified"]
-#
-#     list_display = ("email", "first_name", "last_name", "role", "is_active", "avatar_img")
-#
-#     detailed_list_display = (
-#         "email",
-#         "first_name",
-#         "last_name",
-#         "role",
-#         "avatar_img",
-#         "is_active",
-#         "is_verified",
-#         "is_staff",
-#         "is_superuser",
-#         "date_joined",
-#     )
-#     simple_list_display = ("email", "first_name", "last_name", "role", "avatar_img")
-#     history_list_display = ["email", "role", "is_active", "is_verified"]
-#     detailed_list_filter = ("role", "is_active", "is_verified", "is_staff")
-#     simple_list_filter = ("role",)
-#     detailed_search_fields = ("email", "first_name", "last_name")
-#     simple_search_fields = ("email",)
-#     # readonly_fields = ("date_joined", "last_login") # Это будет динамически переопределяться в get_readonly_fields
-#
-#     # --- Определяем кастомные fieldsets для разных ролей ---
-#
-#     # Стандартные fieldsets для Админа (полный доступ)
-#     fieldsets = (
-#         (None, {"fields": ("email", "password")}),
-#         (_("Personal info"), {"fields": ("first_name", "last_name", "phone_number", "language", "avatar")}),
-#         (_("Permissions"),
-#          {"fields": ("is_active", "is_verified", "is_staff", "is_superuser", "role", "groups", "user_permissions")}),
-#         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
-#     )
-#
-#     # fieldsets для добавления нового пользователя (только для Админа)
-#     add_fieldsets = (
-#         (None, {
-#             "classes": ("wide",),
-#             "fields": ("email", "first_name", "last_name", "role", "password", "password2"),  # Используйте "password"
-#         }),
-#     )
-#
-#     # fieldsets для Тенанта, который смотрит ЧУЖОЙ профиль (только персональная информация)
-#     tenant_other_view_fieldsets = (
-#         (None, {"fields": ("avatar", "first_name", "last_name", "groups", "phone_number", "email", "language")}),
-#     )
-#
-#     # fieldsets для Тенанта, который смотрит/редактирует СВОЙ профиль
-#     tenant_self_edit_fieldsets = (
-#         (None, {"fields": ("avatar", "first_name", "last_name", "groups", "phone_number", "email", "language")}),
-#         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
-#     )
-#
-#     def avatar_img(self, obj):
-#         if obj.avatar:
-#             return format_html(
-#                 '<img src="{}" width="30" style="border-radius:50%;">',
-#                 obj.avatar.url
-#             )
-#         return "-"
-#
-#     avatar_img.short_description = "Avatar"
-#
-#     # --- Динамическое определение fieldsets ---
-#     def get_fieldsets(self, request, obj=None):
-#         # Если добавляем нового пользователя (obj is None)
-#         if not obj:
-#             return self.add_fieldsets
-#
-#         # Если текущий пользователь (request.user) - Тенант
-#         if user_has_role(request.user, ["TENANT"]):
-#             # Если Тенант смотрит свой собственный профиль
-#             if request.user == obj:
-#                 return self.tenant_self_edit_fieldsets
-#             # Если Тенант смотрит профиль другого пользователя (например, Лендлорда)
-#             else:
-#                 return self.tenant_other_view_fieldsets
-#
-#         # Для Админов и Лендлордов - использовать стандартные fieldsets
-#         return super().get_fieldsets(request, obj)
-#
-#     # --- Динамическое определение readonly_fields ---
-#     def get_readonly_fields(self, request, obj=None):
-#         user = request.user
-#
-#         # Для нового пользователя (не редактируем, а создаем)
-#         if not obj:
-#             # Здесь можно вернуть пустой список, или те поля, которые всегда read-only при создании
-#             return []  # Поля like password1, password2 будут доступны для ввода
-#
-#         # Если текущий пользователь - Админ
-#         if user_has_role(user, ["ADMIN"]):
-#             return ("date_joined", "last_login")  # Только эти поля read-only
-#
-#         # Если текущий пользователь - Тенант или Лендлорд
-#         if user_has_role(user, ["TENANT", "LANDLORD"]):
-#             # Если пользователь смотрит свой СОБСТВЕННЫЙ профиль
-#             if obj.pk == user.pk:
-#                 # Поля, которые пользователь МОЖЕТ редактировать (остальные будут read-only)
-#                 editable_fields = ["avatar", "first_name", "last_name", "phone_number", "email", "language"]
-#                 # Email обычно не редактируется, но если надо, оставьте
-#                 # Groups тоже обычно не редактируется
-#
-#                 # Создаем список всех полей, кроме разрешенных для редактирования
-#                 all_model_fields = [f.name for f in self.model._meta.get_fields()]
-#                 readonly_fields = [f for f in all_model_fields if f not in editable_fields]
-#
-#                 # Важные даты всегда только для чтения
-#                 readonly_fields.extend(["date_joined", "last_login"])
-#                 # Исключаем 'password' из readonly, чтобы не конфликтовало
-#                 if 'password' in readonly_fields:
-#                     readonly_fields.remove('password')
-#
-#                 return list(set(readonly_fields))  # Удаляем дубликаты и возвращаем список
-#
-#             # Если пользователь смотрит ЧУЖОЙ профиль
-#             else:
-#                 # Все поля только для чтения (кроме тех, которые могут быть системно необходимы)
-#                 return [f.name for f in self.model._meta.get_fields() if f.name not in ['password']]
-#
-#         # По умолчанию (для других ролей или если что-то пошло не так)
-#         return super().get_readonly_fields(request, obj)
-#
-#     # Изменение 1: get_queryset — Tenant и Landlord видят себя и других, связанных бронированиями
-#     def get_queryset(self, request):
-#         qs = super().get_queryset(request)
-#         user = request.user
-#
-#         if user_has_role(user, ["ADMIN"]):
-#             return qs
-#
-#         if user_has_role(user, ["LANDLORD"]):
-#             # Landlord видит себя и Tenant, у которых есть брони его объявлений
-#             tenant_ids = (
-#                 Booking.objects.filter(listing__user=user)
-#                 .values_list("user_id", flat=True)
-#                 .distinct()
-#             )
-#             return qs.filter(Q(pk=user.pk) | Q(pk__in=tenant_ids))
-#
-#         if user_has_role(user, ["TENANT"]):
-#             # Tenant видит себя и Landlord, у которых у него брони
-#             landlord_ids = (
-#                 Booking.objects.filter(user=user)
-#                 .values_list("listing__user_id", flat=True)
-#                 .distinct()
-#             )
-#             return qs.filter(Q(pk=user.pk) | Q(pk__in=landlord_ids))
-#
-#         return qs.none()
-#
-#     # --- Права доступа (проверить внимательно) ---
-#
-#     # has_add_permission: Добавлять пользователей может только Admin
-#     def has_add_permission(self, request):
-#         return user_has_role(request.user, ["ADMIN"])
-#
-#     # has_delete_permission: Админ может удалять. Лендлорд/Тенант не могут.
-#     def has_delete_permission(self, request, obj=None):
-#         user = request.user
-#         if user_has_role(user, ["ADMIN"]):
-#             return True
-#         # Лендлорд и Тенант не могут удалять
-#         return False
-#
-#     # has_change_permission: Кто может редактировать/просматривать формы
-#     def has_change_permission(self, request, obj=None):
-#         user = request.user
-#
-#         # Админ может изменять всех
-#         if user_has_role(user, ["ADMIN"]):
-#             return True
-#
-#         # Если obj None (это запрос на создание нового пользователя, а не изменение существующего)
-#         # В этом случае, только ADMIN может добавлять
-#         if obj is None:
-#             return self.has_add_permission(request)
-#
-#         # Лендлорд и Тенант могут изменять только свой собственный профиль
-#         if user_has_role(user, ["TENANT", "LANDLORD"]):
-#             return obj.pk == user.pk  # Разрешено, только если obj - это текущий пользователь
-#
-#         return False  # По умолчанию запрещено
-#
-#     # has_view_permission: Кто может видеть модуль пользователей в админке
-#     def has_module_permission(self, request):
-#         # Все, кто имеет allowed_roles, могут видеть модуль
-#         return user_has_role(request.user, self.allowed_roles)
-#
-#     # --- Actions ---
-#     @admin.action(description="Mark selected users as verified")
-#     def make_verified(self, request, queryset):
-#         queryset.update(is_verified=True)
-#
-#     # make_verified.short_description = "Mark selected users as verified" # Эта строка дублирует @admin.action, можно убрать
-#
-#     # --- Formfield for ManyToMany (Groups) ---
-#     def formfield_for_manytomany(self, db_field, request, **kwargs):
-#         if db_field.name == "groups":
-#             user = request.user
-#             if user_has_role(user, ["ADMIN"]):
-#                 kwargs["queryset"] = Group.objects.all()
-#                 # Удален код для автоматического добавления админ-группы, это лучше делать через миграции или при создании пользователя
-#             elif user_has_role(user, ["TENANT"]):
-#                 kwargs["queryset"] = Group.objects.filter(name="Tenant")
-#             elif user_has_role(user, ["LANDLORD"]):
-#                 kwargs["queryset"] = Group.objects.filter(name="Landlord")
-#             else:
-#                 kwargs["queryset"] = Group.objects.none()
-#         return super().formfield_for_manytomany(db_field, request, **kwargs)
-
-
-# @admin.register(User)
-# class UserAdmin(AdminDisplayModeMixin, BaseHistoryAdmin, DjangoUserAdmin):
-#     add_form = CustomUserCreationForm
-#     form = CustomUserChangeForm
-#     ordering = ['email']
-#
-#     allowed_roles = ["ADMIN", "TENANT", "LANDLORD"]
-#     actions = ["make_verified"]
-#
-#     list_display = ("email", "first_name", "last_name", "role", "is_active", "avatar_img")
-#
-#     detailed_list_display = (
-#         "email",
-#         "first_name",
-#         "last_name",
-#         "role",
-#         "avatar_img",
-#         "is_active",
-#         "is_verified",
-#         "is_staff",
-#         "is_superuser",
-#         "date_joined",
-#     )
-#     simple_list_display = ("email", "first_name", "last_name", "role", "avatar_img")
-#     # simple_list_display = ("email", "first_name", "last_name", "role")
-#     history_list_display = ["email", "role", "is_active", "is_verified"]
-#     detailed_list_filter = ("role", "is_active", "is_verified", "is_staff")
-#     simple_list_filter = ("role",)
-#     detailed_search_fields = ("email", "first_name", "last_name")
-#     simple_search_fields = ("email",)
-#     readonly_fields = ("date_joined", "last_login")
-#
-#
-#     fieldsets = (
-#         (None, {"fields": ("email", "password")}),
-#         (
-#             ("Personal info"),
-#             {
-#                 "fields": (
-#                     "first_name",
-#                     "last_name",
-#                     "phone_number",
-#                     "language",
-#                     "avatar",
-#                 )
-#             },
-#         ),  # <--- Поле 'avatar' добавлено сюда
-#         (
-#             ("Permissions"),
-#             {
-#                 "fields": (
-#                     "is_active",
-#                     "is_verified",
-#                     "is_staff",
-#                     "is_superuser",
-#                     "role",
-#                     "groups",
-#                     "user_permissions",
-#                 )
-#             },
-#         ),
-#         (("Important dates"), {"fields": ("last_login", "date_joined")}),
-#     )
-#
-#     add_fieldsets = (
-#         (None, {
-#             "classes": ("wide",),
-#             "fields": ("email", "first_name", "last_name", "role", "password1", "password2"),
-#         }),
-#     )
-#
-#     def avatar_img(self, obj):
-#         if obj.avatar:
-#             return format_html(
-#                 '<img src="{}" width="30" style="border-radius:50%;">',
-#                 obj.avatar.url
-#             )
-#         return "-"
-#
-#     avatar_img.short_description = "Avatar"
-#
-#
-#     # Изменение 2: Права редактирования Tenant и Landlord — разрешаем менять только имя,
-#     # фамилию, email, телефон (если есть)
-#     def get_readonly_fields(self, request, obj=None):
-#         user = request.user
-#
-#         # Админ может всё
-#         if user_has_role(user, ["ADMIN"]):
-#             return ["date_joined", "last_login"]
-#
-#         # Свой профиль Tenant / Landlord
-#         if obj and user_has_role(user, ["TENANT", "LANDLORD"]) and obj.pk == user.pk:
-#             allowed = ["first_name", "last_name", "email", "phone_number", "avatar"]
-#             return [f.name for f in self.model._meta.fields if f.name not in allowed]
-#
-#         # Чужой профиль — всё только для чтения
-#         return [f.name for f in self.model._meta.fields if f.name not in ["first_name", "last_name"]]
-#
-#     def get_readonly_fields(self, request, obj=None):
-#         user = request.user
-#
-#         if obj and (user_has_role(user, ["TENANT", "LANDLORD"])) and obj.pk == user.pk:
-#             allowed = [
-#                 "first_name",
-#                 "last_name",
-#                 "email",
-#                 "phone_number",
-#             ]  # <- добавь phone, если есть
-#             readonly = [
-#                 f.name for f in self.model._meta.fields if f.name not in allowed
-#             ]
-#             return readonly
-#
-#         return super().get_readonly_fields(request, obj)
-#
-#     # Изменение 1: get_queryset — Tenant и Landlord видят себя и других, связанных бронированиями
-#     def get_queryset(self, request):
-#         qs = super().get_queryset(request)
-#         user = request.user
-#
-#         if user_has_role(user, ["ADMIN"]):
-#             return qs
-#
-#         if user_has_role(user, ["LANDLORD"]):
-#             # Landlord видит себя и Tenant, у которых есть брони его объявлений
-#             tenant_ids = (
-#                 Booking.objects.filter(listing__user=user)
-#                 .values_list("user_id", flat=True)
-#                 .distinct()
-#             )
-#             return qs.filter(Q(pk=user.pk) | Q(pk__in=tenant_ids))
-#
-#         if user_has_role(user, ["TENANT"]):
-#             # Tenant видит себя и Landlord, у которых у него брони
-#             landlord_ids = (
-#                 Booking.objects.filter(user=user)
-#                 .values_list("listing__user_id", flat=True)
-#                 .distinct()
-#             )
-#             return qs.filter(Q(pk=user.pk) | Q(pk__in=landlord_ids))
-#
-#         return qs.none()
-#
-#     # --------------------------
-#
-#     def has_delete_permission(self, request, obj=None):
-#         user = request.user
-#         if user_has_role(user, ["ADMIN"]):
-#             return True
-#         if obj and user_has_role(user, ["LANDLORD"]):
-#             return False
-#         if obj and user_has_role(user, ["TENANT"]):
-#             return obj.pk == user.pk  # Только сам себя
-#         return False
-#
-#     @admin.action(description="Mark selected users as verified")
-#     def make_verified(self, request, queryset):
-#         queryset.update(is_verified=True)
-#
-#     make_verified.short_description = "Mark selected users as verified"
-#
-#     def formfield_for_manytomany(self, db_field, request, **kwargs):
-#         if db_field.name == "groups":
-#             if user_has_role(request.user, ["ADMIN"]):
-#                 kwargs["queryset"] = Group.objects.all()
-#                 if not request.user.groups.filter(name="Admin").exists():
-#                     admin_group = Group.objects.filter(name="Admin").first()
-#                     if admin_group:
-#                         request.user.groups.add(admin_group)
-#             elif user_has_role(request.user, ["TENANT"]):
-#                 kwargs["queryset"] = Group.objects.filter(name="Tenant")
-#             elif user_has_role(request.user, ["LANDLORD"]):
-#                 kwargs["queryset"] = Group.objects.filter(name="Landlord")
-#             else:
-#                 kwargs["queryset"] = Group.objects.none()
-#         return super().formfield_for_manytomany(db_field, request, **kwargs)
-#
-#     def has_view_permission(self, request, obj=None):
-#         return user_has_role(request.user, self.get_allowed_roles())
-#
-#     def has_change_permission(self, request, obj=None):
-#         user = request.user
-#         if user_has_role(user, ["ADMIN"]):
-#             return True
-#         if obj and user_has_role(user, ["TENANT", "LANDLORD"]):
-#             return obj.pk == user.pk
-#         if obj is None:
-#             return user_has_role(request.user, self.get_allowed_roles())
-#         return False
-#
-#     def has_module_permission(self, request):
-#         return user_has_role(request.user, self.get_allowed_roles())
-#
-#     def has_add_permission(self, request):
-#         # Добавлять пользователей может только Admin
-#         return user_has_role(request.user, ["ADMIN"])
-
-
 class ListingPhotoInline(admin.TabularInline):
     model = ListingPhoto
-    extra = 2  # Сколько пустых форм для добавления показать по умолчанию
-    # fields = ('image', 'caption', 'order') # Поля для отображения в инлайне
-    readonly_fields = ("get_image_preview",)  # Если хотите превью
+    extra = 0  # Чтобы не добавлять пустые формы по умолчанию
 
+    def get_fields(self, request, obj=None):
+        if user_has_role(request.user, ["ADMIN", "LANDLORD"]):
+            return ("image", "order", "get_image_preview")
+        # Для Тенанта только превью
+        return ("get_image_preview",)
+
+    def get_readonly_fields(self, request, obj=None):
+        if user_has_role(request.user, ["ADMIN", "LANDLORD"]):
+            # Здесь get_image_preview является readonly, но это не мешает
+            # отображению ссылки, а только предотвращает его редактирование
+            return ("get_image_preview",)
+        # Для Тенанта все поля, которые отображаются, должны быть readonly
+        return ("get_image_preview", "image", "order")
+
+    # --- ИСПРАВЛЕННЫЙ МЕТОД ---
     def get_image_preview(self, obj):
         if obj.image:
+            # Создаем ссылку, которая при клике откроет увеличенное изображение.
+            # Этот HTML-код, скорее всего, совпадает с тем, что ищет ваш JavaScript-код.
             return format_html(
-                '<img src="{}" style="max-height: 100px;" />', obj.image.url
+                '<a href="{}" target="_blank"><img src="{}" style="max-height: 100px; max-width: 100px; border-radius: 5px; cursor: pointer;"/></a>',
+                obj.image.url,
+                obj.image.url,
             )
         return "(No image)"
 
     get_image_preview.short_description = "Preview"
 
-
 @admin.register(Listing)
 class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
     exclude = (
         "photos",
-        "latitude",
         "description_en",
         "description_ru",
         "title_en",
         "title_ru",
     )
     allowed_roles = ["ADMIN", "LANDLORD", "TENANT"]
-    form = ListingForm
-    filter_horizontal = ("amenities",)  # Использует виджет FilteredSelectMultiple
+    form = ListingForm # Используем ваш кастомный ListingForm
+    filter_horizontal = ("amenities",)
 
     inlines = [AvailabilitySlotInline, ListingPhotoInline]
 
@@ -1218,27 +776,28 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
                 return queryset.filter(amenities__id=self.value())
             return queryset
 
+    # ИЗМЕНЕНИЕ: Используем get_user_full_name в list_display
     detailed_list_display = (
         "title_en",
-        "user",
+        "get_user_full_name",
         "city",
         "country",
         "price_per_night",
         "availability_range",
-        "amenities_list",  # ← добавили
+        "amenities_list",
         "is_active",
         "popularity",
         "created_at",
-        "get_location_latitude",  # <-- Эти методы
-        "get_location_longitude",  # <-- находятся здесь
+        "get_location_latitude",
+        "get_location_longitude",
     )
-    simple_list_display = ("title_en", "user", "price_per_night")  # , "photo_preview")
-    # readonly_fields = ("photo_preview",)
+    simple_list_display = ("title_en", "get_user_full_name", "price_per_night") # И здесь!
+    # readonly_fields = ("photo_preview",) # Это будет управляться get_readonly_fields
 
     history_list_display = [
-        "title_en",
+        # "title_en",
         "title_de",
-        "title_ru",
+        # "title_ru",
         "price_per_night",
         "is_active",
         "popularity",
@@ -1263,21 +822,39 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
     )
     simple_search_fields = ("title_en", "user__email")
 
+    # НОВЫЙ МЕТОД: Для отображения почтового индекса из Location
+    def get_location_postal_code(self, obj):
+        if obj.location:
+            return obj.location.postal_code
+        return None
+
+    get_location_postal_code.short_description = _("Postal Code")
+
     def get_location_latitude(self, obj):
-        # Здесь obj - это объект Listing
         return (
             obj.location.coordinates.y
             if obj.location and obj.location.coordinates
             else None
         )
 
+    get_location_latitude.short_description = _("Latitude")  # Добавил short_description
+
     def get_location_longitude(self, obj):
-        # Здесь obj - это объект Listing
         return (
             obj.location.coordinates.x
             if obj.location and obj.location.coordinates
             else None
         )
+
+    get_location_longitude.short_description = _("Longitude")  # Добавил short_description
+
+    # НОВЫЙ МЕТОД: Для отображения имени и фамилии пользователя в list_display
+    def get_user_full_name(self, obj):
+        if obj.user:
+            return f"{obj.user.first_name} {obj.user.last_name}"
+        return "-"
+    get_user_full_name.short_description = _("User") # Отображаемое название столбца
+
 
     def availability_range(self, obj):
         slots = obj.availability_slots.filter(is_available=True).order_by("date")
@@ -1298,7 +875,7 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
     def toggle_active(self, request, queryset):
         updated_count = 0
         for obj in queryset:
-            if self.has_change_permission(request, obj):  # 👈 проверка прав
+            if self.has_change_permission(request, obj):
                 obj.is_active = not obj.is_active
                 obj.save()
                 updated_count += 1
@@ -1323,10 +900,10 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
         writer = csv.writer(response)
         writer.writerow(
             [
-                "Title (EN)",
+                # "Title (EN)",
                 "Title (DE)",
-                "Title (RU)",
-                "User Email",
+                # "Title (RU)",
+                "User Email", # Здесь email уместен для экспорта
                 "Price Per Night",
                 "City",
                 "Popularity",
@@ -1335,9 +912,9 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
         for obj in queryset.order_by("-popularity")[:5]:
             writer.writerow(
                 [
-                    obj.title_en,
+                    # obj.title_en,
                     obj.title_de,
-                    obj.title_ru,
+                    # obj.title_ru,
                     obj.user.email,
                     obj.price_per_night,
                     obj.address,
@@ -1348,6 +925,139 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
 
     export_top_listings.short_description = "Export top 5 listings to CSV"
 
+    # --- ОПРЕДЕЛЕНИЕ CUSTOM FIELDSETS ДЛЯ РАЗНЫХ РОЛЕЙ ---
+
+    # Стандартные fieldsets для Админа (полный доступ)
+    fieldsets = (
+        (None, {"fields": (
+            "user", "title_de", "description_de", "address", "city", "country",
+            "get_location_postal_code",  # <-- Используем новый метод
+            "price_per_night", "rooms", "property_type", "amenities", "is_active", "popularity", "created_at",
+            "get_location_latitude", "get_location_longitude",  # <-- Используем методы
+            "title_en", "description_en", "title_ru", "description_ru",
+            # "photos" # Это поле обычно не указывается здесь, если есть инлайны
+        )}),
+    )
+
+    # fieldsets для Лендлорда (без User и Popularity для редактирования, но видно)
+    landlord_edit_fieldsets = (
+        (None, {"fields": (
+            "id", "user", "title_de", "description_de", "address", "city", "country",
+            "get_location_postal_code",  # <-- Используем новый метод
+            "price_per_night", "rooms", "property_type", "amenities", "is_active", "popularity", "created_at"
+        )}),
+    )
+
+    # НОВЫЙ fieldsets для Тенанта (только для просмотра выбранных полей)
+    tenant_view_fieldsets = (
+        (None, {
+            "fields": (
+                "id",
+                "user",
+                "title_de",
+                "description_de",
+                "address",
+                "city",
+                "country",
+                "price_per_night",
+                "rooms",
+                "property_type",
+                "is_active",
+                "popularity",
+                "amenities",
+            )
+        }),
+    )
+
+    # --- Динамическое определение fieldsets ---
+    def get_fieldsets(self, request, obj=None):
+        # При добавлении нового объекта (только для Админа/Лендлорда)
+        if not obj:
+            return self.fieldsets  # Возвращаем полный fieldsets для добавления
+
+        # Если Текущий пользователь - Тенант
+        if user_has_role(request.user, ["TENANT"]):
+            return self.tenant_view_fieldsets
+
+        # Если Текущий пользователь - Лендлорд
+        if user_has_role(request.user, ["LANDLORD"]):
+            # Лендлорд может видеть свои объявления, поля User и Popularity read-only
+            return self.landlord_edit_fieldsets
+
+        # Для Админа - использовать стандартные fieldsets
+        return super().get_fieldsets(request, obj)
+
+    # --- Динамическое определение readonly_fields для формы редактирования ---
+    def get_readonly_fields(self, request, obj=None):
+        user = request.user
+        base_readonly = ("created_at",)
+
+        if not obj:
+            return ("popularity",) + base_readonly
+
+        if user_has_role(user, ["ADMIN"]):
+            # ИСПРАВЛЕНО: Добавляем 'id' в readonly_fields для Админа
+            return ("id",) + base_readonly
+
+        if user_has_role(user, ["LANDLORD"]):
+            if obj.user == user:
+                # ИСПРАВЛЕНО: Добавляем 'id' в readonly_fields для Лендлорда
+                return ("id", "user", "popularity", "get_location_postal_code",
+                        "get_location_latitude", "get_location_longitude") + base_readonly
+            # Если это не его объявление, все поля только для чтения.
+            # `id` должен быть в этом списке.
+            readonly_fields = [f.name for f in self.model._meta.get_fields() if f.editable]
+            readonly_fields.extend(["id", "get_user_full_name", "amenities_list",
+                                    "get_location_postal_code",
+                                    "get_location_latitude",
+                                    "get_location_longitude"])
+            readonly_fields.extend(list(base_readonly))
+            return tuple(readonly_fields)
+
+        if user_has_role(user, ["TENANT"]):
+            # 'id' добавляем в readonly_fields, а не в fieldsets
+            readonly_fields = [f.name for f in self.model._meta.get_fields() if f.editable]
+            readonly_fields.extend(["id", "get_user_full_name", "amenities_list",
+                                    "get_location_postal_code",
+                                    "get_location_latitude",
+                                    "get_location_longitude"])
+            readonly_fields.extend(list(base_readonly))
+            return tuple(readonly_fields)
+
+        return super().get_readonly_fields(request, obj)
+
+    # --- НОВЫЙ МЕТОД: Динамическое определение инлайнов ---
+    def get_inlines(self, request, obj=None):
+        inlines = []
+        # Добавляем PhotoInline
+        photo_inline_instance = ListingPhotoInline
+        if user_has_role(request.user, ["ADMIN", "LANDLORD"]):
+            # Лендлорд и Админ могут добавлять/удалять фото
+            photo_inline_instance.extra = 2
+            photo_inline_instance.can_delete = True
+        elif user_has_role(request.user, ["TENANT"]):
+            # Тенант только просматривает
+            photo_inline_instance.extra = 0
+            photo_inline_instance.can_delete = False
+        inlines.append(photo_inline_instance)
+
+        # Если у вас есть AvailabilitySlotInline, добавьте его сюда с аналогичной логикой
+        # if 'AvailabilitySlotInline' in globals() and user_has_role(request.user, ["ADMIN", "LANDLORD"]):
+        #     inlines.append(AvailabilitySlotInline)
+        # elif 'AvailabilitySlotInline' in globals() and user_has_role(request.user, ["TENANT"]):
+        #      # Возможно, Тенант должен видеть availability, но не редактировать
+        #      # Создайте копию класса для инлайна, если хотите изменить его свойства для Тенанта
+        #      class TenantAvailabilitySlotInline(AvailabilitySlotInline):
+        #          extra = 0
+        #          can_delete = False
+        #          # Все поля readonly для Тенанта
+        #          def get_readonly_fields(self, request, obj=None):
+        #              return [f.name for f in self.model._meta.get_fields()]
+        #      inlines.append(TenantAvailabilitySlotInline)
+
+        return inlines
+
+    # --- Ограничение видимости объектов для Лендлорда ---
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         user = request.user
@@ -1356,35 +1066,53 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
             return qs
 
         if user_has_role(user, ["LANDLORD"]):
-            return qs.filter(user=user)  # ✅ Только свои объявления
+            return qs.filter(user=user)
 
         if user_has_role(user, ["TENANT"]):
-            return qs.filter(is_active=True)  # ✅ Только активные
+            return qs.filter(is_active=True)
 
         return qs.none()
+
+    # --- Права доступа к модели Listings в админке ---
 
     def has_add_permission(self, request):
         return user_has_role(request.user, ["LANDLORD", "ADMIN"])
 
     def has_view_permission(self, request, obj=None):
-        # Все роли могут просматривать
-        return self.has_module_permission(request)
+        user = request.user
+        if user_has_role(user, ["ADMIN"]):
+            return True
+        if user_has_role(user, ["LANDLORD"]):
+            if obj is not None: # Просмотр конкретного объекта
+                return obj.user == user
+            return True # Просмотр списка (фильтруется get_queryset)
+        if user_has_role(user, ["TENANT"]):
+            # Тенант может просматривать активные объявления (если они отображаются в списке для них)
+            # Эта логика уже есть в get_queryset
+            return True # Разрешаем просмотр, но get_queryset отфильтрует
+        return False
 
     def has_change_permission(self, request, obj=None):
         user = request.user
-
         if user_has_role(user, ["ADMIN"]):
             return True
-
         if user_has_role(user, ["LANDLORD"]):
-            return obj is None or (obj and obj.user == user)
+            if obj is not None:
+                return obj.user == user
+            return True # Если obj is None, это для формы добавления/изменения, Лендлорд может добавлять
+        return False
 
-        # Tenant может только просматривать
+    def has_delete_permission(self, request, obj=None):
+        user = request.user
+        if user_has_role(user, ["ADMIN"]):
+            return True
+        if user_has_role(user, ["LANDLORD"]):
+            if obj is not None:
+                return obj.user == user
         return False
 
     def has_module_permission(self, request):
         return user_has_role(request.user, self.get_allowed_roles())
-
 
 @admin.register(Booking)
 class BookingAdmin(
@@ -1429,6 +1157,83 @@ class BookingAdmin(
         queryset.update(status="CONFIRMED")
 
     confirm_booking.short_description = "Confirm selected bookings"
+
+    # --- НОВЫЕ АТРИБУТЫ: Определение fieldsets для разных ролей ---
+
+    # Стандартный fieldset для Админа (все поля доступны для редактирования)
+    admin_fieldsets = (
+        (None, {
+            "fields": (
+                "user",
+                "listing",
+                "start_date",
+                "end_date",
+                "total_price",
+                "status",
+            )
+        }),
+    )
+
+    # fieldset для Лендлорда (может видеть детали бронирования, но не редактировать пользователя и объявление)
+    landlord_fieldsets = (
+        (None, {
+            "fields": (
+                "user",
+                "listing",
+                "start_date",
+                "end_date",
+                "total_price",
+                "status",
+            )
+        }),
+    )
+
+    # fieldset для Тенанта (может редактировать только start_date, end_date, total_price, status)
+    tenant_fieldsets = (
+        (None, {
+            "fields": (
+                "user",
+                "listing",
+                "start_date",
+                "end_date",
+                "total_price",
+                "status",
+            )
+        }),
+    )
+
+    # --- НОВЫЙ МЕТОД: Динамический выбор fieldsets ---
+    def get_fieldsets(self, request, obj=None):
+        if user_has_role(request.user, ["TENANT"]):
+            return self.tenant_fieldsets
+
+        if user_has_role(request.user, ["LANDLORD"]):
+            return self.landlord_fieldsets
+
+        return self.admin_fieldsets
+
+    # --- НОВЫЙ МЕТОД: Динамическое определение полей, доступных только для чтения ---
+    def get_readonly_fields(self, request, obj=None):
+        user = request.user
+
+        # Если создаем новый объект, created_at всегда readonly
+        if not obj:
+            return ("created_at",)
+
+        # Для Админа, только created_at является readonly
+        if user_has_role(user, ["ADMIN"]):
+            return ("created_at",)
+
+        # Для Лендлорда, user, listing и created_at являются readonly
+        if user_has_role(user, ["LANDLORD"]):
+            return ("user", "listing", "created_at",)
+
+        # Для Тенанта, user, listing и created_at являются readonly
+        if user_has_role(user, ["TENANT"]):
+            return ("user", "listing", "created_at",)
+
+        # По умолчанию
+        return super().get_readonly_fields(request, obj)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

@@ -95,4 +95,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "Users (Пользователи)"  # Оставил твой verbose_name_plural
 
     def __str__(self):
+        # Если есть имя и фамилия, вернем "Имя Фамилия (email)".
+        # Иначе вернем только email.
+        if self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name} ({self.email})"
         return self.email
+
+    # def __str__(self):
+    #     return self.email

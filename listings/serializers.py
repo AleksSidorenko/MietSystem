@@ -7,9 +7,9 @@ from drf_spectacular.utils import OpenApiTypes, extend_schema_field
 from PIL import Image
 from rest_framework import serializers
 
-from listings.models import Listing
 from locations.serializers import LocationSerializer
 from utils.translation import TranslationSerializerMixin
+from listings.models import Listing, ListingPhoto
 
 
 class AvailabilitySlotSerializer(serializers.Serializer):
@@ -20,6 +20,7 @@ class AvailabilitySlotSerializer(serializers.Serializer):
 class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer):
     availability = serializers.SerializerMethodField()
     location = LocationSerializer(read_only=True)
+    main_photo = serializers.SerializerMethodField()
 
     @extend_schema_field(
         {
@@ -43,6 +44,21 @@ class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer)
             {"date": slot.date.isoformat(), "is_available": slot.is_available}
             for slot in obj.availability_slots.all()
         ]
+
+    # --- НОВЫЙ МЕТОД ДЛЯ ПОЛУЧЕНИЯ ГЛАВНОГО ФОТО ---
+    def get_main_photo(self, obj):
+        """
+        Возвращает URL главной фотографии (первой по порядку).
+        """
+        # Используем related_name 'gallery' из модели ListingPhoto
+        first_photo = obj.gallery.order_by('order').first()
+
+        if first_photo and first_photo.image:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(first_photo.image.url)
+            return first_photo.image.url
+        return None
 
     class Meta:
         model = Listing
