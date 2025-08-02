@@ -18,12 +18,32 @@ ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1").split(","
 ADMIN_DEBUG_MODE = True
 ADMIN_DETAILED_MODE = True
 
-# Безопасность для production
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_BROWSER_XSS_FILTER = True
-X_FRAME_OPTIONS = "DENY"
+ROOT_URLCONF = "core.urls"
+AUTH_USER_MODEL = "users.User"
+
+# --- Настройки безопасности ---
+# Используем DEBUG для управления настройками безопасности
+if DEBUG:
+    SECURE_SSL_REDIRECT = False
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    SECURE_BROWSER_XSS_FILTER = False
+    X_FRAME_OPTIONS = "SAMEORIGIN"  # Позволяет встраивать фреймы на том же домене
+    # Для локальной разработки, где нет HTTPS
+    SIMPLE_JWT_AUTH_COOKIE_SECURE = False
+else:
+    # Настройки для продакшена (когда DEBUG=False)
+    SECURE_SSL_REDIRECT = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    X_FRAME_OPTIONS = "DENY"
+    SIMPLE_JWT_AUTH_COOKIE_SECURE = True
+
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_COOKIE_AGE = 1209600  # 2 недели
+SESSION_COOKIE_HTTPONLY = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Сессия завершается при закрытии браузера
 
 LEAFLET_CONFIG = {
     "DEFAULT_CENTER": (51.1657, 10.4515),
@@ -116,9 +136,6 @@ LOGGING = {
         },
     },
 }
-
-ROOT_URLCONF = "core.urls"
-AUTH_USER_MODEL = "users.User"
 
 TEMPLATES = [
     {
@@ -242,7 +259,6 @@ SPECTACULAR_SETTINGS = {
     "PREPROCESSING_HOOKS": [],
 }
 
-
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
@@ -250,9 +266,10 @@ SIMPLE_JWT = {
     "AUTH_COOKIE": "access_token",
     "AUTH_COOKIE_REFRESH": "refresh_token",
     "AUTH_COOKIE_HTTP_ONLY": True,
-    "AUTH_COOKIE_SECURE": True,
+    "AUTH_COOKIE_SECURE": SIMPLE_JWT_AUTH_COOKIE_SECURE,
     "AUTH_COOKIE_SAMESITE": "Strict",
 }
+
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_HOST = config("EMAIL_HOST")
@@ -321,26 +338,10 @@ if SENTRY_DSN:
 
 LOGIN_REDIRECT_URL = "/"
 
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
-SESSION_COOKIE_AGE = 1209600  # 2 недели
-SESSION_COOKIE_SECURE = False  # Для локального тестирования
-SESSION_COOKIE_HTTPONLY = True
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Сессия завершается при закрытии браузера
-
-# SESSION_COOKIE_NAME = "miet_sessionid"
-# CSRF_COOKIE_NAME = "miet_csrftoken"
-# # SESSION_COOKIE_AGE = 1209600  # 2 недели
-# # SESSION_COOKIE_SECURE = False  # Для разработки, установите True для HTTPS в продакшене
-# SESSION_COOKIE_SECURE = True
-# SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
 ADMIN_SITE_HEADER = "MietSystem Admin"
 ADMIN_SITE_TITLE = "MietSystem"
 ADMIN_INDEX_TITLE = "Добро пожаловать в админ-панель MietSystem"
 
 SILENCED_SYSTEM_CHECKS = ["models.W036"]
-
-SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)
-
 
 LOGIN_URL = "/admin/login/"

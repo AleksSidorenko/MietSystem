@@ -47,6 +47,7 @@ from users.models import User
 from utils.role_utils import user_has_role
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Prefetch
 
 
 
@@ -142,13 +143,21 @@ class AvailabilitySlotAdmin(admin.ModelAdmin):
 
 class LocationInline(admin.StackedInline):
     model = Location
-    extra = 1
+    extra = 0
+    fields = (
+        "postal_code",
+        "street",
+        "city",
+        "federal_state",
+        "get_latitude",
+        "get_longitude",
+    )
     readonly_fields = ("get_latitude", "get_longitude")
 
     def get_latitude(self, obj):
         return (
-            obj.location.coordinates.y
-            if obj.location and obj.location.coordinates
+            obj.coordinates.y
+            if obj.coordinates
             else None
         )
 
@@ -156,8 +165,8 @@ class LocationInline(admin.StackedInline):
 
     def get_longitude(self, obj):
         return (
-            obj.location.coordinates.x
-            if obj.location and obj.location.coordinates
+            obj.coordinates.x
+            if obj.coordinates
             else None
         )
 
@@ -356,14 +365,12 @@ class AccessAttemptAdmin(BaseAdmin, ExportCsvMixin):
     def has_change_permission(self, request, obj=None):
         return False
 
-
 @admin.register(PeriodicTask)
 class PeriodicTaskAdmin(BaseAdmin):
     list_display = ("name", "task", "enabled", "last_run_at")
     list_filter = ("enabled",)
     search_fields = ("name", "task")
     readonly_fields = ("last_run_at",)
-
 
 @admin.register(User)
 class UserAdmin(AdminDisplayModeMixin, BaseHistoryAdmin, DjangoUserAdmin):
@@ -447,7 +454,7 @@ class UserAdmin(AdminDisplayModeMixin, BaseHistoryAdmin, DjangoUserAdmin):
                     "first_name",
                     "last_name",
                     "role",
-                    "password",
+                    "password1",
                     "password2",
                 ),
             },
@@ -738,14 +745,15 @@ class ListingPhotoInline(admin.TabularInline):
 
     get_image_preview.short_description = "Preview"
 
+
 @admin.register(Listing)
 class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
     exclude = (
         "photos",
-        "description_en",
-        "description_ru",
-        "title_en",
-        "title_ru",
+        # "description_en",
+        # "description_ru",
+        # "title_en",
+        # "title_ru",
     )
     allowed_roles = ["ADMIN", "LANDLORD", "TENANT"]
     form = ListingForm # Используем ваш кастомный ListingForm
@@ -755,8 +763,8 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
 
     export_fields = [
         "title_en",
-        "title_de",
-        "title_ru",
+        # "title_de",
+        # "title_ru",
         "user__email",
         "price_per_night",
         "city",
@@ -779,7 +787,9 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
     # ИЗМЕНЕНИЕ: Используем get_user_full_name в list_display
     detailed_list_display = (
         "title_en",
-        "get_user_full_name",
+        "description_en",
+        # "title_de",
+        # "get_user_full_name",
         "city",
         "country",
         "price_per_night",
@@ -788,10 +798,10 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
         "is_active",
         "popularity",
         "created_at",
-        "get_location_latitude",
-        "get_location_longitude",
+        # "get_location_latitude",
+        # "get_location_longitude",
     )
-    simple_list_display = ("title_en", "get_user_full_name", "price_per_night") # И здесь!
+    simple_list_display = ("title_de", "get_user_full_name", "price_per_night") # И здесь!
     # readonly_fields = ("photo_preview",) # Это будет управляться get_readonly_fields
 
     history_list_display = [
@@ -820,7 +830,7 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
         "country",
         "address",
     )
-    simple_search_fields = ("title_en", "user__email")
+    simple_search_fields = ("title_de", "user__email")
 
     # НОВЫЙ МЕТОД: Для отображения почтового индекса из Location
     def get_location_postal_code(self, obj):
@@ -868,7 +878,16 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
     availability_range.short_description = "Availability Slots"
 
     def amenities_list(self, obj):
-        return ", ".join([a.name for a in obj.amenities.all()])
+        amenities = obj.amenities.all()
+        count = amenities.count()
+
+        if count == 0:
+            return "—"
+
+        shown = ", ".join([a.name for a in amenities[:2]])
+        if count > 2:
+            return f"{shown}, … ({count})"
+        return shown
 
     amenities_list.short_description = "Amenities"
 
@@ -925,24 +944,31 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
 
     export_top_listings.short_description = "Export top 5 listings to CSV"
 
-    # --- ОПРЕДЕЛЕНИЕ CUSTOM FIELDSETS ДЛЯ РАЗНЫХ РОЛЕЙ ---
-
     # Стандартные fieldsets для Админа (полный доступ)
     fieldsets = (
-        (None, {"fields": (
-            "user", "title_de", "description_de", "address", "city", "country",
-            "get_location_postal_code",  # <-- Используем новый метод
-            "price_per_night", "rooms", "property_type", "amenities", "is_active", "popularity", "created_at",
-            "get_location_latitude", "get_location_longitude",  # <-- Используем методы
-            "title_en", "description_en", "title_ru", "description_ru",
-            # "photos" # Это поле обычно не указывается здесь, если есть инлайны
-        )}),
+        ("Основная информация", {
+            "fields": (
+                "user",
+                "title_en", "description_en",
+                "address", "city", "country",
+                "price_per_night", "rooms", "property_type",
+                "amenities", "is_active",
+            )
+        }),
+        # Секция для отображения геоданных будет видна только на странице редактирования
+        ("Геолокация (только для просмотра)", {
+            "fields": (
+                "get_location_latitude",
+                "get_location_longitude",
+                "get_location_postal_code",
+            )
+        }),
     )
 
     # fieldsets для Лендлорда (без User и Popularity для редактирования, но видно)
     landlord_edit_fieldsets = (
         (None, {"fields": (
-            "id", "user", "title_de", "description_de", "address", "city", "country",
+            "id", "user", "title_en", "description_en", "address", "city", "country",
             "get_location_postal_code",  # <-- Используем новый метод
             "price_per_night", "rooms", "property_type", "amenities", "is_active", "popularity", "created_at"
         )}),
@@ -971,21 +997,22 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
 
     # --- Динамическое определение fieldsets ---
     def get_fieldsets(self, request, obj=None):
-        # При добавлении нового объекта (только для Админа/Лендлорда)
-        if not obj:
-            return self.fieldsets  # Возвращаем полный fieldsets для добавления
-
-        # Если Текущий пользователь - Тенант
-        if user_has_role(request.user, ["TENANT"]):
-            return self.tenant_view_fieldsets
-
-        # Если Текущий пользователь - Лендлорд
-        if user_has_role(request.user, ["LANDLORD"]):
-            # Лендлорд может видеть свои объявления, поля User и Popularity read-only
-            return self.landlord_edit_fieldsets
-
-        # Для Админа - использовать стандартные fieldsets
-        return super().get_fieldsets(request, obj)
+        if obj:  # Если объект существует, показываем все fieldsets
+            return super().get_fieldsets(request, obj)
+        # Если объекта нет (страница добавления),
+        # возвращаем fieldsets без секции геоданных.
+        return (
+            ("Основная информация", {
+                "fields": (
+                    "user",
+                    "title_en", "description_en",
+                    # "title_de", "description_de",
+                    "address", "city", "country",
+                    "price_per_night", "rooms", "property_type",
+                    "amenities", "is_active",
+                )
+            }),
+        )
 
     # --- Динамическое определение readonly_fields для формы редактирования ---
     def get_readonly_fields(self, request, obj=None):
@@ -996,8 +1023,13 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
             return ("popularity",) + base_readonly
 
         if user_has_role(user, ["ADMIN"]):
-            # ИСПРАВЛЕНО: Добавляем 'id' в readonly_fields для Админа
-            return ("id",) + base_readonly
+            return (
+                "id",
+                "get_location_latitude",
+                "get_location_longitude",
+                "get_location_postal_code",
+                "popularity",
+            ) + base_readonly
 
         if user_has_role(user, ["LANDLORD"]):
             if obj.user == user:
@@ -1027,35 +1059,35 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
         return super().get_readonly_fields(request, obj)
 
     # --- НОВЫЙ МЕТОД: Динамическое определение инлайнов ---
-    def get_inlines(self, request, obj=None):
-        inlines = []
-        # Добавляем PhotoInline
-        photo_inline_instance = ListingPhotoInline
-        if user_has_role(request.user, ["ADMIN", "LANDLORD"]):
-            # Лендлорд и Админ могут добавлять/удалять фото
-            photo_inline_instance.extra = 2
-            photo_inline_instance.can_delete = True
-        elif user_has_role(request.user, ["TENANT"]):
-            # Тенант только просматривает
-            photo_inline_instance.extra = 0
-            photo_inline_instance.can_delete = False
-        inlines.append(photo_inline_instance)
+    def get_inline_instances(self, request, obj=None):
+        inline_instances = []
+        for inline_class in self.inlines:
+            inline = inline_class(self.model, self.admin_site)
+            if isinstance(inline, ListingPhotoInline):
+                if user_has_role(request.user, ["TENANT"]):
+                    inline.can_delete = False
+                    inline.extra = 0
+                else:
+                    inline.can_delete = True
+                    inline.extra = 2
+            inline_instances.append(inline)
+        return inline_instances
 
-        # Если у вас есть AvailabilitySlotInline, добавьте его сюда с аналогичной логикой
-        # if 'AvailabilitySlotInline' in globals() and user_has_role(request.user, ["ADMIN", "LANDLORD"]):
-        #     inlines.append(AvailabilitySlotInline)
-        # elif 'AvailabilitySlotInline' in globals() and user_has_role(request.user, ["TENANT"]):
-        #      # Возможно, Тенант должен видеть availability, но не редактировать
-        #      # Создайте копию класса для инлайна, если хотите изменить его свойства для Тенанта
-        #      class TenantAvailabilitySlotInline(AvailabilitySlotInline):
-        #          extra = 0
-        #          can_delete = False
-        #          # Все поля readonly для Тенанта
-        #          def get_readonly_fields(self, request, obj=None):
-        #              return [f.name for f in self.model._meta.get_fields()]
-        #      inlines.append(TenantAvailabilitySlotInline)
-
-        return inlines
+    # def get_inlines(self, request, obj=None):
+    #     inlines = []
+    #     # Добавляем PhotoInline
+    #     photo_inline_instance = ListingPhotoInline
+    #     if user_has_role(request.user, ["ADMIN", "LANDLORD"]):
+    #         # Лендлорд и Админ могут добавлять/удалять фото
+    #         photo_inline_instance.extra = 2
+    #         photo_inline_instance.can_delete = True
+    #     elif user_has_role(request.user, ["TENANT"]):
+    #         # Тенант только просматривает
+    #         photo_inline_instance.extra = 0
+    #         photo_inline_instance.can_delete = False
+    #     inlines.append(photo_inline_instance)
+    #
+    #     return inlines
 
     # --- Ограничение видимости объектов для Лендлорда ---
     def get_queryset(self, request):
@@ -1584,7 +1616,6 @@ class LocationForm(forms.ModelForm):
     class Meta:
         model = Location
         fields = "__all__"
-
 
 @admin.register(Location)
 class LocationAdmin(AdminDisplayModeMixin, LeafletGeoAdmin, BaseHistoryAdmin):
