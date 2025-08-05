@@ -1,3 +1,0 @@
-# bookings/urls.py
-
-# urlpatterns = []

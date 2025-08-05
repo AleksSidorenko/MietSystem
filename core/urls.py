@@ -15,11 +15,12 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
+from analytics.views import AnalyticsViewSet
 from core.authentication import (
     CookieJWTAuthenticationScheme,
     OpenApiAuthenticationExtension,
 )
-from core.router import router  # <-- Импорт router из router.py (единственный)
+from core.router import router
 from core.views import (
     HealthCheckAPIView,
     configure_s3,
@@ -29,12 +30,14 @@ from core.views import (
     restart_celery,
     status_page_view,
 )
+from users.views import AllUsersForAdminDashboardView # Добавлен импорт
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include(router.urls)),
-    path("api/users/", include("users.urls")),
-    path("api/analytics/", include("analytics.urls")),
+    path("api/analytics/", AnalyticsViewSet.as_view({"get": "list"}), name="analytics"),
+    path("api/", include(router.urls)), # Все DRF-эндпоинты теперь здесь
+    path("api/users/all_users_for_admin_dashboard/", AllUsersForAdminDashboardView.as_view(), name="all_users_for_admin_dashboard"),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/docs/",
@@ -56,13 +59,13 @@ urlpatterns = [
     path("restart-celery/", restart_celery, name="restart_celery"),
     path(
         "logout/action/", logout_view, name="logout"
-    ),  # [Изменено] Путь для logout_view
+    ),
     path(
         "logout/", logout_page_view, name="logout_page"
-    ),  # [Добавлено] Путь для страницы выхода
+    ),
     path(
         "login/", login_view, name="login"
-    ),  # [Добавлено] Маршрут для кастомного логина
+    ),
 ]
 
 urlpatterns += i18n_patterns(
@@ -70,5 +73,4 @@ urlpatterns += i18n_patterns(
     prefix_default_language=False,
 )
 
-# if settings.DEBUG:
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

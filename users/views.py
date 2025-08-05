@@ -26,9 +26,39 @@ from users.serializers import (
     UserSerializer,
 )
 from users.tasks import send_reset_password_email, send_verification_email
+#--------
+
+from rest_framework.views import APIView
+# from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 User = get_user_model()
 
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+# users/views.py
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from .models import User
+from .serializers import UserSerializer
+
+class AllUsersForAdminDashboardView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+# class AllUsersForAdminDashboardView(APIView):
+#     authentication_classes = [SessionAuthentication]
+#     permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        print(f"[DEBUG] AllUsersForAdminDashboardView accessed by {request.user}")
+        role = request.query_params.get("role", None)
+        users = User.objects.all()
+        if role:
+            users = users.filter(role=role.upper())
+        user_data = users.values("id", "email", "first_name", "last_name", "role", "is_active")
+        return Response({"users": list(user_data)})
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = (

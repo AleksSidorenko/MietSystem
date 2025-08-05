@@ -18,18 +18,23 @@ from core.celery import app as celery_app
 from botocore.exceptions import ClientError
 from decouple import config
 import boto3
+from datetime import datetime
+from django.utils import timezone
+from datetime import datetime, timezone, timedelta
 
 try:
     from slack_sdk import WebClient
 except ImportError:
     WebClient = None
 
+
 class HealthCheckService:
     def __init__(self):
         self.redis_client = Redis.from_url(settings.CACHES['default']['LOCATION'])
         self.s3_client = boto3.client('s3')
         self.s3_bucket = settings.AWS_STORAGE_BUCKET_NAME
-        self.slack_client = WebClient(token=config('SLACK_TOKEN', default='')) if WebClient and config('SLACK_TOKEN', default='') else None
+        self.slack_client = WebClient(token=config('SLACK_TOKEN', default='')) if WebClient and config('SLACK_TOKEN',
+                                                                                                       default='') else None
 
     def run_all_checks(self, user=None):
         User = get_user_model()
@@ -47,11 +52,14 @@ class HealthCheckService:
                 "tenants": User.objects.filter(role="TENANT").count(),
             },
             "stats": {
-                "listings": Listing.objects.filter(user=user).count() if user and user.role == "LANDLORD" else Listing.objects.count(),
-                "bookings": Booking.objects.filter(user=user).count() if user and user.role == "TENANT" else Booking.objects.count(),
+                "listings": Listing.objects.filter(
+                    user=user).count() if user and user.role == "LANDLORD" else Listing.objects.count(),
+                "bookings": Booking.objects.filter(
+                    user=user).count() if user and user.role == "TENANT" else Booking.objects.count(),
                 "reviews": Review.objects.count(),
                 "locations": Location.objects.count(),
-                "views": ViewHistory.objects.filter(user=user).count() if user and user.role == "TENANT" else ViewHistory.objects.count(),
+                "views": ViewHistory.objects.filter(
+                    user=user).count() if user and user.role == "TENANT" else ViewHistory.objects.count(),
             },
             "system_metrics": {
                 "cpu_percent": psutil.cpu_percent(),
@@ -60,7 +68,6 @@ class HealthCheckService:
                 "celery_tasks": PeriodicTask.objects.count(),
             },
         }
-        # [Изменение] Добавлен параметр user для фильтрации stats по текущему пользователю
         failed_services = [
             key for key, value in data.items()
             if key in ['database', 'redis', 'celery', 's3', 'localization'] and value['status'] == 'offline'
@@ -80,46 +87,53 @@ class HealthCheckService:
     def check_redis(self):
         try:
             start = now()
+            # Проверяем соединение с Redis
+            print(f"Attempting Redis ping to {settings.CACHES['default']['LOCATION']}")
+            self.redis_client.ping()
+            print("Redis ping successful")
             cache.set("healthcheck_test", "ok", timeout=5)
+            print("Redis cache set successful")
             info = self.redis_client.info()
+            print("Redis info retrieved")
             keys = info['db0']['keys'] if 'db0' in info else 0
             hits = info.get('keyspace_hits', 0)
             misses = info.get('keyspace_misses', 0)
             hit_rate = (hits / (hits + misses) * 100) if (hits + misses) > 0 else 0
             latency = (now() - start).total_seconds() * 1000
             status = "online" if latency < 100 else "warning"
+
+            # Сбор данных для hit_rate_history
+            hit_rate_history = []
+            for i in range(24):
+                hour_ago = datetime.now(timezone.utc) - timedelta(hours=i)  # Исправлено
+                key = f'hit_rate_{hour_ago.strftime("%Y%m%d%H")}'
+                hit_rate_value = self.redis_client.get(key)
+                hit_rate_history.append(float(hit_rate_value) if hit_rate_value else 0)
+                print(f"Checked Redis key {key}: {hit_rate_value}")
+            hit_rate_history.reverse()
+
             return {
                 "status": status,
                 "latency_ms": round(latency, 2),
                 "keys": keys,
-                "hit_rate": round(hit_rate, 2)
+                "hit_rate": round(hit_rate, 2),
+                "used_memory_human": info.get('used_memory_human', 'N/A'),
+                "hit_rate_history": hit_rate_history
             }
         except Exception as e:
+            print(f"Redis check failed: {str(e)}")
             return {"status": "offline", "error": str(e)}
 
     def check_celery(self):
         try:
-            inspect = celery_app.control.inspect()
-
-            stats = inspect.stats()
-            active_tasks_raw = inspect.active() or {}
-            scheduled_tasks_raw = inspect.scheduled() or {}
-
-            active_tasks = sum(len(tasks) for tasks in active_tasks_raw.values()) if active_tasks_raw else 0
-            scheduled_tasks = sum(len(tasks) for tasks in scheduled_tasks_raw.values()) if scheduled_tasks_raw else 0
-
-            return {
-                "status": "online" if stats else "offline",
-                "active_tasks": active_tasks,
-                "queued_tasks": scheduled_tasks
-            }
-
+            result = celery_app.control.inspect().ping()
+            return {"status": "online" if result else "offline"}
         except Exception as e:
             return {"status": "offline", "error": str(e)}
 
     def check_s3(self):
         if not self.s3_bucket:
-            return {"status": "offline", "error": "S3 bucket name not configured."}
+            return {"status": "offline", "error": "S3 bucket name not configured"}
         try:
             self.s3_client.head_bucket(Bucket=self.s3_bucket)
             return {"status": "online"}
@@ -128,21 +142,22 @@ class HealthCheckService:
 
     def check_localization(self):
         try:
-            langs = [lang[0] for lang in settings.LANGUAGES]
-            return {"status": "online", "languages": langs}
+            return {"status": "online"}
         except Exception as e:
             return {"status": "offline", "error": str(e)}
 
     def notify_sentry(self, failed_services):
         if settings.SENTRY_DSN:
-            sentry_sdk.capture_message(f"Health check failed for services: {', '.join(failed_services)}")
+            with sentry_sdk.push_scope() as scope:
+                scope.set_tag("service_failure", ",".join(failed_services))
+                sentry_sdk.capture_message(f"Service failure detected: {', '.join(failed_services)}")
 
     def notify_slack(self, failed_services):
-        if self.slack_client and failed_services:
+        if self.slack_client and config('SLACK_CHANNEL', default=''):
             try:
                 self.slack_client.chat_postMessage(
-                    channel='#monitoring',
-                    text=f"🚨 Health check failed for: {', '.join(failed_services)}"
+                    channel=config('SLACK_CHANNEL'),
+                    text=f"🚨 Service failure detected: {', '.join(failed_services)}"
                 )
             except Exception as e:
-                sentry_sdk.capture_exception(e)
+                print(f"Failed to notify Slack: {e}")

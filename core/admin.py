@@ -1,4 +1,4 @@
-### `core/admin.py`
+# core/admin.py
 
 from django.contrib import admin
 from django_otp.admin import OTPAdminSite

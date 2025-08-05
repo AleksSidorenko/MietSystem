@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_celery_beat",
     "rest_framework",
     "rest_framework_simplejwt",
     "django_filters",
@@ -74,7 +75,6 @@ INSTALLED_APPS = [
     "axes",
     "allauth",
     "allauth.account",
-    "django_celery_beat",
     "django_ratelimit",
     "storages",
     "simple_history",
@@ -171,6 +171,7 @@ DATABASES = {
     }
 }
 
+# Настройки кэша
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -283,13 +284,15 @@ ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_EMAIL_REQUIRED = True
 FRONTEND_URL = config("FRONTEND_URL")
 
+# Настройки Celery
 CELERY_BROKER_URL = config("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = config("REDIS_URL")
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-
+CELERY_TIMEZONE = 'UTC'
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True  # Для устранения предупреждения
 CELERY_BEAT_SCHEDULE = {
     "update-popularity-every-hour": {
         "task": "utils.tasks.update_popularity",

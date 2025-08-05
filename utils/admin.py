@@ -4,7 +4,7 @@
 import csv
 
 from allauth.account.models import EmailAddress
-from axes.models import AccessAttempt, AccessFailureLog, AccessLog
+from axes.models import AccessAttempt, AccessLog, AccessFailureLog
 from django import forms
 from django.conf import settings
 from django.contrib import admin, messages
@@ -24,10 +24,10 @@ from django.utils.html import format_html  # Для avatar_img
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django_celery_beat.models import (
-    ClockedSchedule,
-    CrontabSchedule,
-    IntervalSchedule,
     PeriodicTask,
+    IntervalSchedule,
+    CrontabSchedule,
+    ClockedSchedule,
     SolarSchedule,
 )
 from django_otp.plugins.otp_totp.models import TOTPDevice
@@ -45,9 +45,11 @@ from reviews.models import Review
 from users.forms import CustomUserChangeForm, CustomUserCreationForm
 from users.models import User
 from utils.role_utils import user_has_role
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Prefetch
+from allauth.account.models import EmailAddress
+
+
 
 
 
@@ -62,7 +64,6 @@ class DefaultLocationForm(forms.ModelForm):
 @admin.register(Amenity)
 class AmenityAdmin(admin.ModelAdmin):
     pass
-
 
 class AvailabilitySlotInline(admin.TabularInline):
     model = AvailabilitySlot
@@ -317,18 +318,32 @@ class AdminDisplayModeMixin:
     def search_fields(self):
         return self._get_admin_attr("search_fields")
 
-# Отмена регистрации ненужных моделей
+
+admin.site.unregister(PeriodicTask)
+admin.site.unregister(IntervalSchedule)
 admin.site.unregister(AccessLog)
 admin.site.unregister(AccessFailureLog)
 admin.site.unregister(ClockedSchedule)
 admin.site.unregister(CrontabSchedule)
 admin.site.unregister(SolarSchedule)
-admin.site.unregister(IntervalSchedule)
 admin.site.unregister(TOTPDevice)
 admin.site.unregister(EmailAddress)
 admin.site.unregister(AccessAttempt)
-admin.site.unregister(PeriodicTask)
 
+
+# === celery-beat PeriodicTask ===
+@admin.register(PeriodicTask)
+class PeriodicTaskAdmin(BaseAdmin):
+    list_display = ("name", "task", "enabled", "last_run_at")
+    list_filter = ("enabled",)
+    search_fields = ("name", "task")
+    readonly_fields = ("last_run_at",)
+
+# === IntervalSchedule ===
+@admin.register(IntervalSchedule)
+class IntervalScheduleAdmin(BaseAdmin):
+    list_display = ("every", "period")
+    list_filter = ("period",)
 
 @admin.register(TOTPDevice)
 class TOTPDeviceAdmin(BaseAdmin):
@@ -364,13 +379,6 @@ class AccessAttemptAdmin(BaseAdmin, ExportCsvMixin):
 
     def has_change_permission(self, request, obj=None):
         return False
-
-@admin.register(PeriodicTask)
-class PeriodicTaskAdmin(BaseAdmin):
-    list_display = ("name", "task", "enabled", "last_run_at")
-    list_filter = ("enabled",)
-    search_fields = ("name", "task")
-    readonly_fields = ("last_run_at",)
 
 @admin.register(User)
 class UserAdmin(AdminDisplayModeMixin, BaseHistoryAdmin, DjangoUserAdmin):
