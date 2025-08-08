@@ -38,6 +38,29 @@ class HealthCheckService:
 
     def run_all_checks(self, user=None):
         User = get_user_model()
+
+        stats_data = {
+            "listings": Listing.objects.count(),  # Общее количество объявлений для всех
+            "bookings": Booking.objects.count(),  # Общее количество бронирований для всех
+            "reviews": Review.objects.count(),
+            "locations": Location.objects.count(),
+            "views": ViewHistory.objects.count(),
+        }
+
+        # Если пользователь аутентифицирован, корректируем данные
+        if user and user.is_authenticated:
+            if user.role == "TENANT":
+                # Для Тенанта показываем его бронирования
+                stats_data["bookings"] = Booking.objects.filter(user=user).count()
+                # Показываем количество просмотренных объявлений
+                stats_data["views"] = ViewHistory.objects.filter(user=user).count()
+            elif user.role == "LANDLORD":
+                # Для Лендлорда показываем его объявления и бронирования
+                stats_data["listings"] = Listing.objects.filter(user=user).count()
+                stats_data["bookings"] = Booking.objects.filter(listing__user=user).count()
+                # Показываем количество просмотренных объявлений
+                stats_data["views"] = ViewHistory.objects.filter(listing__user=user).count()
+
         data = {
             "time": now(),
             "database": self.check_database(),
@@ -51,16 +74,7 @@ class HealthCheckService:
                 "landlords": User.objects.filter(role="LANDLORD").count(),
                 "tenants": User.objects.filter(role="TENANT").count(),
             },
-            "stats": {
-                "listings": Listing.objects.filter(
-                    user=user).count() if user and user.role == "LANDLORD" else Listing.objects.count(),
-                "bookings": Booking.objects.filter(
-                    user=user).count() if user and user.role == "TENANT" else Booking.objects.count(),
-                "reviews": Review.objects.count(),
-                "locations": Location.objects.count(),
-                "views": ViewHistory.objects.filter(
-                    user=user).count() if user and user.role == "TENANT" else ViewHistory.objects.count(),
-            },
+            "stats": stats_data,
             "system_metrics": {
                 "cpu_percent": psutil.cpu_percent(),
                 "memory_percent": psutil.virtual_memory().percent,
@@ -68,6 +82,7 @@ class HealthCheckService:
                 "celery_tasks": PeriodicTask.objects.count(),
             },
         }
+
         failed_services = [
             key for key, value in data.items()
             if key in ['database', 'redis', 'celery', 's3', 'localization'] and value['status'] == 'offline'

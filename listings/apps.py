@@ -1,5 +1,4 @@
-### listings/apps.py
-
+# listings/apps.py
 from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
 
@@ -11,3 +10,5 @@ class ListingsConfig(AppConfig):
 
     def ready(self):
         import listings.translation
+        import listings.signals
+

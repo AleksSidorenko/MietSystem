@@ -1,5 +1,4 @@
 # users/views.py
-
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_protect
@@ -10,7 +9,6 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
-
 from bookings.permissions import IsOwnerOrAdmin
 from users.models import User, VerificationToken
 from users.permissions import (
@@ -26,39 +24,36 @@ from users.serializers import (
     UserSerializer,
 )
 from users.tasks import send_reset_password_email, send_verification_email
-#--------
-
 from rest_framework.views import APIView
-# from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import SessionAuthentication
+from rest_framework import generics
+from django_ratelimit.core import is_ratelimited
+
+from django.utils.translation import gettext as _
+from rest_framework import serializers
+from bookings.models import Booking
+from listings.models import Listing
+
+
+
 
 User = get_user_model()
-
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAuthenticated
-
-# users/views.py
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
-from .models import User
-from .serializers import UserSerializer
 
 class AllUsersForAdminDashboardView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
-    queryset = User.objects.all()
 
-# class AllUsersForAdminDashboardView(APIView):
-#     authentication_classes = [SessionAuthentication]
-#     permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        print(f"[DEBUG] AllUsersForAdminDashboardView accessed by {request.user}")
-        role = request.query_params.get("role", None)
-        users = User.objects.all()
+    def get_queryset(self):
+        role = self.request.query_params.get("role", None)
+        queryset = User.objects.all()
         if role:
-            users = users.filter(role=role.upper())
-        user_data = users.values("id", "email", "first_name", "last_name", "role", "is_active")
-        return Response({"users": list(user_data)})
+            queryset = queryset.filter(role=role.upper())
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({"users": serializer.data})
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = (
@@ -87,29 +82,72 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         )
         return response
 
-
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    def get_serializer(self, *args, **kwargs):
+        serializer = super().get_serializer(*args, **kwargs)
+
+        # Если это ListSerializer, то работаем с его child
+        target_serializer = serializer.child if isinstance(serializer, serializers.ListSerializer) else serializer
+
+        # Ограничиваем поле role, если не админ
+        if not self.request.user.is_authenticated or self.request.user.role != "ADMIN":
+            if 'role' in target_serializer.fields:
+                target_serializer.fields['role'].read_only = True
+
+        return serializer
+
     def get_permissions(self):
         if not hasattr(self, "request") or self.request is None:
-            return [
-                IsAuthenticated()
-            ]  # ← позволяет drf-spectacular сгенерировать схему без авторизации
+            return [IsAuthenticated()]
 
-        if self.action == "create":
-            return [IsAuthenticated(), IsTenant()]
+        # Публичные методы без авторизации
+        if self.action in ["password_reset", "password_reset_confirm", "email_verification"]:
+            return [AllowAny()]
+
+        # Создание только для админа
+        elif self.action == "create":
+            return [IsAuthenticated(), IsAdmin()]
+
+        # Остальные требуют авторизации
         elif self.action in ["update", "partial_update", "destroy"]:
-            return [IsAuthenticated(), IsOwnerOrAdmin()]
+            return [IsAuthenticated(), IsSelfOrAdmin()]
 
+        # Остальное по умолчанию
         return [IsAuthenticated()]
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated and user.role == "ADMIN":
-            return User.objects.all()
-        return User.objects.none()  # Только админ видит других
+
+        if not user.is_authenticated:
+            return User.objects.none()
+
+        if user.role == "ADMIN":
+            return User.objects.all().order_by('date_joined')
+
+        elif user.role == "LANDLORD":
+            # Арендаторы, которые бронировали объявления лендлорда (listing.user == user)
+            tenant_ids = Booking.objects.filter(
+                listing__user=user
+            ).values_list("user_id", flat=True).distinct()
+
+            return User.objects.filter(
+                id__in=tenant_ids
+            ).order_by('date_joined')
+
+        elif user.role == "TENANT":
+            # Лендлорды, у которых этот тенант бронировал объявления
+            landlord_ids = Booking.objects.filter(
+                user=user
+            ).values_list("listing__user_id", flat=True).distinct()
+
+            return User.objects.filter(
+                id__in=landlord_ids
+            ).order_by('date_joined')
+
+        return User.objects.none()
 
     @action(
         detail=False,
@@ -125,14 +163,16 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
         elif request.method == "PATCH":
-            allowed_fields = ["first_name", "last_name", "email", "phone_number"]
-            data = {
-                field: request.data[field]
-                for field in allowed_fields
-                if field in request.data
-            }
-
-            serializer = self.get_serializer(user, data=data, partial=True)
+            if user.role == "ADMIN":
+                data_to_update = request.data
+            else:
+                allowed_fields = ["first_name", "last_name", "email", "phone_number"]
+                data_to_update = {
+                    field: request.data[field]
+                    for field in allowed_fields
+                    if field in request.data
+                }
+            serializer = self.get_serializer(user, data=data_to_update, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -140,10 +180,20 @@ class UserViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
 
-    @action(detail=False, methods=["post"], permission_classes=[])
-    @csrf_protect
-    @ratelimit(group="ip", rate="100/m")
+    @action(detail=False, methods=["post"], permission_classes=[AllowAny])
     def email_verification(self, request):
+        # Rate limiting без декораторов
+        was_limited = is_ratelimited(
+            request=request,
+            group='email-verification',
+            key='ip',
+            rate='100/m',
+            method='POST',
+            increment=True
+        )
+        if was_limited:
+            return Response({"error": "Too many requests"}, status=429)
+
         token = request.data.get("token")
         try:
             verification_token = VerificationToken.objects.get(
@@ -165,26 +215,30 @@ class UserViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    @action(detail=False, methods=["post"], permission_classes=[])
-    @csrf_protect
-    @ratelimit(group="ip", rate="100/m")
+    @action(detail=False, methods=["post"], permission_classes=[AllowAny])
     def password_reset(self, request):
+        was_limited = is_ratelimited(
+            request=request, group='password-reset', key='ip', rate='100/m', method='POST', increment=True
+        )
+        if was_limited:
+            return Response({"error": "Too many requests"}, status=429)
+
         email = request.data.get("email")
         try:
             user = User.objects.get(email=email)
             send_reset_password_email.delay(user.id)
-            return Response(
-                {"message": _("Password reset email sent")}, status=status.HTTP_200_OK
-            )
+            return Response({"message": _("Password reset email sent")}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
-            return Response(
-                {"error": _("User not found")}, status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": _("User not found")}, status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=False, methods=["post"], permission_classes=[])
-    @csrf_protect
-    @ratelimit(group="ip", rate="100/m")
+    @action(detail=False, methods=["post"], permission_classes=[AllowAny])
     def password_reset_confirm(self, request):
+        was_limited = is_ratelimited(
+            request=request, group='password-reset-confirm', key='ip', rate='100/m', method='POST', increment=True
+        )
+        if was_limited:
+            return Response({"error": "Too many requests"}, status=429)
+
         token = request.data.get("token")
         password = request.data.get("password")
         try:
@@ -195,14 +249,9 @@ class UserViewSet(viewsets.ModelViewSet):
             user.set_password(password)
             user.save()
             verification_token.delete()
-            return Response(
-                {"message": _("Password reset successful")}, status=status.HTTP_200_OK
-            )
+            return Response({"message": _("Password reset successful")}, status=status.HTTP_200_OK)
         except VerificationToken.DoesNotExist:
-            return Response(
-                {"error": _("Invalid or expired token")},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({"error": _("Invalid or expired token")}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=["get", "post"], permission_classes=[IsAuthenticated])
     # @csrf_protect

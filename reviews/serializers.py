@@ -1,5 +1,4 @@
 # reviews/serializers.py
-
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
@@ -11,6 +10,7 @@ class ReviewSerializer(TranslationSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = [
+            'url',
             "id",
             "user",
             "booking",
@@ -27,19 +27,25 @@ class ReviewSerializer(TranslationSerializerMixin, serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        booking = data["booking"]
-        if booking.status != "CONFIRMED":
-            raise serializers.ValidationError(
-                _("Review can only be created for confirmed bookings")
-            )
-        if booking.user != self.context["request"].user:
-            raise serializers.ValidationError(
-                _("Only the booking owner can create a review")
-            )
-        if booking.end_date > timezone.now().date():
-            raise serializers.ValidationError(
-                _("Review can only be created after the booking end date")
-            )
+        request = self.context["request"]
+
+        # Проверки только при создании нового отзыва
+        if request.method == "POST":
+            booking = data["booking"]
+
+            if booking.status != "CONFIRMED":
+                raise serializers.ValidationError(
+                    _("Review can only be created for confirmed bookings")
+                )
+            if booking.user != request.user:
+                raise serializers.ValidationError(
+                    _("Only the booking owner can create a review")
+                )
+            if booking.end_date > timezone.now().date():
+                raise serializers.ValidationError(
+                    _("Review can only be created after the booking end date")
+                )
+
         return data
 
     def validate_comment(self, value):

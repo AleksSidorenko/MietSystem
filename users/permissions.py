@@ -1,192 +1,60 @@
-### ✅ users/permissions.py
-
-# from rest_framework.permissions import BasePermission, SAFE_METHODS
-#
-#
-# class IsAdmin(BasePermission):
-#     def has_permission(self, request, view):
-#         return request.user.is_authenticated and request.user.role == 'ADMIN'
-#
-#
-# class IsLandlord(BasePermission):
-#     def has_permission(self, request, view):
-#         return request.user.is_authenticated and request.user.role == 'LANDLORD'
-#
-#
-# class IsTenant(BasePermission):
-#     def has_permission(self, request, view):
-#         return request.user.is_authenticated and request.user.role == 'TENANT'
-#
-#
-# class IsSelfOrAdmin(BasePermission):
-#     def has_object_permission(self, request, view, obj):
-#         return request.user == obj or request.user.role == 'ADMIN'
-#
-#
-# class IsAuthenticated(BasePermission):
-#     def has_permission(self, request, view):
-#         return request.user.is_authenticated
-
-# # users/permissions.py
-#
-# from rest_framework.permissions import BasePermission, SAFE_METHODS
-#
-#
-# class IsAdmin(BasePermission):
-#     def has_permission(self, request, view):
-#         return request.user.is_authenticated and request.user.role == 'ADMIN'
-#
-#
-# class IsLandlord(BasePermission):
-#     def has_permission(self, request, view):
-#         return request.user.is_authenticated and request.user.role == 'LANDLORD'
-#
-#
-# class IsTenant(BasePermission):
-#     def has_permission(self, request, view):
-#         return request.user.is_authenticated and request.user.role == 'TENANT'
-#
-#
-# class IsSelfOrAdmin(BasePermission):
-#     """
-#     Доступ к пользователю:
-#     - сам пользователь может просматривать/обновлять свой профиль
-#     - админ может всё
-#     """
-#     def has_object_permission(self, request, view, obj):
-#         return request.user == obj or request.user.role == 'ADMIN'
-#
-# class IsAuthenticated(BasePermission):
-#     """Любой авторизованный пользователь"""
-#     def has_permission(self, request, view):
-#         return request.user.is_authenticated
-
-
-# # users/permissions.py
-#
-# from rest_framework.permissions import BasePermission
-#
-# class IsAdminUser(BasePermission):
-#     """Доступ только для админов"""
-#     def has_permission(self, request, view):
-#         return request.user and request.user.is_authenticated and request.user.role == "ADMIN"
-#
-# class IsSelfOrAdmin(BasePermission):
-#     """Пользователь может менять себя, либо админ"""
-#     def has_object_permission(self, request, view, obj):
-#         return request.user == obj or (request.user.is_authenticated and request.user.role == "ADMIN")
-#
-# class IsTenant(BasePermission):
-#     """Только TENANT"""
-#     def has_permission(self, request, view):
-#         return request.user.is_authenticated and request.user.role == "TENANT"
-#
-# class IsLandlord(BasePermission):
-#     """Только LANDLORD"""
-#     def has_permission(self, request, view):
-#         return request.user.is_authenticated and request.user.role == "LANDLORD"
-#
-# class IsAdmin(BasePermission):
-#     """Полные права для ADMIN"""
-#     def has_permission(self, request, view):
-#         return request.user.is_authenticated and (
-#             request.user.role == "ADMIN" or request.user.is_superuser
-#         )
-#     def has_object_permission(self, request, view, obj):
-#         return self.has_permission(request, view)
-#
-# class IsAuthenticated(BasePermission):
-#     """Любой авторизованный пользователь"""
-#     def has_permission(self, request, view):
-#         return request.user.is_authenticated
-
-
 # users/permissions.py
-from rest_framework.permissions import SAFE_METHODS, BasePermission
+from rest_framework import permissions
 
 
-class IsAdminUser(BasePermission):
+class IsAdminUser(permissions.BasePermission):
     def has_permission(self, request, view):
         return (
-            request.user
-            and request.user.is_authenticated
-            and request.user.role == "ADMIN"
+                request.user
+                and request.user.is_authenticated
+                and request.user.role == "ADMIN"
         )
 
 
-class IsSelfOrAdmin(BasePermission):
+class IsSelfOrAdmin(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user == obj or (
-            request.user.is_authenticated and request.user.role == "ADMIN"
+                request.user.is_authenticated and request.user.role == "ADMIN"
         )
 
 
-class IsTenant(BasePermission):
-    """
-    Разрешает доступ только арендаторам.
-    """
-
+class IsTenant(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.role == "TENANT"
 
     def has_object_permission(self, request, view, obj):
-        # Арендатор имеет права только на свои собственные объекты.
-        # Например, для бронирования это означает, что арендатор может взаимодействовать
-        # только со своими собственными бронированиями (obj.user == request.user).
-        # Эту логику лучше вынести в IsBookingOwnerOrLandlord,
-        # если IsTenant используется только для разрешения создания бронирований.
-        # В данном случае, пока оставим его простым, если не требуется для других объектов.
-        return True  # Или False, если IsTenant используется только для create/list, а не для деталей
+        return True
 
 
-class IsLandlord(BasePermission):
-    """
-    Разрешает доступ только арендодателям.
-    """
-
+class IsLandlord(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.role == "LANDLORD"
 
     def has_object_permission(self, request, view, obj):
-        # Арендодатель имеет права на свои объекты размещения и связанные с ними бронирования.
-        # Здесь также может потребоваться специфическая логика для разных типов объектов.
-        return True  # Или False
+        return True
 
 
-class IsAdmin(BasePermission):
-    """
-    Разрешает доступ только администраторам (роль ADMIN или is_superuser).
-    Администраторы имеют полный доступ ко всем объектам.
-    """
-
+class IsAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
-        # Администратор имеет общие разрешения, чтобы видеть все представления
         return request.user.is_authenticated and (
-            request.user.role == "ADMIN" or request.user.is_superuser
+                request.user.role == "ADMIN" or request.user.is_superuser
         )
 
     def has_object_permission(self, request, view, obj):
-        # Администратор имеет полные права на уровне объекта.
         return request.user.is_authenticated and (
-            request.user.role == "ADMIN" or request.user.is_superuser
+                request.user.role == "ADMIN" or request.user.is_superuser
         )
 
 
-class IsAuthenticated(BasePermission):
-    """
-    Разрешает доступ только аутентифицированным пользователям.
-    """
-
+class IsAuthenticated(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        # Для базового IsAuthenticated, разрешения на уровне объекта обычно не требуются,
-        # так как это разрешение обычно комбинируется с более специфичными.
-        return True  # Или False, в зависимости от контекста
+        return True
 
 
-class IsBookingOwnerOrLandlord(BasePermission):
+class IsBookingOwnerOrLandlord(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.user.is_superuser or request.user.role == "ADMIN":
             return True
@@ -194,4 +62,52 @@ class IsBookingOwnerOrLandlord(BasePermission):
             return True
         if obj.listing.user == request.user:
             return True
+        return False
+
+
+class IsAdminOrLandlord(permissions.BasePermission):
+    def has_permission(self, request, view):
+        user = request.user
+        return user.is_authenticated and user.role in ['ADMIN', 'LANDLORD']
+
+class ReviewPermissions(permissions.BasePermission):
+    def has_permission(self, request, view):
+        user = request.user
+
+        # Разрешаем всем просматривать список отзывов (list)
+        if view.action == 'list' and request.method == 'GET':
+            return True
+
+        # Разрешаем доступ к деталям (retrieve) для аутентифицированных пользователей
+        if view.action == 'retrieve' and request.method == 'GET':
+            return user.is_authenticated
+
+        # Разрешаем создавать отзывы только для аутентифицированных TENANT
+        if view.action == 'create' and request.method == 'POST':
+            return user.is_authenticated and user.role == "TENANT"
+
+        # Для остальных действий (update, delete, approve)
+        # мы проверяем, аутентифицирован ли пользователь.
+        return user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+
+        # Администратор имеет полный доступ ко всему
+        if user.role == "ADMIN":
+            return True
+
+        # Разрешаем просматривать детали отзыва (retrieve) для всех, у кого есть права
+        # (это уже было проверено в has_permission)
+        if view.action == 'retrieve' and request.method == 'GET':
+            return True
+
+        # Разрешаем редактирование и удаление только владельцу отзыва
+        if view.action in ['update', 'partial_update', 'destroy']:
+            return obj.user == user
+
+        # Разрешаем одобрение (approve) только администратору
+        if view.action == 'approve':
+            return user.role == "ADMIN"
+
         return False

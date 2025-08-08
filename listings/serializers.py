@@ -1,12 +1,9 @@
 # listings/serializers.py
-
 import io
-
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import OpenApiTypes, extend_schema_field
 from PIL import Image
 from rest_framework import serializers
-
 from locations.serializers import LocationSerializer
 from utils.translation import TranslationSerializerMixin
 from listings.models import Listing, ListingPhoto
@@ -16,8 +13,8 @@ class AvailabilitySlotSerializer(serializers.Serializer):
     date = serializers.DateField()
     is_available = serializers.BooleanField()
 
-
 class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='listing-detail')  # <-- НОВОЕ ПОЛЕ
     availability = serializers.SerializerMethodField()
     location = LocationSerializer(read_only=True)
     main_photo = serializers.SerializerMethodField()
@@ -46,6 +43,7 @@ class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer)
         ]
 
     # --- НОВЫЙ МЕТОД ДЛЯ ПОЛУЧЕНИЯ ГЛАВНОГО ФОТО ---
+    @extend_schema_field(str)
     def get_main_photo(self, obj):
         """
         Возвращает URL главной фотографии (первой по порядку).
@@ -63,6 +61,7 @@ class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer)
     class Meta:
         model = Listing
         fields = [
+            "url",  # <-- ДОБАВЛЕНО ПОЛЕ
             "id",
             "user",
             "title",
@@ -135,12 +134,7 @@ class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer)
                         "Each availability item must be a dictionary with 'date' (string) and 'is_available' (boolean)"
                     )
                 )
-            # Опционально: можно добавить валидацию формата даты, если это необходимо
-            # from datetime import date
-            # try:
-            #     date.fromisoformat(date_str)
-            # except ValueError:
-            #     raise serializers.ValidationError(_("Invalid date format in availability. Use YYYY-MM-DD."))
+
         return value
 
 

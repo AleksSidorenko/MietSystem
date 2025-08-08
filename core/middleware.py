@@ -1,5 +1,4 @@
 # core/middleware.py
-
 from rest_framework.response import Response
 
 

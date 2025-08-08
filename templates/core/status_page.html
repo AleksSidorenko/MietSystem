@@ -281,10 +281,10 @@
             <h2 class="text-lg font-semibold mb-1">{% trans "My Dashboard" %}</h2>
             {% if request.user.role == 'LANDLORD' %}
             <p class="text-sm">{% trans "My Listings" %}: <strong>{{ data.stats.listings|default:0 }}</strong> <a href="/api/listings/" class="text-blue-500 hover:underline ml-1">{% trans "View all listings" %}</a></p>
-            <p class="text-sm">{% trans "New Bookings" %}: <strong>{{ data.stats.bookings|default:0 }}</strong> <a href="/api/bookings/" class="text-blue-500 hover:underline ml-1">{% trans "View all bookings" %}</a></p>
+            <p class="text-sm">{% trans "My Bookings" %}: <strong>{{ data.stats.bookings|default:0 }}</strong> <a href="/api/bookings/" class="text-blue-500 hover:underline ml-1">{% trans "View all bookings" %}</a></p>
             {% elif request.user.role == 'TENANT' %}
             <p class="text-sm">{% trans "My Bookings" %}: <strong>{{ data.stats.bookings|default:0 }}</strong> <a href="/api/bookings/" class="text-blue-500 hover:underline ml-1">{% trans "View all bookings" %}</a></p>
-            <p class="text-sm">{% trans "Viewed Listings" %}: <strong>{{ data.stats.views|default:0 }}</strong> <a href="/api/listings/" class="text-blue-500 hover:underline ml-1">{% trans "View all listings" %}</a></p>
+            <p class="text-sm">{% trans "Total Listings" %}: <strong>{{ data.stats.listings|default:0 }}</strong> <a href="/api/listings/" class="text-blue-500 hover:underline ml-1">{% trans "View all listings" %}</a></p>
             {% elif request.user.role == 'ADMIN' %}
             <p class="text-sm">{% trans "You have full access to system monitoring and user management." %}</p>
             <div class="grid grid-cols-2 gap-2 text-sm mt-1">

@@ -1,9 +1,9 @@
 # bookings/models.py
-
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from simple_history.models import HistoricalRecords
+
 
 
 class Booking(models.Model):

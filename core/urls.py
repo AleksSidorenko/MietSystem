@@ -37,7 +37,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/analytics/", AnalyticsViewSet.as_view({"get": "list"}), name="analytics"),
     path("api/", include(router.urls)), # Все DRF-эндпоинты теперь здесь
-    path("api/users/all_users_for_admin_dashboard/", AllUsersForAdminDashboardView.as_view(), name="all_users_for_admin_dashboard"),
+    path("api/admin_dashboard/users/", AllUsersForAdminDashboardView.as_view(), name="admin_users_list"),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/docs/",

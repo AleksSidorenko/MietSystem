@@ -116,7 +116,7 @@ def status_page_view(request):
         endpoints_post += 1
         endpoints_total += 1 # /api/token/verify/
         endpoints_post += 1
-        endpoints_total += 1 # /api/users/all_users_for_admin_dashboard/
+        endpoints_total += 1 # /api/admin_dashboard/users/
         endpoints_get += 1
 
         data["endpoints_total"] = endpoints_total
