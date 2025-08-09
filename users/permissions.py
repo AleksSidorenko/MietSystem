@@ -86,19 +86,24 @@ class ReviewPermissions(permissions.BasePermission):
         if view.action == 'create' and request.method == 'POST':
             return user.is_authenticated and user.role == "TENANT"
 
-        # Для остальных действий (update, delete, approve)
-        # мы проверяем, аутентифицирован ли пользователь.
         return user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
         user = request.user
 
-        # Администратор имеет полный доступ ко всему
         if user.role == "ADMIN":
             return True
 
+        if view.action == 'approve':
+            # Разрешаем одобрение администратору
+            if user.role == "ADMIN":
+                return True
+            # Разрешаем одобрение лендлорду, если отзыв относится к его объявлению
+            if user.role == "LANDLORD":
+                return obj.booking.listing.user == user
+            return False
+
         # Разрешаем просматривать детали отзыва (retrieve) для всех, у кого есть права
-        # (это уже было проверено в has_permission)
         if view.action == 'retrieve' and request.method == 'GET':
             return True
 
@@ -106,8 +111,27 @@ class ReviewPermissions(permissions.BasePermission):
         if view.action in ['update', 'partial_update', 'destroy']:
             return obj.user == user
 
-        # Разрешаем одобрение (approve) только администратору
-        if view.action == 'approve':
-            return user.role == "ADMIN"
-
         return False
+
+
+    # def has_object_permission(self, request, view, obj):
+    #     user = request.user
+    #
+    #     # Администратор имеет полный доступ ко всему
+    #     if user.role == "ADMIN":
+    #         return True
+    #
+    #     # Разрешаем просматривать детали отзыва (retrieve) для всех, у кого есть права
+    #     # (это уже было проверено в has_permission)
+    #     if view.action == 'retrieve' and request.method == 'GET':
+    #         return True
+    #
+    #     # Разрешаем редактирование и удаление только владельцу отзыва
+    #     if view.action in ['update', 'partial_update', 'destroy']:
+    #         return obj.user == user
+    #
+    #     # Разрешаем одобрение (approve) только администратору
+    #     if view.action == 'approve':
+    #         return user.role == "ADMIN"
+    #
+    #     return False

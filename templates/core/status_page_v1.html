@@ -1,4 +1,5 @@
 <!-- templates/core/status_page.html -->
+
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
@@ -143,6 +144,7 @@
                 </div>
             </details>
         </div>
+        <!-- Modals -->
         <div id="system-modal" class="modal js-required">
             <div class="modal-content">
                 <h2 class="text-lg font-semibold mb-1">📊 {% trans "System Metrics" %}</h2>
@@ -306,13 +308,15 @@
                 {% endif %}
             </div>
             <div class="mt-2">
-                <select id="language-switcher" class="p-1 border rounded bg-gray-100 text-sm">
-                    {% get_available_languages as LANGUAGES %}
-                    {% get_language_info_list for LANGUAGES as languages %}
-                    {% for lang in languages %}
-                    <option value="{{ lang.code }}" {% if lang.code == LANGUAGE_CODE %}selected{% endif %}>{{ lang.name_local }}</option>
-                    {% endfor %}
-                </select>
+                <div class="mt-2">
+                    <select id="language-switcher" class="p-1 border rounded bg-gray-100 text-sm">
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
+                        {% for lang in languages %}
+                        <option value="{{ lang.code }}" {% if lang.code == LANGUAGE_CODE %}selected{% endif %}>{{ lang.name_local }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
         </div>
         {% if settings.DEBUG and request.user.role == 'ADMIN' %}
@@ -326,37 +330,19 @@
         </div>
         {% endif %}
         <script>
-                    // Код для переключения языка, который мы обсуждали
             document.getElementById('language-switcher').addEventListener('change', function() {
                 const langCode = this.value;
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = "{% url 'set_language' %}";
-        
-                const csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = 'csrfmiddlewaretoken';
-                // ИСПРАВЛЕНИЕ: Используем фильтр |escapejs для безопасной вставки токена
-                csrfInput.value = '{{ csrf_token|escapejs }}'; 
-                form.appendChild(csrfInput);
-        
-                const nextInput = document.createElement('input');
-                nextInput.type = 'hidden';
-                nextInput.name = 'next';
-                nextInput.value = window.location.pathname;
-                form.appendChild(nextInput);
-        
-                const langInput = document.createElement('input');
-                langInput.type = 'hidden';
-                langInput.name = 'language';
-                langInput.value = langCode;
-                form.appendChild(langInput);
-        
-                document.body.appendChild(form);
-                form.submit();
+                const currentPath = window.location.pathname;
+                let newPath;
+                
+                if (langCode === 'en') {
+                    newPath = currentPath.replace(/^\/(ru|de)\//, '/');
+                } else {
+                    const pathWithoutPrefix = currentPath.replace(/^\/(ru|de)\//, '/');
+                    newPath = `/${langCode}${pathWithoutPrefix}`;
+                }
+                window.location.href = newPath;
             });
-        
-            // Все остальные ваши функции, собранные в один блок с исправлениями
             function toggleAllDetails() {
                 const details = document.querySelectorAll('details');
                 const allOpen = Array.from(details).every(d => d.open);
@@ -368,17 +354,15 @@
             function closeModal(modalId) {
                 document.getElementById(`${modalId}-modal`).classList.remove('modal-open');
             }
-            const cpuUsage = parseFloat("{{ data.system_metrics.cpu_percent|default:0 }}");
-            const memoryUsage = parseFloat("{{ data.system_metrics.memory_percent|default:0 }}");
-            const diskFree = parseFloat("{{ data.system_metrics.disk_free_gb|default:0 }}");
-            const cpuMaxThreshold = parseFloat("{{ data.system_metrics.cpu_max_threshold|default:80 }}");
-            const memoryMaxThreshold = parseFloat("{{ data.system_metrics.memory_max_threshold|default:90 }}");
-            const diskMinThreshold = parseFloat("{{ data.system_metrics.disk_min_threshold|default:10 }}");
-        
+            const cpuUsage = {{ data.system_metrics.cpu_percent|default:0 }};
+            const memoryUsage = {{ data.system_metrics.memory_percent|default:0 }};
+            const diskFree = {{ data.system_metrics.disk_free_gb|default:0 }};
+            const cpuMaxThreshold = {{ data.system_metrics.cpu_max_threshold|default:80 }};
+            const memoryMaxThreshold = {{ data.system_metrics.memory_max_threshold|default:90 }};
+            const diskMinThreshold = {{ data.system_metrics.disk_min_threshold|default:10 }};
             const cpuColor = cpuUsage > cpuMaxThreshold ? '#dc2626' : (cpuUsage > (cpuMaxThreshold * 0.8)) ? '#f59e0b' : '#22c55e';
             const memoryColor = memoryUsage > memoryMaxThreshold ? '#dc2626' : (memoryUsage > (memoryMaxThreshold * 0.8)) ? '#f59e0b' : '#22c55e';
             const diskColor = diskFree < diskMinThreshold ? '#dc2626' : (diskFree < (diskMinThreshold * 2)) ? '#f59e0b' : '#22c55e';
-            
             new Chart(document.getElementById('cpuChart'), {
                 type: 'doughnut',
                 data: { datasets: [{ data: [cpuUsage, 100 - cpuUsage], backgroundColor: [cpuColor, '#e5e7eb'] }] },
@@ -396,7 +380,7 @@
             });
             const redisHitRateData = {
                 labels: Array.from({length: 24}, (_, i) => `${24 - i}{% trans "h ago" %}`).reverse(),
-                datasets: [{ label: '{% trans "Hit Rate" %}', data: JSON.parse("{{ data.redis.hit_rate_history }}"), borderColor: '#f59e0b', tension: 0.1, fill: false }]
+                datasets: [{ label: '{% trans "Hit Rate" %}', data: {{ data.redis.hit_rate_history|default:"[]"|safe }}, borderColor: '#f59e0b', tension: 0.1, fill: false }]
             };
             new Chart(document.getElementById('redisHitRateChart'), {
                 type: 'line',
