@@ -13,8 +13,11 @@ from rest_framework.response import Response
 from django.utils.translation import gettext_lazy as _
 
 from users.permissions import IsAdmin, IsTenant, IsAdminOrLandlord
-from .models import ViewHistory, SearchHistory
-from .serializers import ViewHistorySerializer, SearchHistorySerializer
+from analytics.models import ViewHistory, SearchHistory
+from analytics.serializers import ViewHistorySerializer, SearchHistorySerializer
+
+from rest_framework.views import APIView
+from io import StringIO
 
 
 @method_decorator(ratelimit(key='ip', rate='100/m', method='GET', block=True), name='top_5')
@@ -129,3 +132,29 @@ class SearchHistoryViewSet(viewsets.ModelViewSet):
         if user:
             SearchHistory.objects.filter(user=user).order_by("-timestamp")[10:].delete()
         return Response(serializer.data)
+
+
+class AnalyticsExportCSVView(APIView):
+    def get(self, request):
+        # Создаем буфер в памяти
+        csv_buffer = StringIO()
+        writer = csv.writer(csv_buffer)
+
+        # Пишем заголовки столбцов
+        writer.writerow(['Listing', 'City', 'User Email', 'View Count'])
+
+        # Получаем данные из базы
+        # Например, считаем количество просмотров каждого listing для каждого пользователя
+        view_histories = ViewHistory.objects.all()
+        for vh in view_histories:
+            writer.writerow([
+                vh.listing.title,
+                vh.listing.city,
+                vh.user.email,
+                1,  # Или другое поле, если есть
+            ])
+
+        # Возвращаем ответ с csv и правильным Content-Type
+        response = HttpResponse(csv_buffer.getvalue(), content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="analytics.csv"'
+        return response

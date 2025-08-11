@@ -1,27 +1,28 @@
-
+# tests/api/test_listings.py
 import pytest
 from django.urls import reverse
-from rest_framework.test import APIClient
+
 
 @pytest.mark.django_db
-def test_landlord_can_create_listing(landlord_user, api_client):
-    api_client.force_authenticate(user=landlord_user)
+def test_landlord_can_create_listing(api_client_landlord, sample_listing_data, sample_amenities):
     url = reverse('listing-list')
-    data = {'title': 'Test Listing', 'price_per_night': 50, 'rooms': 1, 'city': 'Berlin'}
-    response = api_client.post(url, data)
+    data = sample_listing_data.copy()
+    # Передаём список имён, как их ждёт сериализатор
+    data['amenities'] = [a.name for a in sample_amenities]
+    response = api_client_landlord.post(url, data, format='json')
+
+    print("Response data:", response.data)
     assert response.status_code == 201
 
+
 @pytest.mark.django_db
-def test_tenant_cannot_create_listing(tenant_user, api_client):
-    api_client.force_authenticate(user=tenant_user)
+def test_tenant_cannot_create_listing(api_client_tenant, sample_listing_data):
     url = reverse('listing-list')
-    data = {'title': 'Invalid Listing'}
-    response = api_client.post(url, data)
+    response = api_client_tenant.post(url, sample_listing_data)
     assert response.status_code == 403
 
 @pytest.mark.django_db
-def test_admin_can_delete_listing(admin_user, api_client, listing):
-    api_client.force_authenticate(user=admin_user)
+def test_admin_can_delete_listing(api_client_admin, listing):
     url = reverse('listing-detail', args=[listing.id])
-    response = api_client.delete(url)
+    response = api_client_admin.delete(url)
     assert response.status_code in [200, 204]

@@ -25,8 +25,14 @@ class ListingFilter(django_filters.FilterSet):
     amenities = django_filters.CharFilter(method="filter_amenities")
 
     def filter_amenities(self, queryset, name, value):
-        amenities = value.split(",")
-        return queryset.filter(amenities__contains=amenities)
+        names = [v.strip() for v in value.split(",") if v.strip()]
+        if not names:
+            return queryset
+        return queryset.filter(amenities__name__in=names).distinct()
+
+    # def filter_amenities(self, queryset, name, value):
+    #     amenities = value.split(",")
+    #     return queryset.filter(amenities__contains=amenities)
 
     class Meta:
         model = Listing
@@ -51,16 +57,43 @@ class ListingViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
 
-        # Для администраторов показываем все объявления, включая неактивные
         if user.is_authenticated and user.role == 'ADMIN':
-            return Listing.objects.all().order_by('-created_at')
+            qs = Listing.objects.all()
+        elif user.is_authenticated and user.role == 'LANDLORD':
+            qs = Listing.objects.filter(user=user)
+        else:
+            qs = Listing.objects.filter(is_active=True)
 
-        # Для лендлордов показываем только их собственные объявления
-        if user.is_authenticated and user.role == 'LANDLORD':
-            return Listing.objects.filter(user=user).order_by('-created_at')
+        # Дополнительная фильтрация по search и city
+        search = self.request.query_params.get("search")
+        if search:
+            qs = qs.filter(
+                Q(title__icontains=search) |
+                Q(description__icontains=search) |
+                Q(address__icontains=search) |
+                Q(city__icontains=search) |
+                Q(country__icontains=search)
+            )
 
-        # Для всех остальных (анонимных и TENANT) показываем только активные объявления
-        return Listing.objects.filter(is_active=True).order_by('-created_at')
+        city = self.request.query_params.get("city")
+        if city:
+            qs = qs.filter(city__icontains=city)
+
+        return qs.order_by('-created_at')
+
+    # def get_queryset(self):
+    #     user = self.request.user
+    #
+    #     # Для администраторов показываем все объявления, включая неактивные
+    #     if user.is_authenticated and user.role == 'ADMIN':
+    #         return Listing.objects.all().order_by('-created_at')
+    #
+    #     # Для лендлордов показываем только их собственные объявления
+    #     if user.is_authenticated and user.role == 'LANDLORD':
+    #         return Listing.objects.filter(user=user).order_by('-created_at')
+    #
+    #     # Для всех остальных (анонимных и TENANT) показываем только активные объявления
+    #     return Listing.objects.filter(is_active=True).order_by('-created_at')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

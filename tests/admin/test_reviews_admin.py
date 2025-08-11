@@ -50,18 +50,6 @@ def tenant_user():
         is_active=True,
     )
 
-
-# @pytest.fixture
-# def another_landlord():
-#     return User.objects.create_user(
-#         email='another_landlord@example.com',
-#         password='pass123',
-#         role='LANDLORD',
-#         is_staff=True,
-#         is_active=True,
-#     )
-
-
 @pytest.fixture
 def listing(landlord_user):
     return Listing.objects.create(
@@ -96,7 +84,7 @@ def review(booking, tenant_user):
         comment="Test review",
     )
 
-
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "user_fixture, expected_status",
     [
@@ -107,6 +95,7 @@ def review(booking, tenant_user):
         # ("another_landlord", 403),  # ❌ не видит чужие отзывы
     ],
 )
+@pytest.mark.django_db
 def test_reviewsadmin_changelist_access(
     client, request, user_fixture, expected_status, review
 ):

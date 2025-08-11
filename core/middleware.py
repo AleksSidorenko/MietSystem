@@ -1,6 +1,7 @@
 # core/middleware.py
 from rest_framework.response import Response
-
+from django.utils.deprecation import MiddlewareMixin
+from django.conf import settings
 
 class MetaResponseMiddleware:
     def __init__(self, get_response):

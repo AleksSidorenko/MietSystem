@@ -1,5 +1,6 @@
 # core/urls.py
 from django.conf import settings
+from django.views.i18n import set_language
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -30,12 +31,16 @@ from core.views import (
     restart_celery,
     status_page_view,
 )
-from users.views import AllUsersForAdminDashboardView # Добавлен импорт
+from users.views import AllUsersForAdminDashboardView
+from analytics.views import AnalyticsExportCSVView
+
+
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/analytics/", AnalyticsViewSet.as_view({"get": "list"}), name="analytics"),
+    path('api/analytics/export/', AnalyticsExportCSVView.as_view(), name='analytics-export'),
     path("api/", include(router.urls)), # Все DRF-эндпоинты теперь здесь
     path("api/admin_dashboard/users/", AllUsersForAdminDashboardView.as_view(), name="admin_users_list"),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
@@ -66,6 +71,7 @@ urlpatterns = [
     path(
         "login/", login_view, name="login"
     ),
+    path('set-lang/', set_language, name='set_language'),
 ]
 
 urlpatterns += i18n_patterns(

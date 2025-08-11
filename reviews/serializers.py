@@ -6,20 +6,15 @@ from utils.translation import TranslationSerializerMixin
 from .models import Review
 
 
+
 class ReviewSerializer(TranslationSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = [
-            'url',
-            "id",
-            "user",
-            "booking",
-            "rating",
-            "comment",
-            "is_approved",
-            "created_at",
+            'url', 'id', 'user', 'booking', 'rating', 'comment',
+            'is_approved', 'created_at',
         ]
-        read_only_fields = ["id", "user", "is_approved", "created_at"]
+        read_only_fields = ['id', 'user', 'is_approved', 'created_at']
 
     def validate_rating(self, value):
         if not 1 <= value <= 5:
@@ -29,7 +24,6 @@ class ReviewSerializer(TranslationSerializerMixin, serializers.ModelSerializer):
     def validate(self, data):
         request = self.context["request"]
 
-        # Проверки только при создании нового отзыва
         if request.method == "POST":
             booking = data["booking"]
 
@@ -54,3 +48,11 @@ class ReviewSerializer(TranslationSerializerMixin, serializers.ModelSerializer):
                 _("Comment must be less than 1000 characters")
             )
         return value
+
+    def create(self, validated_data):
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+        if user is None or user.is_anonymous:
+            raise serializers.ValidationError("User must be authenticated to create a review")
+        validated_data["user"] = user
+        return super().create(validated_data)

@@ -6,7 +6,7 @@ from PIL import Image
 from rest_framework import serializers
 from locations.serializers import LocationSerializer
 from utils.translation import TranslationSerializerMixin
-from listings.models import Listing, ListingPhoto
+from listings.models import Listing, ListingPhoto, Amenity
 
 
 class AvailabilitySlotSerializer(serializers.Serializer):
@@ -14,6 +14,13 @@ class AvailabilitySlotSerializer(serializers.Serializer):
     is_available = serializers.BooleanField()
 
 class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer):
+    amenities = serializers.SlugRelatedField(
+        many=True,
+        slug_field="name",
+        queryset=Amenity.objects.all(),
+        required=False,
+    )
+    # amenities = serializers.ListField(child=serializers.CharField(), required=False)
     url = serializers.HyperlinkedIdentityField(view_name='listing-detail')  # <-- НОВОЕ ПОЛЕ
     availability = serializers.SerializerMethodField()
     location = LocationSerializer(read_only=True)
@@ -98,10 +105,14 @@ class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer)
                 file.seek(0)
         return value
 
-    def validate_amenities(self, value):
-        if not isinstance(value, list):
-            raise serializers.ValidationError(_("Amenities must be a list"))
-        return value
+    # def validate_amenities(self, value):
+    #     if not isinstance(value, list):
+    #         raise serializers.ValidationError(_("Amenities must be a list"))
+    #     amenities_objs = []
+    #     for name in value:
+    #         amenity, _ = Amenity.objects.get_or_create(name=name)
+    #         amenities_objs.append(amenity)
+    #     return amenities_objs
 
     def validate_price_per_night(self, value):
         if value <= 0:
@@ -136,6 +147,26 @@ class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer)
                 )
 
         return value
+
+    def create(self, validated_data):
+        request = self.context.get("request")
+        if not request or not hasattr(request, "user") or request.user.is_anonymous:
+            raise serializers.ValidationError(_("User must be authenticated to create a listing"))
+
+        amenities = validated_data.pop("amenities", [])
+        validated_data.pop("user", None)  # <-- Убираем user, если он есть
+
+        listing = Listing.objects.create(user=request.user, **validated_data)
+        if amenities:
+            listing.amenities.set(amenities)
+        return listing
+
+    def update(self, instance, validated_data):
+        amenities = validated_data.pop("amenities", None)
+        instance = super().update(instance, validated_data)
+        if amenities is not None:
+            instance.amenities.set(amenities)
+        return instance
 
 
 class ListingShortSerializer(serializers.ModelSerializer):

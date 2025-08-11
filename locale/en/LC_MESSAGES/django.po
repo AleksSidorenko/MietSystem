@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MietSystem\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-20 08:08+0200\n"
+"POT-Creation-Date: 2025-08-09 12:29-0500\n"
 "PO-Revision-Date: 2025-07-20 08:30+0200\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: analytics/models.py:14 analytics/models.py:39 bookings/models.py:19
-#: reviews/models.py:13 reviews/views.py:79 users/models.py:116
+#: reviews/models.py:13 users/models.py:94 utils/admin.py:923
 msgid "User"
 msgstr "User"
 
@@ -21,7 +21,7 @@ msgstr "User"
 msgid "Query"
 msgstr "Query"
 
-#: analytics/models.py:17 analytics/models.py:47 analytics/views.py:65
+#: analytics/models.py:17 analytics/models.py:47 analytics/views.py:84
 msgid "Timestamp"
 msgstr "Timestamp"
 
@@ -30,7 +30,7 @@ msgid "Search History"
 msgstr "Search History"
 
 #: analytics/models.py:45 bookings/models.py:25 listings/models.py:24
-#: listings/models.py:137 reviews/views.py:80
+#: listings/models.py:116
 msgid "Listing"
 msgstr "Listing"
 
@@ -38,23 +38,29 @@ msgstr "Listing"
 msgid "View History"
 msgstr "View History"
 
-#: analytics/serializers.py:19
+#: analytics/serializers.py:18
 msgid "Query must be between 1 and 255 characters"
 msgstr "Query must be between 1 and 255 characters"
 
-#: analytics/views.py:44
+#: analytics/views.py:49 analytics/views.py:78
+#, fuzzy
+#| msgid "Only the listing owner can perform this action"
+msgid "You do not have permission to perform this action."
+msgstr "Only the listing owner can perform this action"
+
+#: analytics/views.py:54
 msgid "Invalid time frame. Use 'week' or 'month'"
 msgstr "Invalid time frame. Use 'week' or 'month'"
 
-#: analytics/views.py:65
+#: analytics/views.py:84
 msgid "Listing ID"
 msgstr "Listing ID"
 
-#: analytics/views.py:65 listings/models.py:48
+#: analytics/views.py:84 listings/models.py:48
 msgid "Title"
 msgstr "Title"
 
-#: analytics/views.py:65
+#: analytics/views.py:84
 msgid "Views"
 msgstr "Views"
 
@@ -86,7 +92,7 @@ msgstr "Total price"
 msgid "Status"
 msgstr "Status"
 
-#: bookings/models.py:38 listings/models.py:108 reviews/models.py:24
+#: bookings/models.py:38 listings/models.py:87 reviews/models.py:24
 msgid "Created at"
 msgstr "Created at"
 
@@ -102,19 +108,13 @@ msgstr "End date must be after start date"
 msgid "Total price must be non-negative"
 msgstr "Total price must be non-negative"
 
-#: bookings/views.py:53 bookings/views.py:72
-#, fuzzy
-#| msgid "Only tenants can create bookings"
-msgid "Only tenants can create bookings."
-msgstr "Only tenants can create bookings"
-
-#: bookings/views.py:127
+#: bookings/views.py:115
 #, fuzzy
 #| msgid "Only the landlord can confirm"
-msgid "Only the landlord of this listing can confirm this booking."
+msgid "Only the landlord of this listing or admin can confirm this booking."
 msgstr "Only the landlord can confirm"
 
-#: bookings/views.py:132
+#: bookings/views.py:119
 #, fuzzy
 #| msgid "Only pending bookings can be confirmed"
 msgid "Only pending bookings can be confirmed."
@@ -174,163 +174,129 @@ msgstr ""
 msgid "Country"
 msgstr ""
 
-#: listings/models.py:60
-msgid "Latitude"
-msgstr ""
-
-#: listings/models.py:67
-msgid "Longitude"
-msgstr ""
-
-#: listings/models.py:72
+#: listings/models.py:59
 msgid "Price per night"
 msgstr "Price per night"
 
-#: listings/models.py:74
+#: listings/models.py:61
 msgid "Rooms"
 msgstr "Rooms"
 
-#: listings/models.py:77
+#: listings/models.py:64
 msgid "Apartment"
 msgstr ""
 
-#: listings/models.py:78
+#: listings/models.py:65
 msgid "House"
 msgstr ""
 
-#: listings/models.py:79
+#: listings/models.py:66
 msgid "Studio"
 msgstr ""
 
-#: listings/models.py:80
-msgid "Shared Room"
-msgstr ""
-
-#: listings/models.py:81
+#: listings/models.py:67
 msgid "Villa"
 msgstr ""
 
-#: listings/models.py:82
+#: listings/models.py:68
 msgid "One-Room Apartment"
 msgstr ""
 
-#: listings/models.py:83
+#: listings/models.py:69
 msgid "Two-Room Apartment"
 msgstr ""
 
-#: listings/models.py:84
+#: listings/models.py:70
 msgid "Three-Room Apartment"
 msgstr ""
 
-#: listings/models.py:85
+#: listings/models.py:71
 msgid "Four-Room Apartment"
 msgstr ""
 
-#: listings/models.py:86
-msgid "Dormitory"
-msgstr ""
-
-#: listings/models.py:87
+#: listings/models.py:72
 msgid "Penthouse"
 msgstr ""
 
-#: listings/models.py:88
-msgid "Townhouse"
-msgstr ""
-
-#: listings/models.py:89
-msgid "Cottage"
-msgstr ""
-
-#: listings/models.py:90
-msgid "Condominium"
-msgstr ""
-
-#: listings/models.py:91
+#: listings/models.py:73
 msgid "Loft"
 msgstr ""
 
-#: listings/models.py:92
-msgid "Duplex"
-msgstr ""
-
-#: listings/models.py:93
-msgid "Bungalow"
-msgstr ""
-
-#: listings/models.py:98
+#: listings/models.py:78
 msgid "Property type"
 msgstr "Property type"
 
-#: listings/models.py:103
+#: listings/models.py:83
 msgid "Amenities"
 msgstr "Amenities"
 
-#: listings/models.py:106
-msgid "Photos"
-msgstr "Photos"
-
-#: listings/models.py:107
+#: listings/models.py:86
 msgid "Is active"
 msgstr "Is active"
 
-#: listings/models.py:109
+#: listings/models.py:88
 msgid "Popularity"
 msgstr "Popularity"
 
-#: listings/permissions.py:8
-msgid "Only the listing owner can perform this action"
-msgstr "Only the listing owner can perform this action"
+#: listings/models.py:133
+#, fuzzy
+#| msgid "Listing"
+msgid "Listing Photo"
+msgstr "Listing"
 
-#: listings/permissions.py:15
-msgid "Only landlords can perform this action"
-msgstr "Only landlords can perform this action"
-
-#: listings/serializers.py:41
+#: listings/serializers.py:85
 msgid "Photos must be a list"
 msgstr "Photos must be a list"
 
-#: listings/serializers.py:46
+#: listings/serializers.py:90
 msgid "Photo size must be ≤ 5MB"
 msgstr "Photo size must be ≤ 5MB"
 
-#: listings/serializers.py:48
+#: listings/serializers.py:92
 msgid "Photo must be JPEG or PNG"
 msgstr "Photo must be JPEG or PNG"
 
-#: listings/serializers.py:52
+#: listings/serializers.py:96
 msgid "Photo dimensions must be ≥ 200px"
 msgstr "Photo dimensions must be ≥ 200px"
 
-#: listings/serializers.py:59
+#: listings/serializers.py:103
 msgid "Amenities must be a list"
 msgstr "Amenities must be a list"
 
-#: listings/serializers.py:64
+#: listings/serializers.py:108
 msgid "Price per night must be positive"
 msgstr "Price per night must be positive"
 
-#: listings/serializers.py:70
+#: listings/serializers.py:114
 msgid "Rooms must be a positive integer or half-integer (e.g., 1, 1.5, 2)"
 msgstr "Rooms must be a positive integer or half-integer (e.g., 1, 1.5, 2)"
 
-#: listings/serializers.py:76
-msgid "Availability must be a dictionary"
+#: listings/serializers.py:121
+#, fuzzy
+#| msgid "Availability must be a dictionary"
+msgid "Availability must be a list of dictionaries"
 msgstr "Availability must be a dictionary"
 
-#: listings/serializers.py:81
-msgid "Availability must be a dictionary of date strings to boolean values"
+#: listings/serializers.py:126
+#, fuzzy
+#| msgid "Availability must be a dictionary"
+msgid "Each availability item must be a dictionary"
+msgstr "Availability must be a dictionary"
+
+#: listings/serializers.py:134
+#, fuzzy
+#| msgid "Availability must be a dictionary of date strings to boolean values"
+msgid ""
+"Each availability item must be a dictionary with 'date' (string) and "
+"'is_available' (boolean)"
 msgstr "Availability must be a dictionary of date strings to boolean values"
 
-#: listings/views.py:99
-msgid "Listing deleted successfully"
-msgstr "Listing deleted successfully"
-
-#: locations/models.py:60
+#: locations/models.py:59
 msgid "Coordinates"
 msgstr "Coordinates"
 
-#: locations/models.py:88
+#: locations/models.py:87
 msgid "Location"
 msgstr "Location"
 
@@ -338,19 +304,11 @@ msgstr "Location"
 msgid "Postal code must be a 5-digit number"
 msgstr "Postal code must be a 5-digit number"
 
-#: locations/serializers.py:32
-msgid "Latitude must be between -90 and 90"
-msgstr "Latitude must be between -90 and 90"
-
-#: locations/serializers.py:38
-msgid "Longitude must be between -180 and 180"
-msgstr "Longitude must be between -180 and 180"
-
-#: reviews/models.py:21 reviews/views.py:81
+#: reviews/models.py:21
 msgid "Rating"
 msgstr "Rating"
 
-#: reviews/models.py:22 reviews/views.py:82
+#: reviews/models.py:22
 msgid "Comment"
 msgstr "Comment"
 
@@ -366,47 +324,101 @@ msgstr "Review"
 msgid "Only the review owner or admin can perform this action"
 msgstr "Only the review owner or admin can perform this action"
 
-#: reviews/serializers.py:28
+#: reviews/permissions.py:16
+#, fuzzy
+#| msgid "Only landlords can perform this action"
+msgid "Only admins can perform this action"
+msgstr "Only landlords can perform this action"
+
+#: reviews/permissions.py:25
+#, fuzzy
+#| msgid "Only landlords can perform this action"
+msgid "Only tenants are allowed to perform this action."
+msgstr "Only landlords can perform this action"
+
+#: reviews/serializers.py:26
 msgid "Rating must be between 1 and 5"
 msgstr "Rating must be between 1 and 5"
 
-#: reviews/serializers.py:35
+#: reviews/serializers.py:38
 msgid "Review can only be created for confirmed bookings"
 msgstr "Review can only be created for confirmed bookings"
 
-#: reviews/serializers.py:39
+#: reviews/serializers.py:42
 #, fuzzy
 #| msgid "Only the booking owner or admin can create a review"
 msgid "Only the booking owner can create a review"
 msgstr "Only the booking owner or admin can create a review"
 
-#: reviews/serializers.py:43
+#: reviews/serializers.py:46
 msgid "Review can only be created after the booking end date"
 msgstr "Review can only be created after the booking end date"
 
-#: reviews/serializers.py:50
+#: reviews/serializers.py:54
 msgid "Comment must be less than 1000 characters"
 msgstr "Comment must be less than 1000 characters"
 
-#: reviews/views.py:46
-msgid "Only tenants can create reviews"
+#: reviews/views.py:33
+#, fuzzy
+#| msgid "Only tenants can create reviews"
+msgid "Only tenants can create reviews."
 msgstr "Only tenants can create reviews"
 
-#: reviews/views.py:65
+#: reviews/views.py:44
 msgid "Review approved"
 msgstr "Review approved"
 
-#: reviews/views.py:78
-msgid "Review ID"
-msgstr "Review ID"
+#: templates/admin/base_site.html:6
+#, fuzzy
+#| msgid "MietSystem — Dashboard"
+msgid "MietSystem Admin"
+msgstr "MietSystem — Dashboard"
 
-#: reviews/views.py:83
-msgid "Is Approved"
-msgstr "Is Approved"
+#: templates/admin/base_site.html:9
+#, fuzzy
+#| msgid "System Information"
+msgid "MietSystem Administration"
+msgstr "System Information"
 
-#: reviews/views.py:84
-msgid "Created At"
-msgstr "Created At"
+#: templates/admin/base_site.html:19
+#, fuzzy
+#| msgid "Back to Home"
+msgid "Back to Dashboard"
+msgstr "Back to Home"
+
+#: templates/admin/base_site.html:25 templates/core/status_page.html:57
+#: templates/core/status_page_accordion.html:42
+#: templates/core/status_page_modalWindows.html:47
+#: templates/core/status_page_tabs.html:42
+#: templates/core/status_page_v1.html:58
+msgid "Log out"
+msgstr ""
+
+#: templates/admin/base_site.html:55
+msgid "Change password"
+msgstr ""
+
+#: templates/core/configure_s3.html:9 templates/core/configure_s3.html:14
+#, fuzzy
+#| msgid "Confirmed"
+msgid "Configure S3"
+msgstr "Confirmed"
+
+#: templates/core/configure_s3.html:18
+msgid "S3 Bucket Name"
+msgstr ""
+
+#: templates/core/configure_s3.html:22
+msgid "AWS Access Key ID"
+msgstr ""
+
+#: templates/core/configure_s3.html:26
+msgid "AWS Secret Access Key"
+msgstr ""
+
+#: templates/core/configure_s3.html:29
+msgid "Save"
+msgstr ""
 
 #: templates/core/lockout.html:10 templates/core/lockout.html:57
 msgid "Access Blocked"
@@ -420,163 +432,1191 @@ msgstr "Too many login attempts. Please try again later or contact support."
 msgid "Back to Home"
 msgstr "Back to Home"
 
-#: templates/core/status_page.html:11 templates/core/status_page.html:141
+#: templates/core/login.html:10
+msgid "Log In - MietSystem"
+msgstr ""
+
+#: templates/core/login.html:17
+msgid "Log In to MietSystem"
+msgstr ""
+
+#: templates/core/login.html:26 templates/core/status_page.html:195
+#: templates/core/status_page_accordion.html:137
+#: templates/core/status_page_modalWindows.html:180
+#: templates/core/status_page_tabs.html:138
+#: templates/core/status_page_v1.html:197
+msgid "Email"
+msgstr ""
+
+#: templates/core/login.html:29
+msgid "Enter your email"
+msgstr ""
+
+#: templates/core/login.html:35
+msgid "Password"
+msgstr ""
+
+#: templates/core/login.html:38
+msgid "Enter your password"
+msgstr ""
+
+#: templates/core/login.html:44
+msgid "Log In"
+msgstr ""
+
+#: templates/core/logout.html:10
+msgid "Logged Out - MietSystem"
+msgstr ""
+
+#: templates/core/logout.html:17
+msgid "You have been logged out"
+msgstr ""
+
+#: templates/core/logout.html:18
+msgid "Thank you for using MietSystem."
+msgstr ""
+
+#: templates/core/logout.html:20
+msgid "Log in again"
+msgstr ""
+
+#: templates/core/status_page.html:9 templates/core/status_page.html:41
+#: templates/core/status_page_accordion.html:9
+#: templates/core/status_page_accordion.html:26
+#: templates/core/status_page_modalWindows.html:9
+#: templates/core/status_page_modalWindows.html:31
+#: templates/core/status_page_tabs.html:9
+#: templates/core/status_page_tabs.html:26
+#: templates/core/status_page_v1.html:10 templates/core/status_page_v1.html:42
 msgid "MietSystem — Dashboard"
 msgstr "MietSystem — Dashboard"
 
-#: templates/core/status_page.html:136
+#: templates/core/status_page.html:35
+#: templates/core/status_page_accordion.html:20
+#: templates/core/status_page_modalWindows.html:25
+#: templates/core/status_page_tabs.html:20
+#: templates/core/status_page_v1.html:36
 msgid "Access Denied"
 msgstr "Access Denied"
 
-#: templates/core/status_page.html:137
+#: templates/core/status_page.html:36
+#: templates/core/status_page_accordion.html:21
+#: templates/core/status_page_modalWindows.html:26
+#: templates/core/status_page_tabs.html:21
+#: templates/core/status_page_v1.html:37
 msgid "Please"
 msgstr "Please"
 
-#: templates/core/status_page.html:137
+#: templates/core/status_page.html:36
+#: templates/core/status_page_accordion.html:21
+#: templates/core/status_page_modalWindows.html:26
+#: templates/core/status_page_tabs.html:21
+#: templates/core/status_page_v1.html:37
 msgid "log in"
 msgstr "log in"
 
-#: templates/core/status_page.html:137
+#: templates/core/status_page.html:36
+#: templates/core/status_page_accordion.html:21
+#: templates/core/status_page_modalWindows.html:26
+#: templates/core/status_page_tabs.html:21
+#: templates/core/status_page_v1.html:37
 msgid "to view the system status."
 msgstr "to view the system status."
 
-#: templates/core/status_page.html:145
-msgid "Current Language"
-msgstr "Current Language"
+#: templates/core/status_page.html:46
+#: templates/core/status_page_accordion.html:31
+#: templates/core/status_page_modalWindows.html:36
+#: templates/core/status_page_tabs.html:31
+#: templates/core/status_page_v1.html:47
+msgid "User Avatar"
+msgstr ""
 
-#: templates/core/status_page.html:151
-msgid "System Information"
-msgstr "System Information"
+#: templates/core/status_page.html:48
+#: templates/core/status_page_accordion.html:33
+#: templates/core/status_page_modalWindows.html:38
+#: templates/core/status_page_tabs.html:33
+#: templates/core/status_page_v1.html:49
+msgid "Welcome"
+msgstr ""
 
-#: templates/core/status_page.html:155
-msgid "Server Time"
-msgstr "Server Time"
+#: templates/core/status_page.html:59 templates/core/status_page_v1.html:60
+msgid ""
+"JavaScript is required for full dashboard functionality. Please enable "
+"JavaScript or use the"
+msgstr ""
 
-#: templates/core/status_page.html:159
-msgid "Database"
-msgstr "Database"
-
-#: templates/core/status_page.html:163
-msgid "Redis"
-msgstr "Redis"
-
-#: templates/core/status_page.html:167
-msgid "Celery"
-msgstr "Celery"
-
-#: templates/core/status_page.html:171
-msgid "S3"
-msgstr "S3"
-
-#: templates/core/status_page.html:175
-msgid "Localization"
-msgstr "Localization"
-
-#: templates/core/status_page.html:182
-msgid "Users"
-msgstr "Users"
-
-#: templates/core/status_page.html:186
-msgid "Total Users"
-msgstr "Total Users"
-
-#: templates/core/status_page.html:190
-msgid "Admins"
-msgstr "Admins"
-
-#: templates/core/status_page.html:194
-msgid "Landlords"
-msgstr "Landlords"
-
-#: templates/core/status_page.html:198
-msgid "Tenants"
-msgstr "Tenants"
-
-#: templates/core/status_page.html:205
-msgid "System Objects"
-msgstr "System Objects"
-
-#: templates/core/status_page.html:209 templates/core/status_page.html:257
-msgid "Listings"
-msgstr "Listings"
-
-#: templates/core/status_page.html:213 templates/core/status_page.html:258
-msgid "Bookings"
-msgstr "Bookings"
-
-#: templates/core/status_page.html:217 templates/core/status_page.html:259
-msgid "Reviews"
-msgstr "Reviews"
-
-#: templates/core/status_page.html:221
-msgid "Locations"
-msgstr "Locations"
-
-#: templates/core/status_page.html:228
-msgid "System Metrics"
-msgstr "System Metrics"
-
-#: templates/core/status_page.html:232
-msgid "CPU Usage"
-msgstr "CPU Usage"
-
-#: templates/core/status_page.html:236
-msgid "Memory Usage"
-msgstr "Memory Usage"
-
-#: templates/core/status_page.html:240
-msgid "Free Disk Space"
-msgstr "Free Disk Space"
-
-#: templates/core/status_page.html:244
-msgid "Celery Tasks"
-msgstr "Celery Tasks"
-
-#: templates/core/status_page.html:251
-msgid "Quick Links"
-msgstr "Quick Links"
-
-#: templates/core/status_page.html:253
+#: templates/core/status_page.html:59 templates/core/status_page.html:299
+#: templates/core/status_page_accordion.html:256
+#: templates/core/status_page_modalWindows.html:284
+#: templates/core/status_page_tabs.html:247
+#: templates/core/status_page_v1.html:60 templates/core/status_page_v1.html:301
 msgid "Admin Panel"
 msgstr "Admin Panel"
 
-#: templates/core/status_page.html:254
+#: templates/core/status_page.html:62 templates/core/status_page_v1.html:63
+msgid "Debug Data"
+msgstr ""
+
+#: templates/core/status_page.html:68 templates/core/status_page_v1.html:69
+msgid "Toggle All Sections"
+msgstr ""
+
+#: templates/core/status_page.html:71
+#: templates/core/status_page_accordion.html:48
+#: templates/core/status_page_modalWindows.html:52
+#: templates/core/status_page_modalWindows.html:89
+#: templates/core/status_page_tabs.html:47
+#: templates/core/status_page_tabs.html:56
+#: templates/core/status_page_v1.html:72
+#, fuzzy
+#| msgid "Locations"
+msgid "Notifications"
+msgstr "Locations"
+
+#: templates/core/status_page.html:74
+#: templates/core/status_page_accordion.html:52
+#: templates/core/status_page_modalWindows.html:92
+#: templates/core/status_page_tabs.html:59
+#: templates/core/status_page_v1.html:75
+msgid "All systems are operating normally."
+msgstr ""
+
+#: templates/core/status_page.html:78 templates/core/status_page.html:97
+#: templates/core/status_page_accordion.html:82
+#: templates/core/status_page_modalWindows.html:123
+#: templates/core/status_page_tabs.html:87
+#: templates/core/status_page_v1.html:79 templates/core/status_page_v1.html:98
+msgid "Database"
+msgstr "Database"
+
+#: templates/core/status_page.html:82 templates/core/status_page.html:101
+#: templates/core/status_page_accordion.html:86
+#: templates/core/status_page_modalWindows.html:127
+#: templates/core/status_page_tabs.html:49
+#: templates/core/status_page_tabs.html:91
+#: templates/core/status_page_v1.html:83 templates/core/status_page_v1.html:102
+msgid "Redis"
+msgstr "Redis"
+
+#: templates/core/status_page.html:88 templates/core/status_page.html:148
+#: templates/core/status_page_modalWindows.html:62
+#: templates/core/status_page_v1.html:89 templates/core/status_page_v1.html:150
+msgid "System Metrics"
+msgstr "System Metrics"
+
+#: templates/core/status_page.html:93
+#: templates/core/status_page_accordion.html:78
+#: templates/core/status_page_modalWindows.html:119
+#: templates/core/status_page_tabs.html:83
+#: templates/core/status_page_v1.html:94
+msgid "Server Time"
+msgstr "Server Time"
+
+#: templates/core/status_page.html:104 templates/core/status_page_v1.html:105
+#, fuzzy
+#| msgid "Views"
+msgid "View Graphs"
+msgstr "Views"
+
+#: templates/core/status_page.html:108 templates/core/status_page.html:171
+#: templates/core/status_page_accordion.html:109
+#: templates/core/status_page_modalWindows.html:70
+#: templates/core/status_page_modalWindows.html:152
+#: templates/core/status_page_tabs.html:113
+#: templates/core/status_page_v1.html:109
+#: templates/core/status_page_v1.html:173
+msgid "Redis Statistics"
+msgstr ""
+
+#: templates/core/status_page.html:110
+#: templates/core/status_page_accordion.html:111
+#: templates/core/status_page_modalWindows.html:153
+#: templates/core/status_page_tabs.html:114
+#: templates/core/status_page_v1.html:111
+msgid "Keys"
+msgstr ""
+
+#: templates/core/status_page.html:111
+#: templates/core/status_page_accordion.html:112
+#: templates/core/status_page_modalWindows.html:154
+#: templates/core/status_page_tabs.html:115
+#: templates/core/status_page_v1.html:112
+msgid "Data Size"
+msgstr ""
+
+#: templates/core/status_page.html:112 templates/core/status_page.html:399
+#: templates/core/status_page_accordion.html:113
+#: templates/core/status_page_accordion.html:316
+#: templates/core/status_page_modalWindows.html:155
+#: templates/core/status_page_modalWindows.html:350
+#: templates/core/status_page_tabs.html:116
+#: templates/core/status_page_tabs.html:307
+#: templates/core/status_page_v1.html:113
+#: templates/core/status_page_v1.html:383
+msgid "Hit Rate"
+msgstr ""
+
+#: templates/core/status_page.html:113
+#: templates/core/status_page_accordion.html:114
+#: templates/core/status_page_modalWindows.html:156
+#: templates/core/status_page_tabs.html:117
+#: templates/core/status_page_v1.html:114
+msgid "Clear Cache"
+msgstr ""
+
+#: templates/core/status_page.html:114 templates/core/status_page_v1.html:115
+msgid "View Hit Rate Graph"
+msgstr ""
+
+#: templates/core/status_page.html:118 templates/core/status_page.html:181
+#: templates/core/status_page_accordion.html:122
+#: templates/core/status_page_modalWindows.html:74
+#: templates/core/status_page_modalWindows.html:166
+#: templates/core/status_page_tabs.html:50
+#: templates/core/status_page_tabs.html:124
+#: templates/core/status_page_v1.html:119
+#: templates/core/status_page_v1.html:183
+msgid "Users"
+msgstr "Users"
+
+#: templates/core/status_page.html:120 templates/core/status_page.html:184
+#: templates/core/status_page_accordion.html:126
+#: templates/core/status_page_modalWindows.html:169
+#: templates/core/status_page_tabs.html:127
+#: templates/core/status_page_v1.html:121
+#: templates/core/status_page_v1.html:186
+msgid "Total Users"
+msgstr "Total Users"
+
+#: templates/core/status_page.html:121 templates/core/status_page.html:185
+#: templates/core/status_page.html:408
+#: templates/core/status_page_accordion.html:127
+#: templates/core/status_page_accordion.html:325
+#: templates/core/status_page_modalWindows.html:170
+#: templates/core/status_page_modalWindows.html:359
+#: templates/core/status_page_tabs.html:128
+#: templates/core/status_page_tabs.html:316
+#: templates/core/status_page_v1.html:122
+#: templates/core/status_page_v1.html:187
+#: templates/core/status_page_v1.html:392
+msgid "Admins"
+msgstr "Admins"
+
+#: templates/core/status_page.html:122 templates/core/status_page.html:186
+#: templates/core/status_page.html:408
+#: templates/core/status_page_accordion.html:128
+#: templates/core/status_page_accordion.html:325
+#: templates/core/status_page_modalWindows.html:171
+#: templates/core/status_page_modalWindows.html:359
+#: templates/core/status_page_tabs.html:129
+#: templates/core/status_page_tabs.html:316
+#: templates/core/status_page_v1.html:123
+#: templates/core/status_page_v1.html:188
+#: templates/core/status_page_v1.html:392
+msgid "Landlords"
+msgstr "Landlords"
+
+#: templates/core/status_page.html:123 templates/core/status_page.html:187
+#: templates/core/status_page.html:408
+#: templates/core/status_page_accordion.html:129
+#: templates/core/status_page_accordion.html:325
+#: templates/core/status_page_modalWindows.html:172
+#: templates/core/status_page_modalWindows.html:359
+#: templates/core/status_page_tabs.html:130
+#: templates/core/status_page_tabs.html:316
+#: templates/core/status_page_v1.html:124
+#: templates/core/status_page_v1.html:189
+#: templates/core/status_page_v1.html:392
+msgid "Tenants"
+msgstr "Tenants"
+
+#: templates/core/status_page.html:124 templates/core/status_page_v1.html:125
+msgid "View Details & Graph"
+msgstr ""
+
+#: templates/core/status_page.html:128
+#: templates/core/status_page_modalWindows.html:78
+#: templates/core/status_page_tabs.html:51
+#: templates/core/status_page_v1.html:129
+msgid "Login Attempts"
+msgstr ""
+
+#: templates/core/status_page.html:130 templates/core/status_page_v1.html:131
+msgid "Recent Attempts"
+msgstr ""
+
+#: templates/core/status_page.html:131 templates/core/status_page_v1.html:132
+#, fuzzy
+#| msgid "View Histories"
+msgid "View Details"
+msgstr "View Histories"
+
+#: templates/core/status_page.html:135 templates/core/status_page.html:249
+#: templates/core/status_page_accordion.html:199
+#: templates/core/status_page_modalWindows.html:82
+#: templates/core/status_page_modalWindows.html:234
+#: templates/core/status_page_tabs.html:53
+#: templates/core/status_page_tabs.html:195
+#: templates/core/status_page_v1.html:136
+#: templates/core/status_page_v1.html:251
+msgid "API Testing"
+msgstr ""
+
+#: templates/core/status_page.html:137 templates/core/status_page.html:250
+#: templates/core/status_page_accordion.html:201
+#: templates/core/status_page_modalWindows.html:235
+#: templates/core/status_page_tabs.html:196
+#: templates/core/status_page_v1.html:138
+#: templates/core/status_page_v1.html:252
+#, fuzzy
+#| msgid "Total price"
+msgid "Total Endpoints"
+msgstr "Total price"
+
+#: templates/core/status_page.html:138 templates/core/status_page.html:251
+#: templates/core/status_page_accordion.html:202
+#: templates/core/status_page_modalWindows.html:236
+#: templates/core/status_page_tabs.html:197
+#: templates/core/status_page_v1.html:139
+#: templates/core/status_page_v1.html:253
+msgid "GET Methods"
+msgstr ""
+
+#: templates/core/status_page.html:139 templates/core/status_page.html:252
+#: templates/core/status_page_accordion.html:203
+#: templates/core/status_page_modalWindows.html:237
+#: templates/core/status_page_tabs.html:198
+#: templates/core/status_page_v1.html:140
+#: templates/core/status_page_v1.html:254
+msgid "POST Methods"
+msgstr ""
+
+#: templates/core/status_page.html:140 templates/core/status_page.html:253
+#: templates/core/status_page_accordion.html:204
+#: templates/core/status_page_modalWindows.html:238
+#: templates/core/status_page_tabs.html:199
+#: templates/core/status_page_v1.html:141
+#: templates/core/status_page_v1.html:255
+msgid "PUT Methods"
+msgstr ""
+
+#: templates/core/status_page.html:141 templates/core/status_page.html:254
+#: templates/core/status_page_accordion.html:205
+#: templates/core/status_page_modalWindows.html:239
+#: templates/core/status_page_tabs.html:200
+#: templates/core/status_page_v1.html:142
+#: templates/core/status_page_v1.html:256
+msgid "DELETE Methods"
+msgstr ""
+
+#: templates/core/status_page.html:142 templates/core/status_page.html:269
+#: templates/core/status_page_accordion.html:220
+#: templates/core/status_page_modalWindows.html:254
+#: templates/core/status_page_tabs.html:215
+#: templates/core/status_page_v1.html:143
+#: templates/core/status_page_v1.html:271
+msgid "Test Endpoint"
+msgstr ""
+
+#: templates/core/status_page.html:152
+#: templates/core/status_page_accordion.html:92
+#: templates/core/status_page_modalWindows.html:133
+#: templates/core/status_page_tabs.html:97
+#: templates/core/status_page_v1.html:154
+msgid "CPU Usage"
+msgstr "CPU Usage"
+
+#: templates/core/status_page.html:153 templates/core/status_page.html:158
+#: templates/core/status_page_accordion.html:93
+#: templates/core/status_page_accordion.html:98
+#: templates/core/status_page_modalWindows.html:134
+#: templates/core/status_page_modalWindows.html:139
+#: templates/core/status_page_tabs.html:98
+#: templates/core/status_page_tabs.html:103
+#: templates/core/status_page_v1.html:155
+#: templates/core/status_page_v1.html:160
+msgid "Max"
+msgstr ""
+
+#: templates/core/status_page.html:157
+#: templates/core/status_page_accordion.html:97
+#: templates/core/status_page_modalWindows.html:138
+#: templates/core/status_page_tabs.html:102
+#: templates/core/status_page_v1.html:159
+msgid "Memory Usage"
+msgstr "Memory Usage"
+
+#: templates/core/status_page.html:162
+#: templates/core/status_page_accordion.html:102
+#: templates/core/status_page_modalWindows.html:143
+#: templates/core/status_page_tabs.html:107
+#: templates/core/status_page_v1.html:164
+msgid "Free Disk Space"
+msgstr "Free Disk Space"
+
+#: templates/core/status_page.html:163
+#: templates/core/status_page_accordion.html:103
+#: templates/core/status_page_modalWindows.html:144
+#: templates/core/status_page_tabs.html:108
+#: templates/core/status_page_v1.html:165
+msgid "Min"
+msgstr ""
+
+#: templates/core/status_page.html:166 templates/core/status_page.html:176
+#: templates/core/status_page.html:203 templates/core/status_page.html:244
+#: templates/core/status_page.html:274
+#: templates/core/status_page_modalWindows.html:110
+#: templates/core/status_page_modalWindows.html:147
+#: templates/core/status_page_modalWindows.html:161
+#: templates/core/status_page_modalWindows.html:188
+#: templates/core/status_page_modalWindows.html:229
+#: templates/core/status_page_modalWindows.html:259
+#: templates/core/status_page_v1.html:168
+#: templates/core/status_page_v1.html:178
+#: templates/core/status_page_v1.html:205
+#: templates/core/status_page_v1.html:246
+#: templates/core/status_page_v1.html:276
+msgid "Close"
+msgstr ""
+
+#: templates/core/status_page.html:173
+#: templates/core/status_page_accordion.html:116
+#: templates/core/status_page_modalWindows.html:158
+#: templates/core/status_page_tabs.html:119
+#: templates/core/status_page_v1.html:175
+msgid "Hit Rate (Last 24 Hours)"
+msgstr ""
+
+#: templates/core/status_page.html:190
+#: templates/core/status_page_accordion.html:132
+#: templates/core/status_page_modalWindows.html:175
+#: templates/core/status_page_tabs.html:133
+#: templates/core/status_page_v1.html:192
+#, fuzzy
+#| msgid "Users"
+msgid "User List"
+msgstr "Users"
+
+#: templates/core/status_page.html:191
+#: templates/core/status_page_accordion.html:133
+#: templates/core/status_page_modalWindows.html:176
+#: templates/core/status_page_tabs.html:134
+#: templates/core/status_page_v1.html:193
+#, fuzzy
+#| msgid "Search Histories"
+msgid "Search for users..."
+msgstr "Search Histories"
+
+#: templates/core/status_page.html:196
+#: templates/core/status_page_accordion.html:138
+#: templates/core/status_page_modalWindows.html:181
+#: templates/core/status_page_tabs.html:139
+#: templates/core/status_page_v1.html:198
+msgid "Role"
+msgstr ""
+
+#: templates/core/status_page.html:197 templates/core/status_page.html:216
+#: templates/core/status_page_accordion.html:139
+#: templates/core/status_page_accordion.html:157
+#: templates/core/status_page_modalWindows.html:182
+#: templates/core/status_page_modalWindows.html:201
+#: templates/core/status_page_tabs.html:140
+#: templates/core/status_page_tabs.html:156
+#: templates/core/status_page_v1.html:199
+#: templates/core/status_page_v1.html:218
+#, fuzzy
+#| msgid "Locations"
+msgid "Actions"
+msgstr "Locations"
+
+#: templates/core/status_page.html:208
+#: templates/core/status_page_accordion.html:148
+#: templates/core/status_page_modalWindows.html:193
+#: templates/core/status_page_tabs.html:148
+#: templates/core/status_page_v1.html:210
+msgid "User Login Attempts"
+msgstr ""
+
+#: templates/core/status_page.html:212
+#: templates/core/status_page_accordion.html:153
+#: templates/core/status_page_modalWindows.html:197
+#: templates/core/status_page_tabs.html:152
+#: templates/core/status_page_v1.html:214
+msgid "User/Email"
+msgstr ""
+
+#: templates/core/status_page.html:213
+#: templates/core/status_page_accordion.html:154
+#: templates/core/status_page_modalWindows.html:198
+#: templates/core/status_page_tabs.html:153
+#: templates/core/status_page_v1.html:215
+#, fuzzy
+#| msgid "Address"
+msgid "IP Address"
+msgstr "Address"
+
+#: templates/core/status_page.html:214 templates/core/status_page.html:404
+#: templates/core/status_page_accordion.html:155
+#: templates/core/status_page_accordion.html:321
+#: templates/core/status_page_modalWindows.html:199
+#: templates/core/status_page_modalWindows.html:355
+#: templates/core/status_page_tabs.html:154
+#: templates/core/status_page_tabs.html:312
+#: templates/core/status_page_v1.html:216
+#: templates/core/status_page_v1.html:388
+#, fuzzy
+#| msgid "Timestamp"
+msgid "Time"
+msgstr "Timestamp"
+
+#: templates/core/status_page.html:215
+#: templates/core/status_page_accordion.html:156
+#: templates/core/status_page_modalWindows.html:200
+#: templates/core/status_page_tabs.html:155
+#: templates/core/status_page_v1.html:217
+msgid "Result"
+msgstr ""
+
+#: templates/core/status_page.html:227
+#: templates/core/status_page_accordion.html:168
+#: templates/core/status_page_modalWindows.html:212
+#: templates/core/status_page_tabs.html:167
+#: templates/core/status_page_v1.html:229
+msgid "Success"
+msgstr ""
+
+#: templates/core/status_page.html:227
+#: templates/core/status_page_accordion.html:168
+#: templates/core/status_page_modalWindows.html:212
+#: templates/core/status_page_tabs.html:167
+#: templates/core/status_page_v1.html:229
+msgid "Failed"
+msgstr ""
+
+#: templates/core/status_page.html:227
+#: templates/core/status_page_accordion.html:168
+#: templates/core/status_page_modalWindows.html:212
+#: templates/core/status_page_tabs.html:167
+#: templates/core/status_page_v1.html:229
+msgid "times"
+msgstr ""
+
+#: templates/core/status_page.html:232
+#: templates/core/status_page_accordion.html:173
+#: templates/core/status_page_modalWindows.html:217
+#: templates/core/status_page_tabs.html:172
+#: templates/core/status_page_v1.html:234
+msgid "Block IP"
+msgstr ""
+
+#: templates/core/status_page.html:234
+#: templates/core/status_page_accordion.html:175
+#: templates/core/status_page_modalWindows.html:219
+#: templates/core/status_page_tabs.html:174
+#: templates/core/status_page_v1.html:236
+#, fuzzy
+#| msgid "Total Users"
+msgid "Notify User"
+msgstr "Total Users"
+
+#: templates/core/status_page.html:239
+#: templates/core/status_page_accordion.html:180
+#: templates/core/status_page_modalWindows.html:224
+#: templates/core/status_page_tabs.html:179
+#: templates/core/status_page_v1.html:241
+msgid "No recent login attempts."
+msgstr ""
+
+#: templates/core/status_page.html:256
+#: templates/core/status_page_accordion.html:207
+#: templates/core/status_page_modalWindows.html:241
+#: templates/core/status_page_tabs.html:202
+#: templates/core/status_page_v1.html:258
 msgid "Swagger"
 msgstr "Swagger"
 
-#: templates/core/status_page.html:255
+#: templates/core/status_page.html:257
+#: templates/core/status_page_accordion.html:208
+#: templates/core/status_page_modalWindows.html:242
+#: templates/core/status_page_tabs.html:203
+#: templates/core/status_page_v1.html:259
 msgid "Redoc"
 msgstr "Redoc"
 
-#: templates/core/status_page.html:256
+#: templates/core/status_page.html:260
+#: templates/core/status_page_accordion.html:211
+#: templates/core/status_page_modalWindows.html:245
+#: templates/core/status_page_tabs.html:206
+#: templates/core/status_page_v1.html:262
+msgid "Test Single Endpoint"
+msgstr ""
+
+#: templates/core/status_page.html:261
+#: templates/core/status_page_accordion.html:212
+#: templates/core/status_page_modalWindows.html:246
+#: templates/core/status_page_tabs.html:207
+#: templates/core/status_page_v1.html:263
+msgid "Enter API endpoint URL (e.g., /api/users/me/)"
+msgstr ""
+
+#: templates/core/status_page.html:268
+#: templates/core/status_page_accordion.html:219
+#: templates/core/status_page_modalWindows.html:253
+#: templates/core/status_page_tabs.html:214
+#: templates/core/status_page_v1.html:270
+msgid "Enter JSON request body for POST/PUT (optional)"
+msgstr ""
+
+#: templates/core/status_page.html:271
+#: templates/core/status_page_accordion.html:222
+#: templates/core/status_page_modalWindows.html:256
+#: templates/core/status_page_tabs.html:217
+#: templates/core/status_page_v1.html:273
+msgid "API Response will appear here."
+msgstr ""
+
+#: templates/core/status_page.html:279
+#: templates/core/status_page_accordion.html:242
+#: templates/core/status_page_modalWindows.html:264
+#: templates/core/status_page_tabs.html:233
+#: templates/core/status_page_v1.html:281
+#, fuzzy
+#| msgid "MietSystem — Dashboard"
+msgid "My Dashboard"
+msgstr "MietSystem — Dashboard"
+
+#: templates/core/status_page.html:281
+#: templates/core/status_page_accordion.html:244
+#: templates/core/status_page_modalWindows.html:266
+#: templates/core/status_page_tabs.html:235
+#: templates/core/status_page_v1.html:283
+#, fuzzy
+#| msgid "Listings"
+msgid "My Listings"
+msgstr "Listings"
+
+#: templates/core/status_page.html:281 templates/core/status_page.html:285
+#: templates/core/status_page_accordion.html:244
+#: templates/core/status_page_accordion.html:248
+#: templates/core/status_page_modalWindows.html:266
+#: templates/core/status_page_modalWindows.html:270
+#: templates/core/status_page_tabs.html:235
+#: templates/core/status_page_tabs.html:239
+#: templates/core/status_page_v1.html:283
+#: templates/core/status_page_v1.html:287
+#, fuzzy
+#| msgid "View Histories"
+msgid "View all listings"
+msgstr "View Histories"
+
+#: templates/core/status_page.html:282 templates/core/status_page.html:284
+#: templates/core/status_page_accordion.html:247
+#: templates/core/status_page_modalWindows.html:269
+#: templates/core/status_page_tabs.html:238
+#: templates/core/status_page_v1.html:284
+#: templates/core/status_page_v1.html:286
+#, fuzzy
+#| msgid "Bookings"
+msgid "My Bookings"
+msgstr "Bookings"
+
+#: templates/core/status_page.html:282 templates/core/status_page.html:284
+#: templates/core/status_page_accordion.html:245
+#: templates/core/status_page_accordion.html:247
+#: templates/core/status_page_modalWindows.html:267
+#: templates/core/status_page_modalWindows.html:269
+#: templates/core/status_page_tabs.html:236
+#: templates/core/status_page_tabs.html:238
+#: templates/core/status_page_v1.html:284
+#: templates/core/status_page_v1.html:286
+msgid "View all bookings"
+msgstr ""
+
+#: templates/core/status_page.html:285 templates/core/status_page_v1.html:287
+#, fuzzy
+#| msgid "Listings"
+msgid "Total Listings"
+msgstr "Listings"
+
+#: templates/core/status_page.html:287
+#: templates/core/status_page_accordion.html:250
+#: templates/core/status_page_modalWindows.html:272
+#: templates/core/status_page_tabs.html:241
+#: templates/core/status_page_v1.html:289
+msgid "You have full access to system monitoring and user management."
+msgstr ""
+
+#: templates/core/status_page.html:289 templates/core/status_page.html:301
+#: templates/core/status_page_accordion.html:191
+#: templates/core/status_page_accordion.html:258
+#: templates/core/status_page_modalWindows.html:274
+#: templates/core/status_page_modalWindows.html:286
+#: templates/core/status_page_tabs.html:188
+#: templates/core/status_page_tabs.html:249
+#: templates/core/status_page_v1.html:291
+#: templates/core/status_page_v1.html:303
+msgid "Listings"
+msgstr "Listings"
+
+#: templates/core/status_page.html:290 templates/core/status_page.html:302
+#: templates/core/status_page_accordion.html:192
+#: templates/core/status_page_accordion.html:259
+#: templates/core/status_page_modalWindows.html:275
+#: templates/core/status_page_modalWindows.html:287
+#: templates/core/status_page_tabs.html:189
+#: templates/core/status_page_tabs.html:250
+#: templates/core/status_page_v1.html:292
+#: templates/core/status_page_v1.html:304
+msgid "Bookings"
+msgstr "Bookings"
+
+#: templates/core/status_page.html:291 templates/core/status_page.html:303
+#: templates/core/status_page_accordion.html:193
+#: templates/core/status_page_accordion.html:260
+#: templates/core/status_page_modalWindows.html:276
+#: templates/core/status_page_modalWindows.html:288
+#: templates/core/status_page_tabs.html:190
+#: templates/core/status_page_tabs.html:251
+#: templates/core/status_page_v1.html:293
+#: templates/core/status_page_v1.html:305
+msgid "Reviews"
+msgstr "Reviews"
+
+#: templates/core/status_page.html:292
+#: templates/core/status_page_accordion.html:194
+#: templates/core/status_page_modalWindows.html:277
+#: templates/core/status_page_tabs.html:191
+#: templates/core/status_page_v1.html:294
+msgid "Locations"
+msgstr "Locations"
+
+#: templates/core/status_page.html:297
+#: templates/core/status_page_accordion.html:254
+#: templates/core/status_page_modalWindows.html:282
+#: templates/core/status_page_tabs.html:245
+#: templates/core/status_page_v1.html:299
+msgid "Quick Links"
+msgstr "Quick Links"
+
+#: templates/core/status_page.html:300
+#: templates/core/status_page_accordion.html:257
+#: templates/core/status_page_modalWindows.html:285
+#: templates/core/status_page_tabs.html:248
+#: templates/core/status_page_v1.html:302
 msgid "Profile"
 msgstr "Profile"
 
-#: templates/core/status_page.html:260
+#: templates/core/status_page.html:305
+#: templates/core/status_page_accordion.html:262
+#: templates/core/status_page_modalWindows.html:290
+#: templates/core/status_page_tabs.html:253
+#: templates/core/status_page_v1.html:307
 msgid "Analytics"
 msgstr "Analytics"
 
-#: templates/core/status_page.html:261
-msgid "JWT Login"
-msgstr "JWT Login"
-
-#: templates/core/status_page.html:277
+#: templates/core/status_page.html:320
+#: templates/core/status_page_accordion.html:281
+#: templates/core/status_page_modalWindows.html:309
+#: templates/core/status_page_tabs.html:272
+#: templates/core/status_page_v1.html:324
 msgid "Debug Information"
 msgstr "Debug Information"
 
-#: users/models.py:40
+#: templates/core/status_page.html:398 templates/core/status_page_v1.html:382
+msgid "h ago"
+msgstr ""
+
+#: templates/core/status_page.html:404
+#: templates/core/status_page_accordion.html:321
+#: templates/core/status_page_modalWindows.html:355
+#: templates/core/status_page_tabs.html:312
+#: templates/core/status_page_v1.html:388
+#, python-format
+msgid "Hit Rate (%%)"
+msgstr ""
+
+#: templates/core/status_page.html:424
+#: templates/core/status_page_accordion.html:341
+#: templates/core/status_page_modalWindows.html:375
+#: templates/core/status_page_tabs.html:332
+#: templates/core/status_page_v1.html:408
+msgid "Loading users..."
+msgstr ""
+
+#: templates/core/status_page.html:435
+#: templates/core/status_page_accordion.html:352
+#: templates/core/status_page_modalWindows.html:386
+#: templates/core/status_page_tabs.html:343
+#: templates/core/status_page_v1.html:419
+msgid "Failed to load users."
+msgstr ""
+
+#: templates/core/status_page.html:443
+#: templates/core/status_page_accordion.html:360
+#: templates/core/status_page_modalWindows.html:394
+#: templates/core/status_page_tabs.html:351
+#: templates/core/status_page_v1.html:427
+msgid "No users found for this filter."
+msgstr ""
+
+#: templates/core/status_page.html:453
+#: templates/core/status_page_accordion.html:370
+#: templates/core/status_page_modalWindows.html:404
+#: templates/core/status_page_tabs.html:361
+#: templates/core/status_page_v1.html:437
+msgid "Block"
+msgstr ""
+
+#: templates/core/status_page.html:453
+#: templates/core/status_page_accordion.html:370
+#: templates/core/status_page_modalWindows.html:404
+#: templates/core/status_page_tabs.html:361
+#: templates/core/status_page_v1.html:437
+msgid "Reset Pass"
+msgstr ""
+
+#: templates/core/status_page.html:476
+#: templates/core/status_page_accordion.html:393
+#: templates/core/status_page_modalWindows.html:427
+#: templates/core/status_page_tabs.html:384
+#: templates/core/status_page_v1.html:460
+msgid "Are you sure you want to block user ID:"
+msgstr ""
+
+#: templates/core/status_page.html:479
+#: templates/core/status_page_accordion.html:396
+#: templates/core/status_page_modalWindows.html:430
+#: templates/core/status_page_tabs.html:387
+#: templates/core/status_page_v1.html:463
+#, fuzzy
+#| msgid "User"
+msgid "User ID:"
+msgstr "User"
+
+#: templates/core/status_page.html:479 templates/core/status_page.html:493
+#: templates/core/status_page_accordion.html:396
+#: templates/core/status_page_accordion.html:410
+#: templates/core/status_page_modalWindows.html:430
+#: templates/core/status_page_modalWindows.html:444
+#: templates/core/status_page_tabs.html:387
+#: templates/core/status_page_tabs.html:401
+#: templates/core/status_page_v1.html:463
+#: templates/core/status_page_v1.html:477
+msgid "blocked."
+msgstr ""
+
+#: templates/core/status_page.html:479
+#: templates/core/status_page_accordion.html:396
+#: templates/core/status_page_modalWindows.html:430
+#: templates/core/status_page_tabs.html:387
+#: templates/core/status_page_v1.html:463
+msgid "Failed to block user:"
+msgstr ""
+
+#: templates/core/status_page.html:483
+#: templates/core/status_page_accordion.html:400
+#: templates/core/status_page_modalWindows.html:434
+#: templates/core/status_page_tabs.html:391
+#: templates/core/status_page_v1.html:467
+msgid "Are you sure you want to reset password for user ID:"
+msgstr ""
+
+#: templates/core/status_page.html:486
+#: templates/core/status_page_accordion.html:403
+#: templates/core/status_page_modalWindows.html:437
+#: templates/core/status_page_tabs.html:394
+#: templates/core/status_page_v1.html:470
+msgid "Password for user ID:"
+msgstr ""
+
+#: templates/core/status_page.html:486
+#: templates/core/status_page_accordion.html:403
+#: templates/core/status_page_modalWindows.html:437
+#: templates/core/status_page_tabs.html:394
+#: templates/core/status_page_v1.html:470
+msgid "reset."
+msgstr ""
+
+#: templates/core/status_page.html:486
+#: templates/core/status_page_accordion.html:403
+#: templates/core/status_page_modalWindows.html:437
+#: templates/core/status_page_tabs.html:394
+#: templates/core/status_page_v1.html:470
+msgid "Failed to reset password:"
+msgstr ""
+
+#: templates/core/status_page.html:490
+#: templates/core/status_page_accordion.html:407
+#: templates/core/status_page_modalWindows.html:441
+#: templates/core/status_page_tabs.html:398
+#: templates/core/status_page_v1.html:474
+msgid "Are you sure you want to block IP address:"
+msgstr ""
+
+#: templates/core/status_page.html:493
+#: templates/core/status_page_accordion.html:410
+#: templates/core/status_page_modalWindows.html:444
+#: templates/core/status_page_tabs.html:401
+#: templates/core/status_page_v1.html:477
+#, fuzzy
+#| msgid "Address"
+msgid "IP Address:"
+msgstr "Address"
+
+#: templates/core/status_page.html:493
+#: templates/core/status_page_accordion.html:410
+#: templates/core/status_page_modalWindows.html:444
+#: templates/core/status_page_tabs.html:401
+#: templates/core/status_page_v1.html:477
+msgid "Failed to block IP:"
+msgstr ""
+
+#: templates/core/status_page.html:494
+#: templates/core/status_page_accordion.html:411
+#: templates/core/status_page_modalWindows.html:445
+#: templates/core/status_page_tabs.html:402
+#: templates/core/status_page_v1.html:478
+msgid "An error occurred while blocking IP."
+msgstr ""
+
+#: templates/core/status_page.html:498
+#: templates/core/status_page_accordion.html:415
+#: templates/core/status_page_modalWindows.html:449
+#: templates/core/status_page_tabs.html:406
+#: templates/core/status_page_v1.html:482
+msgid "Send notification to user:"
+msgstr ""
+
+#: templates/core/status_page.html:499
+#: templates/core/status_page_accordion.html:416
+#: templates/core/status_page_modalWindows.html:450
+#: templates/core/status_page_tabs.html:407
+#: templates/core/status_page_v1.html:483
+msgid "There was a recent login attempt on your account."
+msgstr ""
+
+#: templates/core/status_page.html:501
+#: templates/core/status_page_accordion.html:418
+#: templates/core/status_page_modalWindows.html:452
+#: templates/core/status_page_tabs.html:409
+#: templates/core/status_page_v1.html:485
+msgid "Notification sent to"
+msgstr ""
+
+#: templates/core/status_page.html:501
+#: templates/core/status_page_accordion.html:418
+#: templates/core/status_page_modalWindows.html:452
+#: templates/core/status_page_tabs.html:409
+#: templates/core/status_page_v1.html:485
+msgid "Failed to send notification:"
+msgstr ""
+
+#: templates/core/status_page.html:502
+#: templates/core/status_page_accordion.html:419
+#: templates/core/status_page_modalWindows.html:453
+#: templates/core/status_page_tabs.html:410
+#: templates/core/status_page_v1.html:486
+msgid "An error occurred while sending notification."
+msgstr ""
+
+#: templates/core/status_page.html:504
+#: templates/core/status_page_accordion.html:421
+#: templates/core/status_page_modalWindows.html:455
+#: templates/core/status_page_tabs.html:412
+#: templates/core/status_page_v1.html:488
+msgid "Cannot send notification: User email/username is missing."
+msgstr ""
+
+#: templates/core/status_page.html:513
+#: templates/core/status_page_accordion.html:430
+#: templates/core/status_page_modalWindows.html:464
+#: templates/core/status_page_tabs.html:421
+#: templates/core/status_page_v1.html:497
+msgid "Please enter an API endpoint URL."
+msgstr ""
+
+#: templates/core/status_page.html:516
+#: templates/core/status_page_accordion.html:433
+#: templates/core/status_page_modalWindows.html:467
+#: templates/core/status_page_tabs.html:424
+#: templates/core/status_page_v1.html:500
+msgid "Testing..."
+msgstr ""
+
+#: templates/core/status_page.html:519
+#: templates/core/status_page_accordion.html:436
+#: templates/core/status_page_modalWindows.html:470
+#: templates/core/status_page_tabs.html:427
+#: templates/core/status_page_v1.html:503
+#, fuzzy
+#| msgid "Invalid role"
+msgid "Invalid JSON body."
+msgstr "Invalid role"
+
+#: templates/core/status_page.html:519
+#: templates/core/status_page_accordion.html:436
+#: templates/core/status_page_modalWindows.html:470
+#: templates/core/status_page_tabs.html:427
+#: templates/core/status_page_v1.html:503
+msgid "Error: Invalid JSON body."
+msgstr ""
+
+#: templates/core/status_page.html:527
+#: templates/core/status_page_accordion.html:444
+#: templates/core/status_page_modalWindows.html:478
+#: templates/core/status_page_tabs.html:435
+#: templates/core/status_page_v1.html:511
+msgid "Test completed with status:"
+msgstr ""
+
+#: templates/core/status_page.html:528
+#: templates/core/status_page_accordion.html:445
+#: templates/core/status_page_modalWindows.html:479
+#: templates/core/status_page_tabs.html:436
+#: templates/core/status_page_v1.html:512
+msgid "Error during API test:"
+msgstr ""
+
+#: templates/core/status_page.html:528
+#: templates/core/status_page_accordion.html:445
+#: templates/core/status_page_modalWindows.html:479
+#: templates/core/status_page_tabs.html:436
+#: templates/core/status_page_v1.html:512
+msgid "API Test Failed: "
+msgstr ""
+
+#: templates/core/status_page.html:531
+#: templates/core/status_page_accordion.html:448
+#: templates/core/status_page_modalWindows.html:482
+#: templates/core/status_page_v1.html:515
+msgid "Are you sure you want to clear the Redis cache?"
+msgstr ""
+
+#: templates/core/status_page.html:534
+#: templates/core/status_page_accordion.html:451
+#: templates/core/status_page_modalWindows.html:485
+#: templates/core/status_page_v1.html:518
+msgid "Redis cache cleared."
+msgstr ""
+
+#: templates/core/status_page.html:534
+#: templates/core/status_page_accordion.html:451
+#: templates/core/status_page_modalWindows.html:485
+#: templates/core/status_page_v1.html:518
+msgid "Failed to clear cache:"
+msgstr ""
+
+#: templates/core/status_page.html:535
+#: templates/core/status_page_accordion.html:452
+#: templates/core/status_page_modalWindows.html:486
+#: templates/core/status_page_v1.html:519
+msgid "An error occurred while clearing cache."
+msgstr ""
+
+#: templates/core/status_page_accordion.html:55
+#: templates/core/status_page_modalWindows.html:95
+#: templates/core/status_page_tabs.html:62
+msgid "Database is offline!"
+msgstr ""
+
+#: templates/core/status_page_accordion.html:57
+#: templates/core/status_page_modalWindows.html:97
+#: templates/core/status_page_tabs.html:64
+#, fuzzy
+#| msgid "Database"
+msgid "Database: Warning!"
+msgstr "Database"
+
+#: templates/core/status_page_accordion.html:59
+#: templates/core/status_page_modalWindows.html:99
+#: templates/core/status_page_tabs.html:66
+#, fuzzy
+#| msgid "Database"
+msgid "Database: Online"
+msgstr "Database"
+
+#: templates/core/status_page_accordion.html:62
+#: templates/core/status_page_modalWindows.html:102
+#: templates/core/status_page_tabs.html:69
+msgid "Redis is offline!"
+msgstr ""
+
+#: templates/core/status_page_accordion.html:64
+#: templates/core/status_page_modalWindows.html:104
+#: templates/core/status_page_tabs.html:71
+msgid "Redis: Warning!"
+msgstr ""
+
+#: templates/core/status_page_accordion.html:66
+#: templates/core/status_page_modalWindows.html:106
+#: templates/core/status_page_tabs.html:73
+msgid "Redis: Online"
+msgstr ""
+
+#: templates/core/status_page_accordion.html:73
+#: templates/core/status_page_modalWindows.html:115
+#: templates/core/status_page_tabs.html:79
+#, fuzzy
+#| msgid "System Information"
+msgid "System Information & Metrics"
+msgstr "System Information"
+
+#: templates/core/status_page_accordion.html:188
+#: templates/core/status_page_tabs.html:186
+msgid "System Objects"
+msgstr "System Objects"
+
+#: templates/core/status_page_accordion.html:245
+#: templates/core/status_page_modalWindows.html:267
+#: templates/core/status_page_tabs.html:236
+#, fuzzy
+#| msgid "Bookings"
+msgid "New Bookings"
+msgstr "Bookings"
+
+#: templates/core/status_page_accordion.html:248
+#: templates/core/status_page_modalWindows.html:270
+#: templates/core/status_page_tabs.html:239
+#, fuzzy
+#| msgid "Listings"
+msgid "Viewed Listings"
+msgstr "Listings"
+
+#: templates/core/status_page_modalWindows.html:55
+#, fuzzy
+#| msgid "System Information"
+msgid "All systems normal"
+msgstr "System Information"
+
+#: templates/core/status_page_modalWindows.html:57
+msgid "Issues detected"
+msgstr ""
+
+#: templates/core/status_page_tabs.html:48
+#, fuzzy
+#| msgid "System Objects"
+msgid "System"
+msgstr "System Objects"
+
+#: templates/core/status_page_tabs.html:52
+#, fuzzy
+#| msgid "System Objects"
+msgid "Objects"
+msgstr "System Objects"
+
+#: users/models.py:38
 msgid "Email is required"
 msgstr "Email is required"
 
-#: users/serializers.py:33
-msgid "Invalid role"
-msgstr "Invalid role"
+#: users/models.py:79
+msgid "Avatar"
+msgstr ""
 
-#: users/serializers.py:38
+#: users/serializers.py:52
 msgid "Invalid phone number format"
 msgstr "Invalid phone number format"
 
-#: users/serializers.py:43
+#: users/serializers.py:57
 msgid "Email already exists"
 msgstr "Email already exists"
 
@@ -588,35 +1628,99 @@ msgstr "Verify Your MietSystem Account"
 msgid "Reset Your MietSystem Password"
 msgstr "Reset Your MietSystem Password"
 
-#: users/views.py:63
+#: users/views.py:205
 msgid "Email already verified"
 msgstr "Email already verified"
 
-#: users/views.py:69
+#: users/views.py:211
 msgid "Email verified"
 msgstr "Email verified"
 
-#: users/views.py:72 users/views.py:111
+#: users/views.py:214 users/views.py:254
 msgid "Invalid or expired token"
 msgstr "Invalid or expired token"
 
-#: users/views.py:85
+#: users/views.py:230
 msgid "Password reset email sent"
 msgstr "Password reset email sent"
 
-#: users/views.py:89
+#: users/views.py:232
 msgid "User not found"
 msgstr "User not found"
 
-#: users/views.py:107
+#: users/views.py:252
 msgid "Password reset successful"
 msgstr "Password reset successful"
 
-#~ msgid "Search Histories"
-#~ msgstr "Search Histories"
+#: utils/admin.py:427 utils/admin.py:567
+msgid "Personal info"
+msgstr ""
 
-#~ msgid "View Histories"
-#~ msgstr "View Histories"
+#: utils/admin.py:439 utils/admin.py:576
+msgid "Permissions"
+msgstr ""
+
+#: utils/admin.py:452 utils/admin.py:507 utils/admin.py:544 utils/admin.py:587
+#, fuzzy
+#| msgid "Start date"
+msgid "Important dates"
+msgstr "Start date"
+
+#: utils/admin.py:898
+msgid "Postal Code"
+msgstr ""
+
+#: utils/admin.py:907
+msgid "Latitude"
+msgstr ""
+
+#: utils/admin.py:916
+msgid "Longitude"
+msgstr ""
+
+#, fuzzy
+#~| msgid "Only tenants can create bookings"
+#~ msgid "Only tenants can create bookings."
+#~ msgstr "Only tenants can create bookings"
+
+#~ msgid "Photos"
+#~ msgstr "Photos"
+
+#~ msgid "Listing deleted successfully"
+#~ msgstr "Listing deleted successfully"
+
+#~ msgid "Latitude must be between -90 and 90"
+#~ msgstr "Latitude must be between -90 and 90"
+
+#~ msgid "Longitude must be between -180 and 180"
+#~ msgstr "Longitude must be between -180 and 180"
+
+#~ msgid "Review ID"
+#~ msgstr "Review ID"
+
+#~ msgid "Is Approved"
+#~ msgstr "Is Approved"
+
+#~ msgid "Created At"
+#~ msgstr "Created At"
+
+#~ msgid "Current Language"
+#~ msgstr "Current Language"
+
+#~ msgid "Celery"
+#~ msgstr "Celery"
+
+#~ msgid "S3"
+#~ msgstr "S3"
+
+#~ msgid "Localization"
+#~ msgstr "Localization"
+
+#~ msgid "Celery Tasks"
+#~ msgstr "Celery Tasks"
+
+#~ msgid "JWT Login"
+#~ msgstr "JWT Login"
 
 #~ msgid "Only the booking owner or landlord can perform this action"
 #~ msgstr "Only the booking owner or landlord can perform this action"

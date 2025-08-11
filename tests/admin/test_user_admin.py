@@ -7,7 +7,6 @@ from users.models import User
 
 
 @pytest.fixture
-@pytest.mark.django_db
 def superuser():
     return User.objects.create_user(
         email="super@example.com",
@@ -19,7 +18,6 @@ def superuser():
 
 
 @pytest.fixture
-@pytest.mark.django_db
 def admin_user():
     return User.objects.create_user(
         email="admin@example.com",
@@ -30,7 +28,6 @@ def admin_user():
 
 
 @pytest.fixture
-@pytest.mark.django_db
 def landlord_user():
     return User.objects.create_user(
         email="landlord@example.com", password="pass", role="LANDLORD"
@@ -38,7 +35,6 @@ def landlord_user():
 
 
 @pytest.fixture
-@pytest.mark.django_db
 def tenant_user():
     return User.objects.create_user(
         email="tenant@example.com", password="pass", role="TENANT"
@@ -55,6 +51,7 @@ def tenant_user():
         ("tenant_user", False),
     ],
 )
+@pytest.mark.django_db
 def test_useradmin_module_permission(client, request, user_fixture, can_access):
     user = request.getfixturevalue(user_fixture)
     client.force_login(user)
@@ -77,6 +74,7 @@ def test_useradmin_module_permission(client, request, user_fixture, can_access):
         ("tenant_user", False),
     ],
 )
+@pytest.mark.django_db
 def test_useradmin_change_permission(
     client, request, user_fixture, can_change, admin_user
 ):

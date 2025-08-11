@@ -1,5 +1,4 @@
-#### `locations/tasks.py`
-
+# locations/tasks.py
 import geocoder
 from celery import shared_task
 from sentry_sdk import capture_exception
@@ -27,18 +26,3 @@ def geocode_address(self, location_id):
     except Exception as e:
         capture_exception(e)
         raise self.retry(countdown=60)
-
-
-# from celery import shared_task
-# import geocoder
-# from .models import Location
-#
-# @shared_task
-# def geocode_address(location_id):
-#     location = Location.objects.get(id=location_id)
-#     address = f"{location.street}, {location.city}, {location.federal_state}, Germany"
-#     g = geocoder.osm(address)
-#     if g.ok:
-#         location.latitude = g.lat
-#         location.longitude = g.lng
-#         location.save()

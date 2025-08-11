@@ -103,7 +103,7 @@ def view_history_entry(landlord_user, some_listing):
 
 # --- Тесты для SearchHistoryAdmin ---
 
-
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "user_fixture, expected_status",
     [
@@ -113,6 +113,7 @@ def view_history_entry(landlord_user, some_listing):
         ("tenant_user", 302),
     ],
 )
+@pytest.mark.django_db
 def test_searchhistory_admin_changelist_access(
     client, request, user_fixture, expected_status, search_history_entry
 ):
@@ -128,7 +129,7 @@ def test_searchhistory_admin_changelist_access(
 
 # --- Тесты для ViewHistoryAdmin ---
 
-
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "user_fixture, expected_status",
     [
@@ -138,6 +139,7 @@ def test_searchhistory_admin_changelist_access(
         ("tenant_user", 302),
     ],
 )
+@pytest.mark.django_db
 def test_viewhistory_admin_changelist_access(
     client, request, user_fixture, expected_status, view_history_entry
 ):

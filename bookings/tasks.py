@@ -41,24 +41,3 @@ def send_booking_notification(self, booking_id, action):
 def cleanup_old_bookings():
     threshold = timezone.now().date() - timedelta(days=30)
     Booking.objects.filter(status="PENDING", created_at__lt=threshold).delete()
-
-
-# from celery import shared_task
-# from django.core.mail import send_mail
-# from django.conf import settings
-# from .models import Booking
-#
-# @shared_task
-# def send_booking_notification(booking_id, action):
-#     booking = Booking.objects.get(id=booking_id)
-#     subject = f"Booking {action} - {booking.listing.title}"
-#     message = f"Your booking for {booking.listing.title} has been {action.lower()}.\n"
-#     message += f"Dates: {booking.start_date} to {booking.end_date}\n"
-#     message += f"Total Price: {booking.total_price} EUR"
-#     send_mail(
-#         subject=subject,
-#         message=message,
-#         from_email=settings.DEFAULT_FROM_EMAIL,
-#         recipient_list=[booking.user.email],
-#         fail_silently=True,
-#     )
