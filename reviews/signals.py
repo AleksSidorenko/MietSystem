@@ -1,11 +1,9 @@
-### `reviews/signals.py`
-
+# reviews/signals.py
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from sentry_sdk import capture_message
-
 from .models import Review
 
 

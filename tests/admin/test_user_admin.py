@@ -1,8 +1,6 @@
 # tests/admin/test_user_admin.py
-
 import pytest
 from django.urls import reverse
-
 from users.models import User
 
 

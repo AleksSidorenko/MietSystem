@@ -135,6 +135,8 @@ class SearchHistoryViewSet(viewsets.ModelViewSet):
 
 
 class AnalyticsExportCSVView(APIView):
+    serializer_class = None  # Или EmptySerializer, если нужна конкретика
+
     def get(self, request):
         # Создаем буфер в памяти
         csv_buffer = StringIO()

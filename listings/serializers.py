@@ -20,7 +20,6 @@ class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer)
         queryset=Amenity.objects.all(),
         required=False,
     )
-    # amenities = serializers.ListField(child=serializers.CharField(), required=False)
     url = serializers.HyperlinkedIdentityField(view_name='listing-detail')  # <-- НОВОЕ ПОЛЕ
     availability = serializers.SerializerMethodField()
     location = LocationSerializer(read_only=True)
@@ -104,15 +103,6 @@ class ListingSerializer(TranslationSerializerMixin, serializers.ModelSerializer)
                     )
                 file.seek(0)
         return value
-
-    # def validate_amenities(self, value):
-    #     if not isinstance(value, list):
-    #         raise serializers.ValidationError(_("Amenities must be a list"))
-    #     amenities_objs = []
-    #     for name in value:
-    #         amenity, _ = Amenity.objects.get_or_create(name=name)
-    #         amenities_objs.append(amenity)
-    #     return amenities_objs
 
     def validate_price_per_night(self, value):
         if value <= 0:

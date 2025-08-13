@@ -31,9 +31,7 @@ class Booking(models.Model):
     total_price = models.DecimalField(
         max_digits=10, decimal_places=2, verbose_name=_("Total price"), null=True
     )
-    # total_price = models.DecimalField(
-    #     max_digits=10, decimal_places=2, verbose_name=_("Total price"), null=False
-    # )
+
     status = models.CharField(
         max_length=20,
         choices=Status.choices,
@@ -68,12 +66,6 @@ class Booking(models.Model):
         except TypeError:
             # Если total_price имеет неожиданный тип, бросим ValidationError
             raise ValidationError(_("Total price must be a number"))
-
-    # def clean(self):
-    #     if self.end_date <= self.start_date:
-    #         raise ValidationError(_("End date must be after start date"))
-    #     if self.total_price < 0:
-    #         raise ValidationError(_("Total price must be non-negative"))
 
     def save(self, *args, **kwargs):
         """

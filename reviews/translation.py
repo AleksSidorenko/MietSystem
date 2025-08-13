@@ -1,7 +1,5 @@
-### `reviews/translation.py`
-
+# reviews/translation.py
 from modeltranslation.translator import TranslationOptions, register
-
 from .models import Review
 
 

@@ -110,7 +110,7 @@
                     <p>{% trans "Keys" %}: <strong>{{ data.redis.keys|default:"N/A" }}</strong></p>
                     <p>{% trans "Data Size" %}: <strong>{{ data.redis.used_memory_human|default:"N/A" }}</strong></p>
                     <p>{% trans "Hit Rate" %}: <strong>{{ data.redis.hit_rate|default:"N/A" }}%</strong></p>
-                    <button class="js-required mt-2 bg-red-500 text-white p-1 rounded hover:bg-red-600 text-sm" onclick="clearRedisCache()"><i class="fas fa-trash-alt mr-1"></i> {% trans "Clear Cache" %}</button>
+                    {# <button class="js-required mt-2 bg-red-500 text-white p-1 rounded hover:bg-red-600 text-sm" onclick="clearRedisCache()"><i class="fas fa-trash-alt mr-1"></i> {% trans "Clear Cache" %}</button> #}
                     <button class="js-required mt-2 bg-blue-500 text-white p-1 rounded hover:bg-blue-600 text-sm" onclick="openModal('redis')">{% trans "View Hit Rate Graph" %}</button>
                 </div>
             </details>

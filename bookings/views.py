@@ -12,7 +12,6 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-
 from bookings.models import Booking
 from bookings.permissions import IsOwnerOrAdmin, IsOwnerOrLandlordOrAdmin, IsAdminOrOwnerOrLandlordOrAdmin
 from bookings.permissions import IsAdminOrOwnerOrLandlord

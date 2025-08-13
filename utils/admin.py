@@ -602,32 +602,6 @@ class UserAdmin(AdminDisplayModeMixin, BaseHistoryAdmin, DjangoUserAdmin):
 
         return super().get_fieldsets(request, obj)
 
-    # def get_fieldsets(self, request, obj=None):
-    #     # Если добавляем нового пользователя (obj is None)
-    #     if not obj:
-    #         return self.add_fieldsets
-    #
-    #     # Если текущий пользователь (request.user) - Тенант
-    #     if user_has_role(request.user, ["TENANT"]):
-    #         # Если Тенант смотрит свой собственный профиль
-    #         if request.user == obj:
-    #             return self.tenant_self_edit_fieldsets
-    #         # Если Тенант смотрит профиль другого пользователя
-    #         else:
-    #             return self.tenant_other_view_fieldsets
-    #
-    #     # Если текущий пользователь (request.user) - Лендлорд
-    #     if user_has_role(request.user, ["LANDLORD"]):
-    #         # Если Лендлорд смотрит свой собственный профиль
-    #         if request.user == obj:
-    #             return self.landlord_self_edit_fieldsets
-    #         # Если Лендлорд смотрит профиль другого пользователя (Тенанта)
-    #         else:
-    #             return self.landlord_other_view_fieldsets
-    #
-    #     # Для Админов - использовать стандартные fieldsets
-    #     return super().get_fieldsets(request, obj)
-
     # --- Динамическое определение readonly_fields ---
     def get_readonly_fields(self, request, obj=None):
         user = request.user
@@ -807,10 +781,6 @@ class ListingPhotoInline(admin.TabularInline):
 class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
     exclude = (
         "photos",
-        # "description_en",
-        # "description_ru",
-        # "title_en",
-        # "title_ru",
     )
     allowed_roles = ["ADMIN", "LANDLORD", "TENANT"]
     form = ListingForm # Используем ваш кастомный ListingForm
@@ -820,8 +790,6 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
 
     export_fields = [
         "title_en",
-        # "title_de",
-        # "title_ru",
         "user__email",
         "price_per_night",
         "city",
@@ -845,8 +813,6 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
     detailed_list_display = (
         "title_en",
         "description_en",
-        # "title_de",
-        # "get_user_full_name",
         "city",
         "country",
         "price_per_night",
@@ -855,11 +821,8 @@ class ListingAdmin(AdminDisplayModeMixin, BaseTranslatableAdmin):
         "is_active",
         "popularity",
         "created_at",
-        # "get_location_latitude",
-        # "get_location_longitude",
     )
     simple_list_display = ("title_de", "get_user_full_name", "price_per_night") # И здесь!
-    # readonly_fields = ("photo_preview",) # Это будет управляться get_readonly_fields
 
     history_list_display = [
         # "title_en",
@@ -1386,9 +1349,6 @@ class BookingAdmin(
     def has_module_permission(self, request):
         return user_has_role(request.user, self.get_allowed_roles())
 
-
-
-
 @admin.register(Review)
 class ReviewAdmin(AdminDisplayModeMixin, ExportCsvMixin, BaseAdmin):
     allowed_roles = ["ADMIN", "LANDLORD", "TENANT"]
@@ -1436,22 +1396,6 @@ class ReviewAdmin(AdminDisplayModeMixin, ExportCsvMixin, BaseAdmin):
         # Для остальных пользователей (например, админа)
         return format_html('<a class="button" href="{}">To change</a>', url)
 
-#     def action_links(self, obj):
-#         user = getattr(self, "request_user", None)
-#         if not user:
-#             return ""
-#         url = reverse("admin:reviews_review_change", args=[obj.pk])
-#         if user_has_role(user, ["LANDLORD"]):
-#             return format_html(
-#                 '<a class="button" href="{}">Ответить на отзыв</a> &nbsp; '
-#                 '<a class="button" href="{}">Просмотр</a>',
-#                 url,
-#                 url,
-#             )
-#         return format_html('<a class="button" href="{}">Изменить</a>', url)
-#
-#     action_links.short_description = "Действия"
-
     def get_queryset(self, request):
         self.request_user = request.user
         qs = super().get_queryset(request)
@@ -1463,28 +1407,6 @@ class ReviewAdmin(AdminDisplayModeMixin, ExportCsvMixin, BaseAdmin):
         if user_has_role(user, ["TENANT"]):
             return qs.filter(user=user)
         return qs.none()
-
-#     def get_queryset(self, request):
-#         self.request_user = request.user  # используется в action_links
-#
-#         qs = super().get_queryset(request)
-#         user = request.user
-#         print(f"[ReviewAdmin] get_queryset for {user.email} ({user.role})")
-#
-#         if user_has_role(user, ["ADMIN"]):
-#             print("[ReviewAdmin] ADMIN: return all")
-#             return qs
-#         if user_has_role(user, ["LANDLORD"]):
-#             filtered_qs = qs.filter(booking__listing__user=user)
-#             print(f"[ReviewAdmin] LANDLORD: filtered_qs.count = {filtered_qs.count()}")
-#             return filtered_qs
-#         if user_has_role(user, ["TENANT"]):
-#             filtered_qs = qs.filter(user=user)
-#             print(f"[ReviewAdmin] TENANT: filtered_qs.count = {filtered_qs.count()}")
-#             return filtered_qs
-#
-#         print("[ReviewAdmin] No access - returning empty queryset")
-#         return qs.none()
 
     def get_fieldsets(self, request, obj=None):
         user = request.user
@@ -1531,17 +1453,6 @@ class ReviewAdmin(AdminDisplayModeMixin, ExportCsvMixin, BaseAdmin):
 
         return super().get_readonly_fields(request, obj)
 
-#     def get_readonly_fields(self, request, obj=None):
-#         user = request.user
-#
-#         if user_has_role(user, ["LANDLORD"]) and obj:
-#             # Только разрешить редактировать landlord_response
-#             return [
-#                 f.name for f in self.model._meta.fields if f.name != "landlord_response"
-#             ]
-#         return super().get_readonly_fields(request, obj)
-
-
     def has_add_permission(self, request):
         return user_has_role(request.user, ["TENANT", "ADMIN"])
 
@@ -1565,32 +1476,6 @@ class ReviewAdmin(AdminDisplayModeMixin, ExportCsvMixin, BaseAdmin):
         if obj and user_has_role(user, ["TENANT"]):
             return obj.user == user
         return False
-
-#     def has_add_permission(self, request):
-#         return user_has_role(request.user, ["TENANT", "ADMIN"])
-#
-#     def has_view_permission(self, request, obj=None):
-#         return user_has_role(request.user, self.get_allowed_roles())
-#
-#     def has_change_permission(self, request, obj=None):
-#         user = request.user
-#         if user_has_role(user, ["ADMIN"]):
-#             return True
-#         if obj and user_has_role(user, ["LANDLORD"]):
-#             return obj.booking.listing.user == user
-#         if obj and user_has_role(user, ["TENANT"]):
-#             return obj.user == user
-#         if obj is None:
-#             return True
-#         return False
-
-#     def has_delete_permission(self, request, obj=None):
-#         user = request.user
-#         if user_has_role(user, ["ADMIN"]):
-#             return True
-#         if obj and user_has_role(user, ["TENANT"]):
-#             return obj.user == user  # Только свои отзывы
-#         return False  # Landlord не может удалять
 
     def save_model(self, request, obj, form, change):
         # Если это новый объект, автоматически устанавливаем пользователя

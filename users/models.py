@@ -90,7 +90,6 @@ class User(AbstractBaseUser, PermissionsMixin):
             models.Index(fields=["email"], name="user_email_idx"),
             models.Index(fields=["role"], name="user_role_idx"),
         ]
-        # default_related_name = 'custom_user'
         verbose_name = _("User")
         verbose_name_plural = "Users (Пользователи)"  # Оставил твой verbose_name_plural
 
@@ -101,5 +100,3 @@ class User(AbstractBaseUser, PermissionsMixin):
             return f"{self.first_name} {self.last_name} ({self.email})"
         return self.email
 
-    # def __str__(self):
-    #     return self.email

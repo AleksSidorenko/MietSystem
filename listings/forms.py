@@ -1,5 +1,4 @@
 # listings/forms.py
-
 from django import forms
 from listings.models import Listing
 

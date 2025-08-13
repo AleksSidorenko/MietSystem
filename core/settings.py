@@ -1,5 +1,4 @@
 # core/settings.py
-
 import os
 from datetime import timedelta
 from pathlib import Path
@@ -311,6 +310,14 @@ CELERY_BEAT_SCHEDULE = {
     "cleanup-old-views-every-day": {
         "task": "analytics.tasks.cleanup_old_views",
         "schedule": 86400.0,
+    },
+    "save-redis-hit-rate-every-hour": {
+        "task": "core.tasks.save_hit_rate", # Убедитесь, что путь правильный
+        "schedule": 3600.0, # Каждый час
+    },
+    "update-completed-bookings-every-day": {
+        "task": "bookings.tasks.update_completed_bookings",
+        "schedule": 86400.0, # Запускать один раз в день (86400 секунд)
     },
 }
 

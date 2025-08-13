@@ -5,9 +5,6 @@ from rest_framework.test import APIClient
 from analytics.models import ViewHistory
 
 
-import pytest
-from django.urls import reverse
-
 @pytest.mark.django_db
 def test_get_queryset_for_landlord(api_client, landlord_user, listing):
     api_client.force_authenticate(user=landlord_user)

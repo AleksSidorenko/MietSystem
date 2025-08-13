@@ -1,14 +1,14 @@
-### `bookings/tasks.py`
-from datetime import timedelta, timezone
-
+# bookings/tasks.py
+from datetime import timedelta
 from celery import shared_task
+from django.utils import timezone
 from django.conf import settings
 from django.core.mail import send_mail
 from django.utils.translation import activate
 from django.utils.translation import gettext_lazy as _
 from sentry_sdk import capture_exception
-
 from .models import Booking
+from django.db import connection
 
 
 @shared_task(bind=True, max_retries=3)
@@ -41,3 +41,25 @@ def send_booking_notification(self, booking_id, action):
 def cleanup_old_bookings():
     threshold = timezone.now().date() - timedelta(days=30)
     Booking.objects.filter(status="PENDING", created_at__lt=threshold).delete()
+
+
+
+
+@shared_task
+def update_completed_bookings():
+    """
+    Проверяет и обновляет статус бронирований,
+    чей срок аренды уже закончился.
+    """
+    now_date = timezone.now().date()
+
+    bookings_to_update = Booking.objects.filter(
+        status__in=["CONFIRMED", "PENDING"],
+        end_date__lt=now_date
+    )
+
+    print("Executing query:")
+    print(bookings_to_update.query)
+
+    updated_count = bookings_to_update.update(status="COMPLETED")
+    print(f"Updated {updated_count} bookings to COMPLETED status.")

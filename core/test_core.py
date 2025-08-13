@@ -7,16 +7,13 @@ from rest_framework.test import APIClient
 
 User = get_user_model()
 
-
 @pytest.fixture
 def api_client():
     return APIClient()
 
-
 @pytest.fixture
 def client():
     return Client()
-
 
 @pytest.fixture
 def admin_user(db):
@@ -27,22 +24,12 @@ def admin_user(db):
         last_name="User",
     )
 
-
 @pytest.mark.django_db
 def test_health_check_api(api_client, admin_user):
     api_client.force_authenticate(user=admin_user)
     response = api_client.get("/api/health/")
     assert response.status_code == 200
     assert response.json().get("data", {}).get("status", "").lower() == "ok"
-
-# @pytest.mark.django_db
-# def test_health_check_api(api_client, admin_user):
-#     # Health check endpoint requires authentication
-#     api_client.force_authenticate(user=admin_user)
-#     response = api_client.get("/api/health/")
-#     assert response.status_code == 200
-#     # The current view returns {"status": "ok"} (lowercase) — test updated accordingly.
-#     assert response.json().get("status") in ("ok", "OK", "Ok")
 
 @pytest.mark.django_db
 def test_status_page_unauthenticated(client):

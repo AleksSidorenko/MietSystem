@@ -1,7 +1,5 @@
 # listings/translation.py
-
 from modeltranslation.translator import TranslationOptions, register
-
 from listings.models import Listing
 
 

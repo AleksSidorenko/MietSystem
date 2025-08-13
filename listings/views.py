@@ -30,10 +30,6 @@ class ListingFilter(django_filters.FilterSet):
             return queryset
         return queryset.filter(amenities__name__in=names).distinct()
 
-    # def filter_amenities(self, queryset, name, value):
-    #     amenities = value.split(",")
-    #     return queryset.filter(amenities__contains=amenities)
-
     class Meta:
         model = Listing
         fields = ["price_min", "price_max", "rooms", "property_type", "amenities"]
@@ -81,25 +77,8 @@ class ListingViewSet(viewsets.ModelViewSet):
 
         return qs.order_by('-created_at')
 
-    # def get_queryset(self):
-    #     user = self.request.user
-    #
-    #     # Для администраторов показываем все объявления, включая неактивные
-    #     if user.is_authenticated and user.role == 'ADMIN':
-    #         return Listing.objects.all().order_by('-created_at')
-    #
-    #     # Для лендлордов показываем только их собственные объявления
-    #     if user.is_authenticated and user.role == 'LANDLORD':
-    #         return Listing.objects.filter(user=user).order_by('-created_at')
-    #
-    #     # Для всех остальных (анонимных и TENANT) показываем только активные объявления
-    #     return Listing.objects.filter(is_active=True).order_by('-created_at')
-
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-    # Мы убрали метод get_permissions(), так как IsAdminOrLandlordOrReadOnly
-    # полностью покрывает необходимую логику доступа.
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()

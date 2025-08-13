@@ -1,5 +1,4 @@
 # tests/admin/test_listing_admin.py
-
 import pytest
 from django.urls import reverse
 from listings.models import Listing

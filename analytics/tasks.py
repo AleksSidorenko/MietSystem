@@ -1,9 +1,7 @@
 # analytics/tasks.py
 from datetime import timedelta, timezone
-
 from celery import shared_task
 from django.db.models import Avg
-
 from analytics.models import ViewHistory
 from listings.models import Listing
 from reviews.models import Review

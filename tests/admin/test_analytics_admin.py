@@ -1,9 +1,7 @@
 # tests/admin/test_analytics_admin.py
-
 import pytest
 from django.contrib.gis.geos import Point
 from django.urls import reverse
-
 from analytics.models import SearchHistory, ViewHistory
 from listings.models import Listing
 from locations.models import City, FederalState, Location

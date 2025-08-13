@@ -1,7 +1,5 @@
-# `utils/helpers.py`
-
+# utils/helpers.py
 from datetime import datetime
-
 from django.core.cache import cache
 from django.utils import timezone
 

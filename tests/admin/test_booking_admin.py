@@ -1,5 +1,4 @@
 # tests/admin/test_booking_admin.py
-
 from datetime import date, timedelta
 import random
 import pytest

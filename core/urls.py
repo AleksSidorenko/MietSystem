@@ -35,10 +35,9 @@ from users.views import AllUsersForAdminDashboardView
 from analytics.views import AnalyticsExportCSVView
 
 
-
-
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('i18n/setlang/', set_language, name='set_language'),
     path("api/analytics/", AnalyticsViewSet.as_view({"get": "list"}), name="analytics"),
     path('api/analytics/export/', AnalyticsExportCSVView.as_view(), name='analytics-export'),
     path("api/", include(router.urls)), # Все DRF-эндпоинты теперь здесь
@@ -71,7 +70,6 @@ urlpatterns = [
     path(
         "login/", login_view, name="login"
     ),
-    path('set-lang/', set_language, name='set_language'),
 ]
 
 urlpatterns += i18n_patterns(

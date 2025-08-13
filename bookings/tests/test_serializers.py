@@ -1,7 +1,6 @@
 # bookings/tests/test_serializers.py
 from datetime import date, timedelta
 from decimal import Decimal
-
 import pytest
 from rest_framework.exceptions import ValidationError
 from bookings.serializers import BookingSerializer

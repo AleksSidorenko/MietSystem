@@ -20,3 +20,4 @@ router.register(r"users", UserViewSet, basename="user")
 # Правильные префиксы роутов для Analytics
 router.register(r"analytics-views", AnalyticsViewSet, basename="analytics-views")
 router.register(r"analytics-searches", SearchHistoryViewSet, basename="analytics-searches")
+

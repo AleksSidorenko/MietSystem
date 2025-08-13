@@ -35,6 +35,5 @@ def test_booking_overlap(api_client, tenant_user, listing):
     }
     response = api_client.post("/api/bookings/", data)
     assert response.status_code in (400, 403, 201)
-    # If 400, expect mention about overlap or not available
     if response.status_code == 400:
         assert "overlap" in str(response.data).lower() or "not available" in str(response.data).lower()

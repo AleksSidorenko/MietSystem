@@ -1,5 +1,4 @@
 # bookings/tests/conftest.py
-
 import pytest
 
 from tests.conftest import (

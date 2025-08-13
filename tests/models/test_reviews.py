@@ -25,6 +25,4 @@ def test_review_invalid_rating(booking, tenant_user):
     review = Review(booking=booking, user=tenant_user, rating=6, comment='Invalid')
     with pytest.raises(ValidationError, match='between 1 and 5'):
         review.full_clean()
-    # review = Review(booking=booking, user=tenant_user, rating=6, comment="Invalid")
-    # with pytest.raises(ValidationError):
-    #     review.full_clean()
+

@@ -1,5 +1,4 @@
 # core/authentication.py
-
 from drf_spectacular.authentication import OpenApiAuthenticationExtension
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import BaseAuthentication

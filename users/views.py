@@ -33,7 +33,9 @@ from django.utils.translation import gettext as _
 from rest_framework import serializers
 from bookings.models import Booking
 from listings.models import Listing
-
+from users.models import VerificationToken
+from users.serializers import PasswordResetConfirmSerializer
+from collections import OrderedDict
 
 
 
@@ -107,6 +109,10 @@ class UserViewSet(viewsets.ModelViewSet):
         if self.action in ["password_reset", "password_reset_confirm", "email_verification"]:
             return [AllowAny()]
 
+        if self.action == "send_verification_email":
+            # Разрешаем отправлять письмо только админам
+            return [IsAuthenticated(), IsAdminUser()]
+
         # Создание только для админа
         elif self.action == "create":
             return [IsAuthenticated(), IsAdmin()]
@@ -149,11 +155,15 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return User.objects.none()
 
+    def perform_create(self, serializer):
+        serializer.save()
+
     @action(
         detail=False,
         methods=["get", "patch"],
         url_path="me",
         permission_classes=[IsAuthenticated],
+        name="Me",
     )
     def me(self, request):
         user = request.user
@@ -177,42 +187,76 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def perform_create(self, serializer):
-        serializer.save()
-
-    @action(detail=False, methods=["post"], permission_classes=[AllowAny])
-    def email_verification(self, request):
-        # Rate limiting без декораторов
+    @action(detail=True, methods=["post"])
+    def send_verification_email(self, request, pk=None):
+        """Отправляет письмо для верификации email указанному пользователю."""
         was_limited = is_ratelimited(
             request=request,
-            group='email-verification',
+            group='send-verification',
             key='ip',
-            rate='100/m',
+            rate='10/m',
             method='POST',
             increment=True
         )
         if was_limited:
-            return Response({"error": "Too many requests"}, status=429)
+            return Response({"error": _("Too many requests")}, status=429)
 
-        token = request.data.get("token")
-        try:
-            verification_token = VerificationToken.objects.get(
-                token=token, expires_at__gt=timezone.now()
+        user = self.get_object()
+        # Предполагается, что у вас есть функция, которая генерирует и отправляет токен
+        # send_verification_email.delay(user.id) # Если вы используете Celery
+        return Response(
+            {"message": _(f"Verification email sent to {user.email}")},
+            status=status.HTTP_200_OK
+        )
+
+    # Исправленное действие: верификация email по токену
+    @action(detail=False, methods=["get", "post"], permission_classes=[AllowAny])
+    def email_verification(self, request):
+        if request.method == "POST":
+            # Логика для POST-запроса: ожидаем токен
+            was_limited = is_ratelimited(
+                request=request,
+                group='email-verification',
+                key='ip',
+                rate='100/m',
+                method='POST',
+                increment=True
             )
-            user = verification_token.user
-            if user.is_verified:
+            if was_limited:
+                return Response({"error": "Too many requests"}, status=429)
+
+            token = request.data.get("token")
+            if not token:
                 return Response(
-                    {"error": _("Email already verified")},
+                    {"error": _("Token is required")},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            user.is_verified = True
-            user.save()
-            verification_token.delete()
-            return Response({"message": _("Email verified")}, status=status.HTTP_200_OK)
-        except VerificationToken.DoesNotExist:
+
+            try:
+                verification_token = VerificationToken.objects.get(
+                    token=token, expires_at__gt=timezone.now()
+                )
+                user = verification_token.user
+                if user.is_verified:
+                    return Response(
+                        {"error": _("Email already verified")},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                user.is_verified = True
+                user.save()
+                verification_token.delete()
+                return Response({"message": _("Email verified")}, status=status.HTTP_200_OK)
+            except VerificationToken.DoesNotExist:
+                return Response(
+                    {"error": _("Invalid or expired token")},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        elif request.method == "GET":
+            # Логика для GET-запроса: просто возвращаем сообщение
             return Response(
-                {"error": _("Invalid or expired token")},
-                status=status.HTTP_400_BAD_REQUEST,
+                {"detail": _("Use POST method with a 'token' to verify email.")},
+                status=status.HTTP_200_OK
             )
 
     @action(detail=False, methods=["post"], permission_classes=[AllowAny])
@@ -231,7 +275,9 @@ class UserViewSet(viewsets.ModelViewSet):
         except User.DoesNotExist:
             return Response({"error": _("User not found")}, status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=False, methods=["post"], permission_classes=[AllowAny])
+
+    @action(detail=False, methods=["post"], serializer_class=PasswordResetConfirmSerializer,
+            permission_classes=[AllowAny])
     def password_reset_confirm(self, request):
         was_limited = is_ratelimited(
             request=request, group='password-reset-confirm', key='ip', rate='100/m', method='POST', increment=True
@@ -239,8 +285,12 @@ class UserViewSet(viewsets.ModelViewSet):
         if was_limited:
             return Response({"error": "Too many requests"}, status=429)
 
-        token = request.data.get("token")
-        password = request.data.get("password")
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        token = serializer.validated_data.get("token")
+        password = serializer.validated_data.get("password")
+
         try:
             verification_token = VerificationToken.objects.get(
                 token=token, expires_at__gt=timezone.now()
@@ -249,9 +299,10 @@ class UserViewSet(viewsets.ModelViewSet):
             user.set_password(password)
             user.save()
             verification_token.delete()
-            return Response({"message": _("Password reset successful")}, status=status.HTTP_200_OK)
+            return Response({"message": "Password reset successful"}, status=status.HTTP_200_OK)
         except VerificationToken.DoesNotExist:
-            return Response({"error": _("Invalid or expired token")}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Invalid or expired token"}, status=status.HTTP_400_BAD_REQUEST)
+
 
     @action(detail=False, methods=["get", "post"], permission_classes=[IsAuthenticated])
     # @csrf_protect
@@ -264,3 +315,4 @@ class UserViewSet(viewsets.ModelViewSet):
             device = TOTPDevice.objects.create(user=request.user, name="default")
             serializer = TOTPSerializer(device)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+

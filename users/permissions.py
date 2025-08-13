@@ -112,26 +112,3 @@ class ReviewPermissions(permissions.BasePermission):
             return obj.user == user
 
         return False
-
-
-    # def has_object_permission(self, request, view, obj):
-    #     user = request.user
-    #
-    #     # Администратор имеет полный доступ ко всему
-    #     if user.role == "ADMIN":
-    #         return True
-    #
-    #     # Разрешаем просматривать детали отзыва (retrieve) для всех, у кого есть права
-    #     # (это уже было проверено в has_permission)
-    #     if view.action == 'retrieve' and request.method == 'GET':
-    #         return True
-    #
-    #     # Разрешаем редактирование и удаление только владельцу отзыва
-    #     if view.action in ['update', 'partial_update', 'destroy']:
-    #         return obj.user == user
-    #
-    #     # Разрешаем одобрение (approve) только администратору
-    #     if view.action == 'approve':
-    #         return user.role == "ADMIN"
-    #
-    #     return False
