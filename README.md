@@ -1,149 +1,143 @@
+# 🏠 MietSystem — Plattform für Immobilienvermietung
 
-### 🏠 MietSystem — Платформа аренды жилья
+**MietSystem** ist eine moderne Backend-Plattform zur Wohnraummiete in Deutschland.  
+Sie unterstützt mehrere Rollen (Admin, Vermieter, Mieter) mit separaten Dashboards und einem granularen Berechtigungssystem.  
+Die Anwendung bietet umfassende Funktionen für **Immobilienverwaltung, Buchungssystem, Bewertungen und Analytik**.
 
-  Современное backend-приложение для аренды жилья в Германии с мультиролевой поддержкой (Admin, Landlord, Tenant) с раздельными Dashboard и системой прав доступа. Платформа предоставляет полнофункциональную систему управления недвижимостью, бронирования, отзывов и аналитики.
+## ✨ Hauptfunktionen
 
-### ✨ Основные возможности
+### 🏠 Anzeigenverwaltung
+- Erstellen, Bearbeiten und Löschen von Inseraten  
+- Mehrsprachige Titel und Beschreibungen (DE / EN / RU)  
+- Upload von Fotos (JPEG/PNG ≤ 5 MB)  
+- Verwaltung der Verfügbarkeit über Kalender  
+- Aktivierungsstatus der Anzeige  
 
-### 🏠 Управление объявлениями
-- Создание, редактирование, удаление объявлений
-- Мультиязычные заголовки и описания (DE/EN/RU)
-- Загрузка фотографий (JPEG/PNG ≤ 5MB)
-- Управление календарем доступности
-- Статус активности объявления
+### 🔍 Suche & Filter
+- **FULLTEXT**-Suche in Titeln und Beschreibungen  
+- Filter nach Preis, Zimmerzahl und Immobilientyp  
+- Sortierung nach Beliebtheit, Preis oder Datum  
+- Paginierung (20 Ergebnisse pro Seite)  
+- Caching der Ergebnisse in **Redis**  
 
-### 🔍 Поиск и фильтрация
-- FULLTEXT поиск по заголовкам и описаниям
-- Фильтрация по цене, комнатам, типу жилья
-- Сортировка по популярности, цене, дате
-- Пагинация результатов (20 элементов)
-- Кеширование результатов в Redis
+### 👥 Rollen & Berechtigungen
+- **Mieter (Tenant):** Suche, Buchungen, Bewertungen  
+- **Vermieter (Landlord):** Verwaltung von Inseraten & Buchungen  
+- **Administrator (Admin):** Vollzugriff auf alle Module  
 
-### 👥 Ролевая система
-- **Арендатор (Tenant)**: поиск, бронирование, отзывы
-- **Арендодатель (Landlord)**: управление объявлениями, бронированиями
-- **Администратор (Admin)**: полный доступ ко всем функциям
+### 📅 Buchungssystem
+- Erstellung von Buchungen mit automatischer Verfügbarkeitsprüfung  
+- Preisberechnung in Echtzeit  
+- Bestätigung oder Ablehnung durch Vermieter  
+- Stornierung bis 48 Stunden vor Beginn  
 
-### 📅 Бронирования
-- Создание бронирований с проверкой доступности
-- Автоматический расчет стоимости
-- Подтверждение/отклонение арендодателем
-- Отмена бронирований (до 48 часов)
+### ⭐ Bewertungen
+- Bewertungen nach abgeschlossener Buchung  
+- Moderation durch Administrator  
+- Durchschnittsbewertung mit Caching  
+- Antworten durch Vermieter  
 
-### ⭐ Отзывы и рейтинги
-- Отзывы после завершения бронирования
-- Модерация администратором
-- Средний рейтинг с кешированием
-- Ответы арендодателей на отзывы
+### 📊 Analytik
+- Beliebtheitsformel: `(views × 0.3 + reviews × 0.5 + time_decay × 0.2)`  
+- Nutzer-Suchhistorie & Anzeigehistorie  
+- Export von Analyse-Daten als **CSV**
 
-### 📊 Аналитика
-- Подсчет популярности (views * 0.3 + reviews * 0.5 + time_decay * 0.2)
-- История поиска пользователей
-- История просмотров объявлений
-- Экспорт аналитики в CSV
-
-## 🛠 Технический стек
+## 🛠 Technischer Stack
 
 ### Backend
-- **Python 3.11**
-- **Django 5.0**
-- **Django REST Framework**
-- **MySQL 8.0** (с FULLTEXT, JSON, индексами)
-- **Redis 7.0** (кеширование, ElastiCache)
-- **Celery + RabbitMQ** (асинхронные задачи)
+- **Python 3.11**  
+- **Django 5.0**  
+- **Django REST Framework (DRF)**  
+- **MySQL 8.0** (FULLTEXT, JSON, Indizes)  
+- **Redis 7.0** (Caching, ElastiCache)  
+- **Celery + RabbitMQ** (asynchrone Tasks)  
 
 ### Frontend (Dashboard)
-- **Django Admin Panel**
-- **DRF Browsable API**
-- **Swagger/Redoc** (drf-spectacular)
-- **Мультиязычность** (DE/EN/RU)
+- **Django Admin Panel**  
+- **DRF Browsable API**  
+- **Swagger / Redoc** (drf-spectacular)  
+- **Mehrsprachigkeit** (DE / EN / RU)  
 
-### Безопасность
-- **JWT аутентификация** (SimpleJWT)
-- **2FA** (TOTP)
-- **Rate limiting** (100 req/min)
-- **django-axes** (защита от брутфорса)
-- **CSRF/XSS защита**
+### Sicherheit
+- **JWT-Authentifizierung** (SimpleJWT)  
+- **2FA (TOTP)**  
+- **Rate Limiting** (100 req/min)  
+- **django-axes** (Brute-Force-Schutz)  
+- **CSRF/XSS-Schutz**
 
-### 📁 Структура проекта
+## 📁 Projektstruktur
 
-```
+``` bash
 Project_MietSystem/
-├── analytics/          # Аналитика и статистика
-├── bookings/           # Система бронирования
-├── core/               # Основное приложение (роутинг, настройки, маршруты, middleware)
-├── listings/           # Объявления недвижимости
-├── locations/          # Геолокация и карты
-├── reviews/            # Отзывы и рейтинги
-├── users/              # Управление пользователями и ролями
-├── utils/              # Вспомогательные функции
-├── templates/          # Шаблоны Dashboard
-├── static/             # Статические файлы
-├── media/              # Медиа файлы
-├── tests/              # Тесты
-├── docs/               # Документация
-├── docker-compose.yml  # Docker конфигурация
-├── Dockerfile          # Docker образ
-├── requirements.txt    # Зависимости
-└── manage.py           # Django manage script
+├── analytics/          # Analytik und Berichte
+├── bookings/           # Buchungssystem
+├── core/               # Kernapp (Routing, Settings, Middleware)
+├── listings/           # Immobilienanzeigen
+├── locations/          # Geodaten & Karten
+├── reviews/            # Bewertungen
+├── users/              # Benutzerverwaltung & Rollen
+├── utils/              # Hilfsfunktionen
+├── templates/          # Dashboard-Templates
+├── static/             # Statische Dateien
+├── media/              # Mediendateien
+├── tests/              # Tests
+├── docs/               # Dokumentation
+├── docker-compose.yml  # Docker-Konfiguration
+├── Dockerfile          # Docker-Image
+├── requirements.txt    # Abhängigkeiten
+└── manage.py           # Django-Manage-Skript
 ```
-### Модели данных
-- **User**: пользователи с ролями (Tenant/Landlord/Admin)
-- **Listing**: объявления о недвижимости
-- **Booking**: бронирования с статусами
-- **Review**: отзывы и рейтинги
-- **Location**: геолокация с координатами
-- **SearchHistory**: история поиска
-- **ViewHistory**: история просмотров
 
-### Локальная установка
+## 📦 Installation (lokal)
 
-```bash
-# Клонирование репозитория
+``` bash
+# Repository klonen
 git clone <repository-url>
 cd MietSystem
 
-# Создание виртуального окружения
+# Virtuelle Umgebung erstellen
 python -m venv .venv
 source .venv/bin/activate  # Linux/Mac
-# или
+# oder
 .venv\Scripts\activate     # Windows
 
-# Установка зависимостей
+# Abhängigkeiten installieren
 pip install -r requirements.txt
 
-# Настройка базы данных
-# Создайте базу данных MySQL и обновите settings.py
+# MySQL-Datenbank einrichten und settings.py anpassen
 
-# Применение миграций
+# Migrationen anwenden
 python manage.py migrate
 
-# Создание суперпользователя
+# Superuser anlegen
 python manage.py createsuperuser
 
-# Запуск сервера
+# Server starten
 python manage.py runserver 8001
 ```
 
-## 📡 API документация
+## 📡 API-Dokumentation
 
-### Доступные endpoints
-- `/api/users/` - управление пользователями
-- `/api/listings/` - объявления недвижимости
-- `/api/bookings/` - система бронирования
-- `/api/reviews/` - отзывы и рейтинги
-- `/api/analytics/` - аналитика
-- `/api/docs/` - Swagger документация
-- `/admin/` - админ-панель Django
+### Endpoints
 
-### Формат ответов
-```
+| Endpoint          | Beschreibung                |
+| ----------------- | --------------------------- |
+| `/api/users/`     | Benutzerverwaltung          |
+| `/api/listings/`  | Immobilienanzeigen          |
+| `/api/bookings/`  | Buchungssystem              |
+| `/api/reviews/`   | Bewertungen                 |
+| `/api/analytics/` | Analytik                    |
+| `/api/docs/`      | Swagger/Redoc-Dokumentation |
+| `/admin/`         | Django Admin Panel          |
+
+### Beispielantwort 
+``` 
 json
-// Успешный ответ
+// Erfolg
 {
   "data": {
     "id": 42,
-    "title": "Квартира в центре Берлина",
+    "title": "Wohnung im Zentrum von Berlin",
     "price_per_night": 89.99
   },
   "meta": {
@@ -152,124 +146,105 @@ json
   }
 }
 
-// Ошибка
+// Fehler
 {
   "error": {
     "code": "INVALID_DATE",
-    "message": "Booking dates overlap with existing booking",
+    "message": "Buchungsdaten überschneiden sich mit bestehender Buchung",
     "status": 400
   }
 }
 ```
 
-## 🧪 Тестирование
+## 🧪 Tests
 
-### Запуск тестов
-```bash
-# Запуск всех тестов
-pytest
+### Ausführung
 
-# Запуск с покрытием
-pytest --cov=.
-
-# Нагрузочное тестирование
-locust -f tests/locustfile.py
+``` bash
+pytest                         # Alle Tests
+pytest --cov=.                 # Mit Coverage
+locust -f tests/locustfile.py  # Lasttests
 ```
 
-### Покрытие тестами
-- **Цель**: ≥80% покрытия кода
-- **Юнит-тесты**: модели, сериализаторы, permissions
-- **Интеграционные тесты**: API endpoints
-- **Нагрузочные тесты**: locust (до 1000 RPS)
+### Testabdeckung
 
-## 🛡 Безопасность
+* **Ziel:** ≥ 80 %
+* **Unit-Tests:** Modelle, Serializer, Permissions
+* **Integrationstests:** API-Endpunkte
+* **Lasttests:** bis 1000 RPS (Locust)
 
-### Аутентификация
-- JWT токены (access + refresh)
-- HttpOnly cookies + CSRF защита
-- 2FA (TOTP) для повышенной безопасности
-- Сброс пароля через email
+## 🛡 Sicherheit
 
-### Защита
-- Rate limiting (100 запросов/минуту)
-- django-axes (защита от брутфорса)
-- Argon2 для хеширования паролей
-- XSS и CSRF защита
+### Authentifizierung
 
-### Pre-commit хуки
-```bash
-# Установка pre-commit
+* JWT (Access + Refresh Tokens)
+* HttpOnly-Cookies + CSRF-Schutz
+* 2FA (TOTP)
+* Passwort-Reset per E-Mail
+
+### Schutzmechanismen
+
+* Rate Limiting (100 req/min)
+* Brute-Force-Schutz mit django-axes
+* Passwort-Hashing via Argon2
+* Schutz vor XSS und CSRF
+
+### Pre-Commit-Hooks
+
+``` bash
 pre-commit install
-
-# Запуск всех хуков
 pre-commit run --all-files
 ```
 
-## 📊 Мониторинг
+## 📊 Monitoring & Logging
 
 ### Sentry
-- Мониторинг ошибок в реальном времени
-- Трассировка запросов
-- Профилирование производительности
 
-### Логирование
-- Детальное логирование действий
-- Логи ошибок и предупреждений
-- Ротация логов
+* Echtzeit-Fehlerüberwachung
+* Request-Tracing
+* Performance-Analyse
 
-## 👥 Роли пользователей
+### Logging
 
-### Арендатор (Tenant)
-- Поиск и фильтрация объявлений
-- Создание бронирований
-- Оставление отзывов
-- Просмотр и редактирование профиля
+* Detailliertes Aktionslogging
+* Fehler- und Warnmeldungen
+* Automatische Logrotation
 
-### Арендодатель (Landlord)
-- CRUD своих объявлений
-- Управление бронированиями
-- Ответы на отзывы
-- Аналитика по объектам
+## 👥 Benutzerrollen
 
-### Администратор (Admin)
-- Полный доступ ко всем функциям
-- Модерация контента
-- Управление пользователями
-- Экспорт аналитики
+| Rolle                 | Berechtigungen                                                              |
+|-----------------------|-----------------------------------------------------------------------------|
+| Mieter (Tenant)       | Anzeigen suchen, Buchungen erstellen, Bewertungen abgeben, Profil verwalten |
+| Vermieter (Landlord)  | CRUD für eigene Anzeigen, Buchungsverwaltung, Antworten auf Bewertungen,    |
+|                       |   Objektanalytik                                                            |
+| Administrator (Admin) | Vollzugriff, Moderation, Benutzerverwaltung, Datenexporte                   |
 
-## 🌍 Локализация
+## 🌍 Lokalisierung
 
-### Поддерживаемые языки
-- 🇩🇪 Deutsch (немецкий)
-- 🇬🇧 English (английский)
-- 🇷🇺 Русский
+* **Sprachen:** 🇩🇪 Deutsch, 🇬🇧 Englisch, 🇷🇺 Russisch
+* **Währung:** EUR (erweiterbar)
+* **Geografie:** Bundesländer, Städte, Bezirke
+* **Adressformat:** Straße, PLZ, Ort
 
-### Валюты
-- **EUR** - основная валюта
-- Поддержка расширения на другие валюты
+## 📈 Weiterentwicklung
 
-### География
-- Федеральные земли Германии
-- Города и районы
-- Формат адресов (Straße, PLZ, Ort)
+### Kurzfristige Ziele
 
-## 📈 Перспективы развития
+* Deployment auf **AWS** (Docker/Kubernetes)
+* Kartenintegration (OpenStreetMap / Google Maps)
+* Messenger zwischen Mieter und Vermieter
+* Push- und SMS-Benachrichtigungen
+* Mehrwährungsunterstützung
 
-### Ближайшие планы
-- Docker / Kubernetes → продакшен-деплой на AWS
-- Интеграция с картами (OpenStreetMap/Google Maps)
-- Мессенджер между арендатором и арендодателем
-- Уведомления через SMS и WebPush
-- Поддержка нескольких валют
+### Langfristige Ziele
 
-### Долгосрочные цели
-- Расширение на другие страны
-- Рекомендательная система на основе ML
-- Мобильное приложение (iOS/Android)
-- Интеграция с платежными системами (Stripe, PayPal)
+* Internationale Expansion
+* Empfehlungssystem auf Basis von Machine Learning
+* Mobile App (iOS / Android)
+* Integration von Zahlungsdiensten (Stripe, PayPal)
 
-## 📞 Контакты
+## 📞 Kontakt
 
-**Разработчик**: [Alex Sidorenko]
-*Проект разработан в рамках учебного задания с применением современных практик веб-разработки*
+**Entwickler:** Alex Sidorenko (mailto:alexgruening@icloud.com)
+*Projekt entwickelt nach modernen Best Practices der Webentwicklung.*
 
